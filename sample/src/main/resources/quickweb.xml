@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<quickweb xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+          xsi:noNamespaceSchemaLocation="quickweb.xsd">
+    <session>
+        <charset>UTF-8</charset>
+    </session>
+    <db>
+        <driver>com.mysql.jdbc.Driver</driver>
+        <url>jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false</url>
+        <username>root</username>
+        <password>123456</password>
+    </db>
+    <view>
+        <prefix>/WEB-INF/views/</prefix>
+        <suffix>.jsp</suffix>
+    </view>
+</quickweb>

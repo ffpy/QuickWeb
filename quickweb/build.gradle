@@ -3,6 +3,7 @@ version '1.0-SNAPSHOT'
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
-    providedCompile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.0'
-    providedCompile group: 'mysql', name: 'mysql-connector-java', version: '8.0.9-rc'
+    compile group: 'javax.servlet', name: 'javax.servlet-api', version: '4.0.0'
+    compile group: 'mysql', name: 'mysql-connector-java', version: '8.0.9-rc'
+    compile group: 'com.thoughtworks.xstream', name: 'xstream', version: '1.4.10'
 }

@@ -1,7 +1,8 @@
 package org.quickweb.view;
 
-import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import org.quickweb.session.QuickSession;
+import org.quickweb.utils.ObjectUtils;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServletRequest;
@@ -17,15 +18,18 @@ public class QuickView {
     private HttpServletResponse response;
 
     public QuickView(
-            @NotNull QuickSession quickSession, @NotNull HttpServletRequest request,
-            @NotNull HttpServletResponse response) {
+            QuickSession quickSession, HttpServletRequest request, HttpServletResponse response) {
+        ObjectUtils.requireNonNull(quickSession, request, response);
+
         this.quickSession = quickSession;
         this.request = request;
         this.response = response;
     }
 
-    public void view(@NotNull String path) {
-       mergeParams();
+    public void view(String path) {
+        ObjectUtils.requireNonNull(path);
+
+        mergeParams();
         try {
             request.getRequestDispatcher(path).forward(request, response);
         } catch (ServletException | IOException e) {
@@ -46,8 +50,10 @@ public class QuickView {
         Arrays.stream(request.getCookies()).forEach(cookie -> putParam(cookie.getName(), cookie.getValue()));
     }
 
-    private void putParam(String name, Object value) {
-        if (request.getAttribute(name) == null)
+    private void putParam(String name, @Nullable Object value) {
+        ObjectUtils.requireNonNull(name);
+
+        if (value != null && request.getAttribute(name) == null)
             request.setAttribute(name, value);
     }
 }

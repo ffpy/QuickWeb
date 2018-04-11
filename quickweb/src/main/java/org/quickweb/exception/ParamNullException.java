@@ -1,5 +1,7 @@
 package org.quickweb.exception;
 
+import java.util.Objects;
+
 public class ParamNullException extends NullPointerException {
 
     public ParamNullException() {
@@ -7,6 +9,6 @@ public class ParamNullException extends NullPointerException {
     }
 
     public ParamNullException(String paramName) {
-        super(paramName + " can't be null.");
+        super(Objects.requireNonNull(paramName) + " can't be null");
     }
 }

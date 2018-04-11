@@ -1,7 +1,9 @@
 package org.quickweb.session;
 
-import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
+import org.quickweb.exception.ScopeNotMatchedException;
 import org.quickweb.utils.CookieUtils;
+import org.quickweb.utils.ObjectUtils;
 import org.quickweb.utils.ParamUtils;
 import org.quickweb.utils.SessionUtils;
 import org.quickweb.view.QuickView;
@@ -20,7 +22,9 @@ public class QuickSession {
     private Map<String, Object> modalParamMap = new ConcurrentHashMap<>();
     private static Map<String, Object> applicationParamMap = new ConcurrentHashMap<>();
 
-    public QuickSession(@NotNull HttpServletRequest request, @NotNull HttpServletResponse response) {
+    public QuickSession(HttpServletRequest request, HttpServletResponse response) {
+        ObjectUtils.requireNonNull(request, response);
+
         this.request = request;
         this.response = response;
     }
@@ -41,17 +45,21 @@ public class QuickSession {
         return applicationParamMap;
     }
 
-    public QuickSession watch(@NotNull Consumer<QuickSession> consumer) {
+    public QuickSession watch(Consumer<QuickSession> consumer) {
+        ObjectUtils.requireNonNull(consumer);
+
         consumer.accept(this);
         return this;
     }
 
-    public QuickSession requireParamNotNull(@NotNull String name, @NotNull ParamScope scope) {
+    public QuickSession requireParamNotNull(String name, ParamScope scope) {
         ParamUtils.requireNotNull(getParam(name, scope), name);
         return this;
     }
 
-    public QuickSession requireParamNotEmpty(@NotNull String... names) {
+    public QuickSession requireParamNotEmpty(String... names) {
+        ObjectUtils.requireNonNull(names);
+
         for (String n : names) {
             String value = ParamUtils.requireNotNull(getParam(n), n);
             ParamUtils.requireNotEmpty(value, n);
@@ -59,7 +67,9 @@ public class QuickSession {
         return this;
     }
 
-    public QuickSession requireParamNotEmpty(@NotNull ParamScope scope, @NotNull String... names) {
+    public QuickSession requireParamNotEmpty(ParamScope scope, String... names) {
+        ObjectUtils.requireNonNull(scope, names);
+
         for (String n : names) {
             String value = ParamUtils.requireNotNull(getParam(n, scope), n);
             ParamUtils.requireNotEmpty(value, n);
@@ -67,33 +77,34 @@ public class QuickSession {
         return this;
     }
 
-    public QuickSession requireParamEquals(@NotNull String name, Object expectedValue) {
+    public QuickSession requireParamEquals(String name, @Nullable Object expectedValue) {
+        ObjectUtils.requireNonNull(name);
+
         ParamUtils.requireEquals(name, expectedValue, getParam(name));
         return this;
     }
 
     public QuickSession requireParamEquals(
-            @NotNull String name, @NotNull ParamScope scope,
-            @NotNull String expectedName, @NotNull ParamScope expectedScope) {
+            String name, ParamScope scope, String expectedName, ParamScope expectedScope) {
         Object actualValue = getParam(name, scope);
         Object expectedValue = getParam(expectedName, expectedScope);
         ParamUtils.requireEquals(name, expectedValue, actualValue);
         return this;
     }
 
-    public QuickSession requireParamEqualsWith(@NotNull String name, @NotNull ParamScope expectedScope) {
+    public QuickSession requireParamEqualsWith(String name, ParamScope expectedScope) {
         requireParamEquals(name, getParam(name, expectedScope));
         return this;
     }
 
     public QuickSession requireParamEqualsWith(
-            @NotNull String name, @NotNull String expectedName, @NotNull ParamScope expectedScope) {
+            String name, String expectedName, ParamScope expectedScope) {
         requireParamEquals(name, getParam(expectedName, expectedScope));
         return this;
     }
 
     @SuppressWarnings("unchecked")
-    public <T> T getParam(@NotNull String name) {
+    public <T> T getParam(String name) {
         // 按照作用域的优先级排列
         ParamScope[] scopes = {
                 ParamScope.CONTEXT, ParamScope.MODAL, ParamScope.REQUEST,
@@ -108,7 +119,9 @@ public class QuickSession {
         return null;
     }
 
-    public <T> T getParam(@NotNull String name, @NotNull ParamScope scope) {
+    public <T> T getParam(String name, ParamScope scope) {
+        ObjectUtils.requireNonNull(name, scope);
+
         switch (scope) {
             case CONTEXT:
                 return (T) request.getAttribute(name);
@@ -122,16 +135,21 @@ public class QuickSession {
                 return (T) CookieUtils.getValue(request, name);
             case APPLICATION:
                 return (T) applicationParamMap.get(name);
+            default:
+                throw new ScopeNotMatchedException(scope);
         }
-        return null;
     }
 
-    public QuickSession putParam(@NotNull String name, Object value) {
-        putParam(name, value, EditableParamScope.CONTEXT);
+    public QuickSession putParam(String name, Object value) {
+        if (value != null)
+            putParam(name, value, EditableParamScope.CONTEXT);
         return this;
     }
 
-    public QuickSession putParam(@NotNull String name, Object value, @NotNull EditableParamScope scope) {
+    public QuickSession putParam(
+            String name, Object value, EditableParamScope scope) {
+        ObjectUtils.requireNonNull(name, value, scope);
+
         switch (scope) {
             case CONTEXT:
                 request.setAttribute(name, value);
@@ -142,31 +160,33 @@ public class QuickSession {
             case APPLICATION:
                 applicationParamMap.put(name, value);
                 break;
+            default:
+                throw new ScopeNotMatchedException(scope);
         }
         return this;
     }
 
     public QuickSession putParamBy(
-            @NotNull String name, @NotNull Function<QuickSession, Object> generator) {
+            String name, Function<QuickSession, Object> generator) {
         putParamBy(name, EditableParamScope.CONTEXT, generator);
         return this;
     }
 
     public QuickSession putParamBy(
-            @NotNull String name, @NotNull EditableParamScope scope,
-            @NotNull Function<QuickSession, Object> generator) {
+            String name, EditableParamScope scope,
+            Function<QuickSession, Object> generator) {
         putParam(name, generator.apply(this), scope);
         return this;
     }
 
-    public QuickSession putParamFrom(@NotNull String name, @NotNull ParamScope fromScope) {
+    public QuickSession putParamFrom(String name, ParamScope fromScope) {
         putParamFrom(name, fromScope, ParamScope.CONTEXT);
         return this;
     }
 
     public QuickSession putParamFrom(
-            @NotNull String name, @NotNull ParamScope fromScope,
-            @NotNull ParamScope toScope) {
+            String name, ParamScope fromScope,
+            ParamScope toScope) {
         Object value = getParam(name, fromScope);
         if (value != null)
             putParam(name, value, EditableParamScope.of(toScope));
@@ -174,15 +194,16 @@ public class QuickSession {
     }
 
     public QuickSession putParamFrom(
-            @NotNull String fromName, @NotNull ParamScope fromScope,
-            @NotNull String toName, @NotNull ParamScope toScope) {
+            String fromName, ParamScope fromScope, String toName, ParamScope toScope) {
         Object value = getParam(fromName, fromScope);
         if (value != null)
             putParam(toName, value, EditableParamScope.of(toScope));
         return this;
     }
 
-    public QuickSession removeParam(@NotNull String name, @NotNull EditableParamScope scope) {
+    public QuickSession removeParam(String name, EditableParamScope scope) {
+        ObjectUtils.requireNonNull(name, scope);
+
         switch (scope) {
             case CONTEXT:
                 request.removeAttribute(name);
@@ -198,25 +219,30 @@ public class QuickSession {
     }
 
     public QuickSession mapParam(
-            @NotNull String name, @NotNull Function<Object, Object> mapper,
-            @NotNull EditableParamScope scope) {
+            String name, Function<Object, Object> mapper, EditableParamScope scope) {
+        ObjectUtils.requireNonNull(mapper);
+
         Object value = getParam(name, ParamScope.of(scope));
         putParam(name, mapper.apply(value), scope);
         return this;
     }
 
-    public QuickSession watchParam(@NotNull String name, @NotNull Consumer<Object> watcher) {
+    public QuickSession watchParam(String name, Consumer<Object> watcher) {
+        ObjectUtils.requireNonNull(watcher);
+
         watcher.accept(getParam(name));
         return this;
     }
 
     public QuickSession watchParam(
-            @NotNull String name, @NotNull ParamScope scope, @NotNull Consumer<Object> watcher) {
+            String name, ParamScope scope, Consumer<Object> watcher) {
+        ObjectUtils.requireNonNull(watcher);
+
         watcher.accept(getParam(name, scope));
         return this;
     }
 
-    public QuickModal modal(@NotNull String table) {
+    public QuickModal modal(String table) {
         return new QuickModal(table, this);
     }
 
@@ -224,7 +250,7 @@ public class QuickSession {
         return new QuickView(this, request, response);
     }
 
-    public void view(@NotNull String path) {
+    public void view(String path) {
         view().view(path);
     }
 }

@@ -1,26 +1,35 @@
 package org.quickweb.modal;
 
-import com.sun.istack.internal.NotNull;
+import com.sun.istack.internal.Nullable;
 import org.quickweb.session.QuickSession;
+import org.quickweb.utils.ObjectUtils;
 
 public class QuickModal {
     private String table;
     private QuickSession quickSession;
 
-    public QuickModal(@NotNull String table, @NotNull QuickSession quickSession) {
+    public QuickModal(String table, QuickSession quickSession) {
+        ObjectUtils.requireNonNull(table, quickSession);
+
         this.table = table;
         this.quickSession = quickSession;
     }
 
-    public QuickModal select(@NotNull String... columns) {
+    public QuickModal select(String... columns) {
+        ObjectUtils.requireNonNull(columns);
+
         return this;
     }
 
-    public QuickModal where(@NotNull String condition) {
+    public QuickModal where(String condition) {
+        ObjectUtils.requireNonNull(condition);
+
         return this;
     }
 
-    public QuickModal order(@NotNull String... columns) {
+    public QuickModal order(String... columns) {
+        ObjectUtils.requireNonNull(columns);
+
         return this;
     }
 
@@ -32,37 +41,53 @@ public class QuickModal {
         return this;
     }
 
-    public QuickSession insert(@NotNull String name, Object value) {
+    public QuickSession insert(String name, @Nullable Object value) {
+        ObjectUtils.requireNonNull(name);
+
         return quickSession;
     }
 
-    public QuickSession insert(@NotNull String effectColsParamName, @NotNull String name, Object value) {
+    public QuickSession insert(String effectColsParamName, String name, @Nullable Object value) {
+        ObjectUtils.requireNonNull(effectColsParamName, name);
+
         return quickSession;
     }
 
-    public QuickSession insertFromParam(@NotNull String... params) {
+    public QuickSession insertFromParam(String... params) {
+        ObjectUtils.requireNonNull(params);
+
         return quickSession;
     }
 
     public QuickSession insertFromParamWithEffectCols(
-            @NotNull String effectColsParamName, @NotNull String... param) {
+            String effectColsParamName, String... param) {
+        ObjectUtils.requireNonNull(effectColsParamName, param);
+
         return quickSession;
     }
 
-    public QuickSession update(@NotNull String name, Object value) {
+    public QuickSession update(String name, @Nullable Object value) {
+        ObjectUtils.requireNonNull(name);
+
         return quickSession;
     }
 
-    public QuickSession update(@NotNull String effectColsParamName, @NotNull String name, Object value) {
+    public QuickSession update(String effectColsParamName, String name, @Nullable Object value) {
+        ObjectUtils.requireNonNull(effectColsParamName, name);
+
         return quickSession;
     }
 
-    public QuickSession updateFromParam(@NotNull String... params) {
+    public QuickSession updateFromParam(String... params) {
+        ObjectUtils.requireNonNull(params);
+
         return quickSession;
     }
 
     public QuickSession updateFromParamWithEffectCols(
-            @NotNull String effectColsParamName, @NotNull String... params) {
+            String effectColsParamName, String... params) {
+        ObjectUtils.requireNonNull(effectColsParamName, params);
+
         return quickSession;
     }
 
@@ -70,7 +95,9 @@ public class QuickModal {
         return quickSession;
     }
 
-    public QuickSession delete(@NotNull String effectColsParamName) {
+    public QuickSession delete(String effectColsParamName) {
+        ObjectUtils.requireNonNull(effectColsParamName);
+
         return quickSession;
     }
 
@@ -78,27 +105,39 @@ public class QuickModal {
         return quickSession;
     }
 
-    public QuickSession find(@NotNull String paramName) {
+    public QuickSession find(String paramName) {
+        ObjectUtils.requireNonNull(paramName);
+
         return quickSession;
     }
 
-    public QuickSession count(@NotNull String paramName) {
+    public QuickSession count(String paramName) {
+        ObjectUtils.requireNonNull(paramName);
+
         return quickSession;
     }
 
-    public QuickSession avg(@NotNull String paramName) {
+    public QuickSession avg(String paramName) {
+        ObjectUtils.requireNonNull(paramName);
+
         return quickSession;
     }
 
-    public QuickSession max(@NotNull String paramName, @NotNull ResultType resultType) {
+    public QuickSession max(String paramName, ResultType resultType) {
+        ObjectUtils.requireNonNull(paramName, resultType);
+
         return quickSession;
     }
 
-    public QuickSession min(@NotNull String paramName, @NotNull ResultType resultType) {
+    public QuickSession min(String paramName, ResultType resultType) {
+        ObjectUtils.requireNonNull(paramName, resultType);
+
         return quickSession;
     }
 
-    public QuickSession sum(@NotNull String paramName, @NotNull ResultType resultType) {
+    public QuickSession sum(String paramName, ResultType resultType) {
+        ObjectUtils.requireNonNull(paramName, resultType);
+
         return quickSession;
     }
 }

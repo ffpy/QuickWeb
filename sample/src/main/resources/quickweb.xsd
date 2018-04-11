@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
+    <xs:element name="quickweb">
+        <xs:complexType>
+            <xs:sequence>
+                <xs:element name="session">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="charset"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="db">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="driver"/>
+                            <xs:element name="url" type="xs:anyURI"/>
+                            <xs:element name="username"/>
+                            <xs:element name="password"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+                <xs:element name="view">
+                    <xs:complexType>
+                        <xs:sequence>
+                            <xs:element name="prefix"/>
+                            <xs:element name="suffix"/>
+                        </xs:sequence>
+                    </xs:complexType>
+                </xs:element>
+            </xs:sequence>
+        </xs:complexType>
+    </xs:element>
+</xs:schema>
