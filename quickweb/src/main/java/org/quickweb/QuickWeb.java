@@ -2,6 +2,7 @@ package org.quickweb;
 
 import org.quickweb.config.QuickWebConfig;
 import org.quickweb.session.QuickSession;
+import org.quickweb.session.QuickSessionImpl;
 import org.quickweb.utils.XMLUtils;
 
 import javax.servlet.http.HttpServletRequest;
@@ -30,7 +31,7 @@ public class QuickWeb {
     public static QuickSession server(HttpServletRequest request, HttpServletResponse response) {
         if (config == null)
             init();
-        return new QuickSession(request, response);
+        return new QuickSessionImpl(request, response);
     }
 
     public static QuickWebConfig getConfig() {

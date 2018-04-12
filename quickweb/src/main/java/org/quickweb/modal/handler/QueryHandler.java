@@ -3,6 +3,7 @@ package org.quickweb.modal.handler;
 import com.sun.istack.internal.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.quickweb.modal.QuickModal;
+import org.quickweb.modal.ResultType;
 import org.quickweb.modal.SqlParam;
 import org.quickweb.modal.StmtHelper;
 import org.quickweb.session.EditableParamScope;
@@ -10,8 +11,10 @@ import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.RequireUtils;
 import org.quickweb.utils.SqlUtils;
 
+import java.sql.Date;
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -51,23 +54,26 @@ public class QueryHandler {
     }
 
     public static void count(QuickModal quickModal, String paramName, SqlParam sqlParam) {
-        aggregateAction(quickModal, paramName, "*", sqlParam, "COUNT", Integer.class);
+        aggregateAction(quickModal, paramName, "*", sqlParam, "COUNT", ResultType.INT);
     }
 
     public static void avg(QuickModal quickModal, String paramName, String column, SqlParam sqlParam) {
-        aggregateAction(quickModal, paramName, column, sqlParam, "AVG", Double.class);
+        aggregateAction(quickModal, paramName, column, sqlParam, "AVG", ResultType.DOUBLE);
     }
 
-    public static void max(QuickModal quickModal, String paramName, String column, SqlParam sqlParam) {
-        aggregateAction(quickModal, paramName, column, sqlParam, "MAX");
+    public static void max(QuickModal quickModal, String paramName, String column,
+                           SqlParam sqlParam, ResultType resultType) {
+        aggregateAction(quickModal, paramName, column, sqlParam, "MAX", resultType);
     }
 
-    public static void min(QuickModal quickModal, String paramName, String column, SqlParam sqlParam) {
-        aggregateAction(quickModal, paramName, column, sqlParam, "MIN");
+    public static void min(QuickModal quickModal, String paramName, String column,
+                           SqlParam sqlParam, ResultType resultType) {
+        aggregateAction(quickModal, paramName, column, sqlParam, "MIN", resultType);
     }
 
-    public static void sum(QuickModal quickModal, String paramName, String column, SqlParam sqlParam) {
-        aggregateAction(quickModal, paramName, column, sqlParam, "SUM");
+    public static void sum(QuickModal quickModal, String paramName, String column,
+                           SqlParam sqlParam, ResultType resultType) {
+        aggregateAction(quickModal, paramName, column, sqlParam, "SUM", resultType);
     }
 
     private static void findAction(QuickModal quickModal, String paramName, SqlParam sqlParam,
@@ -97,13 +103,10 @@ public class QueryHandler {
     }
 
     private static void aggregateAction(QuickModal quickModal, String paramName, String column,
-                                        SqlParam sqlParam, String method) {
-        aggregateAction(quickModal, paramName, column, sqlParam, method, null);
-    }
-
-    private static void aggregateAction(QuickModal quickModal, String paramName, String column,
-                                        SqlParam sqlParam, String method, @Nullable Class<?> resultType) {
+                                        SqlParam sqlParam, String method, ResultType resultType) {
         RequireUtils.requireNotEmpty(method, column);
+        RequireUtils.requireNotNull(resultType);
+
         sqlParam.setSelect(method + "(" + column + ")");
 
         findAction(quickModal, paramName, sqlParam, (stmt, rs) -> {
@@ -112,7 +115,7 @@ public class QueryHandler {
                 if (resultType == null)
                     value = rs.getObject(1);
                 else
-                    value = rs.getObject(1, resultType);
+                    value = rs.getObject(1, resultType.getType());
 
                 quickModal.getQuickSession().putParam(paramName, value, EditableParamScope.MODAL);
             }

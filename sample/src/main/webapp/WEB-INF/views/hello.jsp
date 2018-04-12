@@ -12,7 +12,7 @@
         while (names.hasMoreElements()) {
             String name = names.nextElement();
             Object o = request.getAttribute(name);
-            writer.print(name + ": " + o + "\t" + o.getClass() + "<br>");
+            writer.print(name + ": " + o + " [" + o.getClass() + "]<br>");
         }
     %>
 </body>
