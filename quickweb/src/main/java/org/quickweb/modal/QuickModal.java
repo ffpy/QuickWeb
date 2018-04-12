@@ -19,27 +19,27 @@ public interface QuickModal {
 
     QuickModal limit(int value);
 
-    QuickSession insert(String... paramNames);
+    QuickSession insert(String... params);
 
     QuickSession insert(CP... cps);
 
-    QuickSession update(String... paramNames);
+    QuickSession update(String... params);
 
     QuickSession update(CP... cps);
 
     QuickSession delete();
 
-    QuickSession findFirst(String paramName);
+    QuickSession findFirst(String param);
 
-    QuickSession find(String paramName);
+    QuickSession find(String param);
 
-    QuickSession count(String paramName);
+    QuickSession count(String param);
 
-    QuickSession avg(String paramName, String column);
+    QuickSession avg(String param, String column);
 
-    QuickSession max(String paramName, String column, ResultType resultType);
+    QuickSession max(String param, String column, ResultType resultType);
 
-    QuickSession min(String paramName, String column, ResultType resultType);
+    QuickSession min(String param, String column, ResultType resultType);
 
-    QuickSession sum(String paramName, String column, ResultType resultType);
+    QuickSession sum(String param, String column, ResultType resultType);
 }

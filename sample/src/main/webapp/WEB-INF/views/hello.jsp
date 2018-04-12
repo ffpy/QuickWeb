@@ -6,6 +6,12 @@
     <title>Title</title>
 </head>
 <body>
+    <form action="hello" method="post">
+        <label for="name">Name</label>
+        <input id="name" name="name">
+        <button type="submit">提交</button>
+    </form>
+
     <%
         Enumeration<String> names = request.getAttributeNames();
         PrintWriter writer = response.getWriter();

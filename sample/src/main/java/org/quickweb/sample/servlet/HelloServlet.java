@@ -1,7 +1,6 @@
 package org.quickweb.sample.servlet;
 
 import org.quickweb.QuickWeb;
-import org.quickweb.session.CP;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,18 +13,15 @@ public class HelloServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         QuickWeb.server(req, resp)
-                .putParam("name", "aaa")
-                .putParam("name2", "bbb")
+                .view("hello");
+    }
 
-                .startTransaction()
+    @Override
+    protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
+        QuickWeb.server(req, resp)
+                .requireParamNotEmpty("name")
                 .modal("name")
-                .insert(CP.of("name", "name"))
-                .commit()
-                .modal("name")
-                .insert(CP.of("name", "name2"))
-                .rollback()
-                .endTransaction()
-
+                .insert("name")
                 .view("hello");
     }
 }
