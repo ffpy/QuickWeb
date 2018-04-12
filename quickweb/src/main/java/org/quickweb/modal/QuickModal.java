@@ -91,20 +91,20 @@ public class QuickModal {
         return quickSession;
     }
 
-    public QuickSession max(String paramName, String column, ResultType resultType) {
-        QueryHandler.max(this, paramName, column, resultType, sqlParam);
+    public QuickSession max(String paramName, String column) {
+        QueryHandler.max(this, paramName, column, sqlParam);
         resetSqlParam();
         return quickSession;
     }
 
-    public QuickSession min(String paramName, String column, ResultType resultType) {
-        QueryHandler.min(this, paramName, column, resultType, sqlParam);
+    public QuickSession min(String paramName, String column) {
+        QueryHandler.min(this, paramName, column, sqlParam);
         resetSqlParam();
         return quickSession;
     }
 
-    public QuickSession sum(String paramName, String column, ResultType resultType) {
-        QueryHandler.sum(this, paramName, column, resultType, sqlParam);
+    public QuickSession sum(String paramName, String column) {
+        QueryHandler.sum(this, paramName, column, sqlParam);
         resetSqlParam();
         return quickSession;
     }

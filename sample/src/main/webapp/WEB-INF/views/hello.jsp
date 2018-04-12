@@ -11,7 +11,8 @@
         PrintWriter writer = response.getWriter();
         while (names.hasMoreElements()) {
             String name = names.nextElement();
-            writer.print(name + ": " + request.getAttribute(name) + "<br>");
+            Object o = request.getAttribute(name);
+            writer.print(name + ": " + o + "\t" + o.getClass() + "<br>");
         }
     %>
 </body>

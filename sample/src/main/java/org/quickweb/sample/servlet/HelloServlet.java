@@ -14,8 +14,13 @@ public class HelloServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         QuickWeb.server(req, resp)
                 .modal("name")
-                .where("name = $name")
+                .avg("avg", "id")
+                .modal("name")
                 .count("count")
+                .modal("name")
+                .max("max", "id")
+                .modal("name")
+                .sum("sum", "id")
                 .view("hello");
     }
 }

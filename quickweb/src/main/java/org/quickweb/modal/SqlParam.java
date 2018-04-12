@@ -2,7 +2,7 @@ package org.quickweb.modal;
 
 import org.apache.commons.lang3.StringUtils;
 
-public class SqlParam implements Cloneable {
+public class SqlParam {
     private String table = "";
     private String select = "";
     private String where = "";
@@ -64,16 +64,6 @@ public class SqlParam implements Cloneable {
 
     private String paramJoin(String... ss) {
         return StringUtils.join(ss, ',');
-    }
-
-    @Override
-    public SqlParam clone() {
-        try {
-            return (SqlParam) super.clone();
-        } catch (CloneNotSupportedException e) {
-            e.printStackTrace();
-        }
-        return null;
     }
 
     @Override
