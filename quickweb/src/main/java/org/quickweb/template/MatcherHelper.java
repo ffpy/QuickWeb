@@ -2,7 +2,7 @@ package org.quickweb.template;
 
 import org.quickweb.session.ParamScope;
 import org.quickweb.session.QuickSession;
-import org.quickweb.utils.ObjectUtils;
+import org.quickweb.utils.RequireUtils;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
@@ -14,7 +14,7 @@ public class MatcherHelper {
     private final QuickSession quickSession;
 
     public MatcherHelper(QuickSession quickSession, String template) {
-        ObjectUtils.requireNotNull(template);
+        RequireUtils.requireNotNull(template);
 
         this.quickSession = quickSession;
         this.matcher = COMPILE.matcher(template);
@@ -38,39 +38,29 @@ public class MatcherHelper {
 
     public ParamScope getScope(String scopeName) {
         if (scopeName == null)
-            return null;
+            return ParamScope.ALL;
 
-        ParamScope scope;
         switch (scopeName.toUpperCase()) {
             case "CT":
-                scope = ParamScope.CONTEXT;
-                break;
+                return ParamScope.CONTEXT;
             case "ML":
-                scope = ParamScope.MODAL;
-                break;
+                return ParamScope.MODAL;
             case "RT":
-                scope = ParamScope.REQUEST;
-                break;
+                return ParamScope.REQUEST;
             case "SN":
-                scope = ParamScope.SESSION;
-                break;
+                return ParamScope.SESSION;
             case "CE":
-                scope = ParamScope.COOKIE;
-                break;
+                return ParamScope.COOKIE;
             case "AN":
-                scope = ParamScope.APPLICATION;
-                break;
+                return ParamScope.APPLICATION;
+            case "AL":
+                return ParamScope.ALL;
             default:
                 throw new RuntimeException("unknown scope of '" + scopeName + "'");
         }
-        return scope;
     }
 
     public Object getValue() {
-        ParamScope scope = getScope(getScopeName());
-        if (scope == null)
-            return quickSession.getParam(getName());
-        else
-            return quickSession.getParam(getName(), scope);
+        return quickSession.getParam(getName(), getScope(getScopeName()));
     }
 }

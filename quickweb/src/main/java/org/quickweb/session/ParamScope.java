@@ -1,7 +1,7 @@
 package org.quickweb.session;
 
 import org.quickweb.exception.ScopeNotMatchedException;
-import org.quickweb.utils.ObjectUtils;
+import org.quickweb.utils.RequireUtils;
 
 public enum ParamScope implements Scope {
     CONTEXT,
@@ -10,11 +10,12 @@ public enum ParamScope implements Scope {
     SESSION,
     COOKIE,
     APPLICATION,
+    ALL,
     ;
 
     @SuppressWarnings("Duplicates")
     public static ParamScope of(EditableParamScope scope) {
-        ObjectUtils.requireNotNull(scope);
+        RequireUtils.requireNotNull(scope);
 
         switch (scope) {
             case CONTEXT:

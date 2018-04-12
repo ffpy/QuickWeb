@@ -4,7 +4,7 @@ import com.sun.istack.internal.Nullable;
 import org.quickweb.QuickWeb;
 import org.quickweb.config.QuickWebConfig;
 import org.quickweb.session.QuickSession;
-import org.quickweb.utils.ObjectUtils;
+import org.quickweb.utils.RequireUtils;
 import org.quickweb.utils.RequestUtils;
 
 import javax.servlet.ServletException;
@@ -22,7 +22,7 @@ public class QuickView {
 
     public QuickView(
             QuickSession quickSession, HttpServletRequest request, HttpServletResponse response) {
-        ObjectUtils.requireNotNull(quickSession, request, response);
+        RequireUtils.requireNotNull(quickSession, request, response);
 
         this.quickSession = quickSession;
         this.request = request;
@@ -42,7 +42,7 @@ public class QuickView {
     }
 
     public void view(String path) {
-        ObjectUtils.requireNotNull(path);
+        RequireUtils.requireNotNull(path);
 
         QuickWebConfig.View view = QuickWeb.getConfig().getView();
         path = view.getPrefix() + path + view.getSuffix();
@@ -76,7 +76,7 @@ public class QuickView {
     }
 
     private void putParam(String name, @Nullable Object value) {
-        ObjectUtils.requireNotNull(name);
+        RequireUtils.requireNotNull(name);
 
         if (value != null && request.getAttribute(name) == null)
             request.setAttribute(name, value);

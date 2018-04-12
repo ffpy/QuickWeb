@@ -23,7 +23,7 @@ public class QuickSession {
     private static Map<String, Object> applicationParamMap = new ConcurrentHashMap<>();
 
     public QuickSession(HttpServletRequest request, HttpServletResponse response) {
-        ObjectUtils.requireNotNull(request, response);
+        RequireUtils.requireNotNull(request, response);
 
         this.request = request;
         this.response = response;
@@ -62,7 +62,7 @@ public class QuickSession {
     }
 
     public QuickSession watch(Consumer<QuickSession> consumer) {
-        ObjectUtils.requireNotNull(consumer);
+        RequireUtils.requireNotNull(consumer);
 
         consumer.accept(this);
         return this;
@@ -74,7 +74,7 @@ public class QuickSession {
     }
 
     public QuickSession requireParamNotEmpty(String... names) {
-        ObjectUtils.requireNotNull((Object) names);
+        RequireUtils.requireNotNull((Object) names);
 
         for (String n : names) {
             String value = ParamUtils.requireNotNull(getParam(n), n);
@@ -84,7 +84,7 @@ public class QuickSession {
     }
 
     public QuickSession requireParamNotEmpty(ParamScope scope, String... names) {
-        ObjectUtils.requireNotNull(scope, names);
+        RequireUtils.requireNotNull(scope, names);
 
         for (String n : names) {
             String value = ParamUtils.requireNotNull(getParam(n, scope), n);
@@ -94,7 +94,7 @@ public class QuickSession {
     }
 
     public QuickSession requireParamEquals(String name, @Nullable Object expectedValue) {
-        ObjectUtils.requireNotNull(name);
+        RequireUtils.requireNotNull(name);
 
         ParamUtils.requireEquals(name, expectedValue, getParam(name));
         return this;
@@ -136,7 +136,7 @@ public class QuickSession {
     }
 
     public <T> T getParam(String name, ParamScope scope) {
-        ObjectUtils.requireNotNull(name, scope);
+        RequireUtils.requireNotNull(name, scope);
 
         switch (scope) {
             case CONTEXT:
@@ -151,6 +151,8 @@ public class QuickSession {
                 return (T) CookieUtils.getValue(request, name);
             case APPLICATION:
                 return (T) applicationParamMap.get(name);
+            case ALL:
+                return getParam(name);
             default:
                 throw new ScopeNotMatchedException(scope);
         }
@@ -164,7 +166,7 @@ public class QuickSession {
 
     public QuickSession putParam(
             String name, Object value, EditableParamScope scope) {
-        ObjectUtils.requireNotNull(name, value, scope);
+        RequireUtils.requireNotNull(name, value, scope);
 
         switch (scope) {
             case CONTEXT:
@@ -218,7 +220,7 @@ public class QuickSession {
     }
 
     public QuickSession removeParam(String name, EditableParamScope scope) {
-        ObjectUtils.requireNotNull(name, scope);
+        RequireUtils.requireNotNull(name, scope);
 
         switch (scope) {
             case CONTEXT:
@@ -236,7 +238,7 @@ public class QuickSession {
 
     public QuickSession mapParam(
             String name, Function<Object, Object> mapper, EditableParamScope scope) {
-        ObjectUtils.requireNotNull(mapper);
+        RequireUtils.requireNotNull(mapper);
 
         Object value = getParam(name, ParamScope.of(scope));
         putParam(name, mapper.apply(value), scope);
@@ -244,7 +246,7 @@ public class QuickSession {
     }
 
     public QuickSession watchParam(String name, Consumer<Object> watcher) {
-        ObjectUtils.requireNotNull(watcher);
+        RequireUtils.requireNotNull(watcher);
 
         watcher.accept(getParam(name));
         return this;
@@ -252,14 +254,14 @@ public class QuickSession {
 
     public QuickSession watchParam(
             String name, ParamScope scope, Consumer<Object> watcher) {
-        ObjectUtils.requireNotNull(watcher);
+        RequireUtils.requireNotNull(watcher);
 
         watcher.accept(getParam(name, scope));
         return this;
     }
 
     public QuickModal modal(String table) {
-        return new QuickModal(table, this);
+        return new QuickModal(this, table);
     }
 
     public QuickSession startTransaction() {

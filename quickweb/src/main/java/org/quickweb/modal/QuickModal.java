@@ -1,30 +1,22 @@
 package org.quickweb.modal;
 
-import org.apache.commons.lang3.StringUtils;
+import org.quickweb.modal.handler.*;
 import org.quickweb.session.QuickSession;
 import org.quickweb.template.TemplateExpr;
-import org.quickweb.utils.ObjectUtils;
-
-import java.util.Arrays;
+import org.quickweb.utils.RequireUtils;
 
 public class QuickModal {
-    private String table;
     private QuickSession quickSession;
-    private String select;
-    private String where;
-    private String order;
-    private int offset = -1;
-    private int limit = -1;
+    private SqlParam sqlParam = new SqlParam();
 
-    public QuickModal(String table, QuickSession quickSession) {
-        ObjectUtils.requireNotNull(table, quickSession);
-
-        this.table = table;
+    public QuickModal(QuickSession quickSession, String table) {
+        RequireUtils.requireNotNull(table, quickSession);
         this.quickSession = quickSession;
+        this.sqlParam.setTable(new TemplateExpr(quickSession, table).getString());
     }
 
     public String getTable() {
-        return table;
+        return sqlParam.getTable();
     }
 
     public QuickSession getQuickSession() {
@@ -32,99 +24,92 @@ public class QuickModal {
     }
 
     public QuickModal select(String... columns) {
-        ObjectUtils.requireCollectionNotEmpty(columns);
-
-        this.select = StringUtils.join(columns, ',');
+        this.sqlParam.setSelect(columns);
         return this;
     }
 
     public QuickModal where(String condition) {
-        ObjectUtils.requireNotNull(condition);
-
-        this.where = condition;
+        RequireUtils.requireNotNull(condition);
+        this.sqlParam.setWhere(condition);
         return this;
     }
 
     public QuickModal order(String... columns) {
-        ObjectUtils.requireCollectionNotEmpty(columns);
-
-        this.order = StringUtils.join(columns, ',');
+        this.sqlParam.setOrder(columns);
         return this;
     }
 
     public QuickModal offset(int value) {
-        if (value < 0)
-            throw new RuntimeException("offset must be more than -1");
-
-        this.offset = value;
+        this.sqlParam.setOffset(value);
         return this;
     }
 
     public QuickModal limit(int value) {
-        if (value < 0)
-            throw new RuntimeException("offset must be more than -1");
-
-        this.limit = value;
+        this.sqlParam.setLimit(value);
         return this;
     }
 
     public QuickSession insert(String... params) {
-        Handler.save(this, table, params);
+        InsertHandler.insert(this, params, sqlParam);
+        resetSqlParam();
         return quickSession;
     }
 
     public QuickSession update(String... params) {
-        Handler.update(this, table, params, where);
+        UpdateHandler.update(this, params, sqlParam);
+        resetSqlParam();
         return quickSession;
     }
 
     public QuickSession delete() {
+        DeleteHandler.delete(this, sqlParam);
+        resetSqlParam();
         return quickSession;
     }
 
-    public QuickSession delete(String effectRowsParamName) {
-        ObjectUtils.requireNotNull(effectRowsParamName);
-
-        return quickSession;
-    }
-
-    public QuickSession findFirst() {
+    public QuickSession findFirst(String paramName) {
+        QueryHandler.findFirst(this, paramName, sqlParam);
+        resetSqlParam();
         return quickSession;
     }
 
     public QuickSession find(String paramName) {
-        ObjectUtils.requireNotNull(paramName);
-
+        QueryHandler.find(this, paramName, sqlParam);
+        resetSqlParam();
         return quickSession;
     }
 
     public QuickSession count(String paramName) {
-        ObjectUtils.requireNotNull(paramName);
-
+        QueryHandler.count(this, paramName, sqlParam);
+        resetSqlParam();
         return quickSession;
     }
 
-    public QuickSession avg(String paramName) {
-        ObjectUtils.requireNotNull(paramName);
-
+    public QuickSession avg(String paramName, String column) {
+        QueryHandler.avg(this, paramName, column, sqlParam);
+        resetSqlParam();
         return quickSession;
     }
 
-    public QuickSession max(String paramName, ResultType resultType) {
-        ObjectUtils.requireNotNull(paramName, resultType);
-
+    public QuickSession max(String paramName, String column, ResultType resultType) {
+        QueryHandler.max(this, paramName, column, resultType, sqlParam);
+        resetSqlParam();
         return quickSession;
     }
 
-    public QuickSession min(String paramName, ResultType resultType) {
-        ObjectUtils.requireNotNull(paramName, resultType);
-
+    public QuickSession min(String paramName, String column, ResultType resultType) {
+        QueryHandler.min(this, paramName, column, resultType, sqlParam);
+        resetSqlParam();
         return quickSession;
     }
 
-    public QuickSession sum(String paramName, ResultType resultType) {
-        ObjectUtils.requireNotNull(paramName, resultType);
-
+    public QuickSession sum(String paramName, String column, ResultType resultType) {
+        QueryHandler.sum(this, paramName, column, resultType, sqlParam);
+        resetSqlParam();
         return quickSession;
+    }
+
+    private void resetSqlParam() {
+        this.sqlParam = new SqlParam();
     }
 }

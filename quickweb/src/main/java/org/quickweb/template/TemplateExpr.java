@@ -1,7 +1,7 @@
 package org.quickweb.template;
 
 import org.quickweb.session.QuickSession;
-import org.quickweb.utils.ObjectUtils;
+import org.quickweb.utils.RequireUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +13,7 @@ public class TemplateExpr {
     private String template;
 
     public TemplateExpr(QuickSession quickSession, String template) {
-        ObjectUtils.requireNotNull(quickSession, template);
+        RequireUtils.requireNotNull(quickSession, template);
 
         this.quickSession = quickSession;
         this.template = template;
@@ -40,7 +40,7 @@ public class TemplateExpr {
         return template.replaceAll(MatcherHelper.PATTERN, placeholder);
     }
 
-    public List<Object> getVarList() {
+    public List<Object> getValues() {
         MatcherHelper matcherHelper = createMatcherHelper();
         List<Object> list = new ArrayList<>();
         while (matcherHelper.find()) {
@@ -49,7 +49,7 @@ public class TemplateExpr {
         return list;
     }
 
-    public Map<String, Object> getVarMap() {
+    public Map<String, Object> getParamMap() {
         MatcherHelper matcherHelper = createMatcherHelper();
         Map<String, Object> map = new HashMap<>();
         while (matcherHelper.find()) {

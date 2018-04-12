@@ -24,7 +24,7 @@ public class DBUtils {
     }
 
     public static Connection getConnection(String url, @Nullable String user, @Nullable String pwd) {
-        ObjectUtils.requireNotNull(url);
+        RequireUtils.requireNotNull(url);
 
         try {
             return DriverManager.getConnection(url, user, pwd);
