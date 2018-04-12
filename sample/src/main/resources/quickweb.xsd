@@ -6,25 +6,25 @@
                 <xs:element name="session">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="charset"/>
+                            <xs:element name="charset" type="xs:string" default="UTF-8" minOccurs="0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="db">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="driver"/>
+                            <xs:element name="driver" type="xs:string"/>
                             <xs:element name="url" type="xs:anyURI"/>
-                            <xs:element name="username"/>
-                            <xs:element name="password"/>
+                            <xs:element name="username" type="xs:string"/>
+                            <xs:element name="password" type="xs:string"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>
                 <xs:element name="view">
                     <xs:complexType>
                         <xs:sequence>
-                            <xs:element name="prefix"/>
-                            <xs:element name="suffix"/>
+                            <xs:element name="prefix" type="xs:string" default="" minOccurs="0"/>
+                            <xs:element name="suffix" type="xs:string" default="" minOccurs="0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

@@ -5,8 +5,8 @@
         <charset>UTF-8</charset>
     </session>
     <db>
-        <driver>com.mysql.jdbc.Driver</driver>
-        <url>jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false</url>
+        <driver>com.mysql.cj.jdbc.Driver</driver>
+        <url>jdbc:mysql://localhost:3306/quickweb_test?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC</url>
         <username>root</username>
         <password>123456</password>
     </db>

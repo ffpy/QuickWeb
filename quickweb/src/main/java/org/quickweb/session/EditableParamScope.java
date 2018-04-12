@@ -11,7 +11,7 @@ public enum EditableParamScope implements Scope {
 
     @SuppressWarnings("Duplicates")
     public static EditableParamScope of(ParamScope scope) {
-        ObjectUtils.requireNonNull(scope);
+        ObjectUtils.requireNotNull(scope);
 
         switch (scope) {
             case CONTEXT:

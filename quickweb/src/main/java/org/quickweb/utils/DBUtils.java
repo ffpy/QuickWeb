@@ -1,6 +1,8 @@
 package org.quickweb.utils;
 
 import com.sun.istack.internal.Nullable;
+import org.quickweb.QuickWeb;
+import org.quickweb.config.QuickWebConfig;
 
 import java.sql.Connection;
 import java.sql.DriverManager;
@@ -10,14 +12,19 @@ import java.sql.Statement;
 public class DBUtils {
     static {
         try {
-            Class.forName("com.mysql.jdbc.Driver");
+            Class.forName(QuickWeb.getConfig().getDb().getDriver());
         } catch (ClassNotFoundException e) {
             e.printStackTrace();
         }
     }
 
+    public static Connection getConnection() {
+        QuickWebConfig.DB db = QuickWeb.getConfig().getDb();
+        return getConnection(db.getUrl(), db.getUsername(), db.getPassword());
+    }
+
     public static Connection getConnection(String url, @Nullable String user, @Nullable String pwd) {
-        ObjectUtils.requireNonNull(url);
+        ObjectUtils.requireNotNull(url);
 
         try {
             return DriverManager.getConnection(url, user, pwd);

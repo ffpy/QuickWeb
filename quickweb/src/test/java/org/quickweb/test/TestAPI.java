@@ -20,7 +20,7 @@ public class TestAPI {
                 .putParam("ctime", Calendar.getInstance().getTimeInMillis())
 
                 .modal("comment")
-                .insertFromParam("content", "uid", "aid", "ctime")
+                .insert("content", "uid", "aid", "ctime")
 
                 .view("article.jsp");
     }
@@ -76,7 +76,7 @@ public class TestAPI {
                 .putParam("ctime", Calendar.getInstance().getTimeInMillis())
 
                 .modal("user")
-                .insertFromParam("username", "password", "name", "ctime")
+                .insert("username", "password", "name", "ctime")
 
                 .view("login.jsp");
     }
@@ -106,7 +106,7 @@ public class TestAPI {
 
                 .modal("comment")
                 .where("cid = $cid and uid = $uid")
-                .updateFromParam("content")
+                .update("content")
 
                 .view("comment.jsp");
     }

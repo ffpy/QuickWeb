@@ -4,10 +4,6 @@ import java.util.Objects;
 
 public class ParamNullException extends NullPointerException {
 
-    public ParamNullException() {
-        super();
-    }
-
     public ParamNullException(String paramName) {
         super(Objects.requireNonNull(paramName) + " can't be null");
     }

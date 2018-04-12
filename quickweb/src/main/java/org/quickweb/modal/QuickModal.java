@@ -1,93 +1,74 @@
 package org.quickweb.modal;
 
-import com.sun.istack.internal.Nullable;
+import org.apache.commons.lang3.StringUtils;
 import org.quickweb.session.QuickSession;
 import org.quickweb.utils.ObjectUtils;
 
 public class QuickModal {
     private String table;
     private QuickSession quickSession;
+    private String select;
+    private String where;
+    private String order;
+    private int offset = -1;
+    private int limit = -1;
 
     public QuickModal(String table, QuickSession quickSession) {
-        ObjectUtils.requireNonNull(table, quickSession);
+        ObjectUtils.requireNotNull(table, quickSession);
 
         this.table = table;
         this.quickSession = quickSession;
     }
 
-    public QuickModal select(String... columns) {
-        ObjectUtils.requireNonNull(columns);
+    public String getTable() {
+        return table;
+    }
 
+    public QuickSession getQuickSession() {
+        return quickSession;
+    }
+
+    public QuickModal select(String... columns) {
+        ObjectUtils.requireCollectionNotEmpty(columns);
+        this.select = StringUtils.join(columns, ',');
         return this;
     }
 
     public QuickModal where(String condition) {
-        ObjectUtils.requireNonNull(condition);
-
+        ObjectUtils.requireNotNull(condition);
+        this.where = condition;
         return this;
     }
 
     public QuickModal order(String... columns) {
-        ObjectUtils.requireNonNull(columns);
-
+        ObjectUtils.requireCollectionNotEmpty(columns);
+        this.order = StringUtils.join(columns, ',');
         return this;
     }
 
     public QuickModal offset(int value) {
+        if (value < 0)
+            throw new RuntimeException("offset must be more than -1");
+
+        this.offset = value;
         return this;
     }
 
     public QuickModal limit(int value) {
+        if (value < 0)
+            throw new RuntimeException("offset must be more than -1");
+
+        this.limit = value;
         return this;
     }
 
-    public QuickSession insert(String name, @Nullable Object value) {
-        ObjectUtils.requireNonNull(name);
-
+    public QuickSession insert(String... params) {
+        Handler.save(this, table, params);
         return quickSession;
     }
 
-    public QuickSession insert(String effectColsParamName, String name, @Nullable Object value) {
-        ObjectUtils.requireNonNull(effectColsParamName, name);
-
-        return quickSession;
-    }
-
-    public QuickSession insertFromParam(String... params) {
-        ObjectUtils.requireNonNull(params);
-
-        return quickSession;
-    }
-
-    public QuickSession insertFromParamWithEffectCols(
-            String effectColsParamName, String... param) {
-        ObjectUtils.requireNonNull(effectColsParamName, param);
-
-        return quickSession;
-    }
-
-    public QuickSession update(String name, @Nullable Object value) {
-        ObjectUtils.requireNonNull(name);
-
-        return quickSession;
-    }
-
-    public QuickSession update(String effectColsParamName, String name, @Nullable Object value) {
-        ObjectUtils.requireNonNull(effectColsParamName, name);
-
-        return quickSession;
-    }
-
-    public QuickSession updateFromParam(String... params) {
-        ObjectUtils.requireNonNull(params);
-
-        return quickSession;
-    }
-
-    public QuickSession updateFromParamWithEffectCols(
-            String effectColsParamName, String... params) {
-        ObjectUtils.requireNonNull(effectColsParamName, params);
-
+    public QuickSession update(String... params) {
+        Handler.update(this, table, params, where);
         return quickSession;
     }
 
@@ -95,48 +76,48 @@ public class QuickModal {
         return quickSession;
     }
 
-    public QuickSession delete(String effectColsParamName) {
-        ObjectUtils.requireNonNull(effectColsParamName);
+    public QuickSession delete(String effectRowsParamName) {
+        ObjectUtils.requireNotNull(effectRowsParamName);
 
         return quickSession;
     }
 
-    public QuickSession find() {
+    public QuickSession findFirst() {
         return quickSession;
     }
 
     public QuickSession find(String paramName) {
-        ObjectUtils.requireNonNull(paramName);
+        ObjectUtils.requireNotNull(paramName);
 
         return quickSession;
     }
 
     public QuickSession count(String paramName) {
-        ObjectUtils.requireNonNull(paramName);
+        ObjectUtils.requireNotNull(paramName);
 
         return quickSession;
     }
 
     public QuickSession avg(String paramName) {
-        ObjectUtils.requireNonNull(paramName);
+        ObjectUtils.requireNotNull(paramName);
 
         return quickSession;
     }
 
     public QuickSession max(String paramName, ResultType resultType) {
-        ObjectUtils.requireNonNull(paramName, resultType);
+        ObjectUtils.requireNotNull(paramName, resultType);
 
         return quickSession;
     }
 
     public QuickSession min(String paramName, ResultType resultType) {
-        ObjectUtils.requireNonNull(paramName, resultType);
+        ObjectUtils.requireNotNull(paramName, resultType);
 
         return quickSession;
     }
 
     public QuickSession sum(String paramName, ResultType resultType) {
-        ObjectUtils.requireNonNull(paramName, resultType);
+        ObjectUtils.requireNotNull(paramName, resultType);
 
         return quickSession;
     }

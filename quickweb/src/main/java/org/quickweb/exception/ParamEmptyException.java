@@ -5,6 +5,7 @@ import java.util.Objects;
 public class ParamEmptyException extends RuntimeException {
 
     public ParamEmptyException() {
+        this("param");
     }
 
     public ParamEmptyException(String paramName) {

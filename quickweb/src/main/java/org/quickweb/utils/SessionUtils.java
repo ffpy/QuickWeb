@@ -6,7 +6,7 @@ import javax.servlet.http.HttpSession;
 public class SessionUtils {
 
     public static  <T> T getAttribute(HttpServletRequest request, String name) {
-        ObjectUtils.requireNonNull(request, name);
+        ObjectUtils.requireNotNull(request, name);
 
         HttpSession session = request.getSession(false);
         if (session == null) return null;

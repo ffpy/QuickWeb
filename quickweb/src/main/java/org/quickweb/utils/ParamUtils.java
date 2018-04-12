@@ -10,7 +10,7 @@ import java.util.Objects;
 public class ParamUtils {
 
     public static <T> T requireNotNull(@Nullable T obj, String paramName) {
-        ObjectUtils.requireNonNull(paramName);
+        ObjectUtils.requireNotNull(paramName);
 
         if (obj == null)
             throw new ParamNullException(paramName);
@@ -18,7 +18,7 @@ public class ParamUtils {
     }
 
     public static String requireNotEmpty(@Nullable String s, String paramName) {
-        ObjectUtils.requireNonNull(paramName);
+        ObjectUtils.requireNotNull(paramName);
 
         if (s == null || s.isEmpty())
             throw new ParamEmptyException(paramName);
@@ -27,7 +27,7 @@ public class ParamUtils {
 
     public static void requireEquals(
             String name, @Nullable Object expectedValue, @Nullable Object actualValue) {
-        ObjectUtils.requireNonNull(name);
+        ObjectUtils.requireNotNull(name);
 
         if (!Objects.equals(actualValue, expectedValue))
             throw new ParamNotEqualsException(name, expectedValue, actualValue);

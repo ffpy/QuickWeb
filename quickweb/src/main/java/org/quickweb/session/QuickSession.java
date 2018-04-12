@@ -2,15 +2,14 @@ package org.quickweb.session;
 
 import com.sun.istack.internal.Nullable;
 import org.quickweb.exception.ScopeNotMatchedException;
-import org.quickweb.utils.CookieUtils;
-import org.quickweb.utils.ObjectUtils;
-import org.quickweb.utils.ParamUtils;
-import org.quickweb.utils.SessionUtils;
+import org.quickweb.utils.*;
 import org.quickweb.view.QuickView;
 import org.quickweb.modal.QuickModal;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.sql.Connection;
+import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.Consumer;
@@ -19,11 +18,12 @@ import java.util.function.Function;
 public class QuickSession {
     private HttpServletRequest request;
     private HttpServletResponse response;
+    private Connection connection;
     private Map<String, Object> modalParamMap = new ConcurrentHashMap<>();
     private static Map<String, Object> applicationParamMap = new ConcurrentHashMap<>();
 
     public QuickSession(HttpServletRequest request, HttpServletResponse response) {
-        ObjectUtils.requireNonNull(request, response);
+        ObjectUtils.requireNotNull(request, response);
 
         this.request = request;
         this.response = response;
@@ -33,8 +33,24 @@ public class QuickSession {
         return request;
     }
 
+    public void setRequest(HttpServletRequest request) {
+        this.request = request;
+    }
+
     public HttpServletResponse getResponse() {
         return response;
+    }
+
+    public void setResponse(HttpServletResponse response) {
+        this.response = response;
+    }
+
+    public Connection getConnection() {
+        return connection;
+    }
+
+    public void setConnection(Connection connection) {
+        this.connection = connection;
     }
 
     public Map<String, Object> getModalParamMap() {
@@ -46,7 +62,7 @@ public class QuickSession {
     }
 
     public QuickSession watch(Consumer<QuickSession> consumer) {
-        ObjectUtils.requireNonNull(consumer);
+        ObjectUtils.requireNotNull(consumer);
 
         consumer.accept(this);
         return this;
@@ -58,7 +74,7 @@ public class QuickSession {
     }
 
     public QuickSession requireParamNotEmpty(String... names) {
-        ObjectUtils.requireNonNull(names);
+        ObjectUtils.requireNotNull((Object) names);
 
         for (String n : names) {
             String value = ParamUtils.requireNotNull(getParam(n), n);
@@ -68,7 +84,7 @@ public class QuickSession {
     }
 
     public QuickSession requireParamNotEmpty(ParamScope scope, String... names) {
-        ObjectUtils.requireNonNull(scope, names);
+        ObjectUtils.requireNotNull(scope, names);
 
         for (String n : names) {
             String value = ParamUtils.requireNotNull(getParam(n, scope), n);
@@ -78,7 +94,7 @@ public class QuickSession {
     }
 
     public QuickSession requireParamEquals(String name, @Nullable Object expectedValue) {
-        ObjectUtils.requireNonNull(name);
+        ObjectUtils.requireNotNull(name);
 
         ParamUtils.requireEquals(name, expectedValue, getParam(name));
         return this;
@@ -120,7 +136,7 @@ public class QuickSession {
     }
 
     public <T> T getParam(String name, ParamScope scope) {
-        ObjectUtils.requireNonNull(name, scope);
+        ObjectUtils.requireNotNull(name, scope);
 
         switch (scope) {
             case CONTEXT:
@@ -128,7 +144,7 @@ public class QuickSession {
             case MODAL:
                 return (T) modalParamMap.get(name);
             case REQUEST:
-                return (T) request.getParameter(name);
+                return (T) RequestUtils.getParam(request, name);
             case SESSION:
                 return SessionUtils.getAttribute(request, name);
             case COOKIE:
@@ -148,7 +164,7 @@ public class QuickSession {
 
     public QuickSession putParam(
             String name, Object value, EditableParamScope scope) {
-        ObjectUtils.requireNonNull(name, value, scope);
+        ObjectUtils.requireNotNull(name, value, scope);
 
         switch (scope) {
             case CONTEXT:
@@ -202,7 +218,7 @@ public class QuickSession {
     }
 
     public QuickSession removeParam(String name, EditableParamScope scope) {
-        ObjectUtils.requireNonNull(name, scope);
+        ObjectUtils.requireNotNull(name, scope);
 
         switch (scope) {
             case CONTEXT:
@@ -220,7 +236,7 @@ public class QuickSession {
 
     public QuickSession mapParam(
             String name, Function<Object, Object> mapper, EditableParamScope scope) {
-        ObjectUtils.requireNonNull(mapper);
+        ObjectUtils.requireNotNull(mapper);
 
         Object value = getParam(name, ParamScope.of(scope));
         putParam(name, mapper.apply(value), scope);
@@ -228,7 +244,7 @@ public class QuickSession {
     }
 
     public QuickSession watchParam(String name, Consumer<Object> watcher) {
-        ObjectUtils.requireNonNull(watcher);
+        ObjectUtils.requireNotNull(watcher);
 
         watcher.accept(getParam(name));
         return this;
@@ -236,7 +252,7 @@ public class QuickSession {
 
     public QuickSession watchParam(
             String name, ParamScope scope, Consumer<Object> watcher) {
-        ObjectUtils.requireNonNull(watcher);
+        ObjectUtils.requireNotNull(watcher);
 
         watcher.accept(getParam(name, scope));
         return this;
@@ -244,6 +260,47 @@ public class QuickSession {
 
     public QuickModal modal(String table) {
         return new QuickModal(table, this);
+    }
+
+    public QuickSession startTransaction() {
+        connection = DBUtils.getConnection();
+        if (connection != null) {
+            try {
+                connection.setAutoCommit(false);
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+    public QuickSession endTransaction() {
+        commit();
+        DBUtils.close(connection);
+        connection = null;
+        return this;
+    }
+
+    public QuickSession commit() {
+        if (connection != null) {
+            try {
+                connection.commit();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return this;
+    }
+
+    public QuickSession rollback() {
+        if (connection != null) {
+            try {
+                connection.rollback();
+            } catch (SQLException e) {
+                e.printStackTrace();
+            }
+        }
+        return this;
     }
 
     public QuickView view() {

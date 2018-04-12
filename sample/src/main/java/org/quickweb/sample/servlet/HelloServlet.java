@@ -15,6 +15,10 @@ public class HelloServlet extends HttpServlet {
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         QuickWeb.server(req, resp)
                 .putParamFrom("name", ParamScope.REQUEST)
-                .view("WEB-INF/views/hello.jsp");
+                .modal("name")
+//                .insert("name")
+                .where("name = $name")
+                .findFirst()
+                .view("hello");
     }
 }
