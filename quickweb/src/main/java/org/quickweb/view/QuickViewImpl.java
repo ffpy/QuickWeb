@@ -28,18 +28,22 @@ public class QuickViewImpl implements QuickView {
         this.response = response;
     }
 
+    @Override
     public QuickSession getQuickSession() {
         return quickSession;
     }
 
+    @Override
     public HttpServletRequest getRequest() {
         return request;
     }
 
+    @Override
     public HttpServletResponse getResponse() {
         return response;
     }
 
+    @Override
     public void view(String path) {
         RequireUtils.requireNotNull(path);
 

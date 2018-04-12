@@ -31,38 +31,47 @@ public class QuickSessionImpl implements QuickSession {
         this.response = response;
     }
 
+    @Override
     public HttpServletRequest getRequest() {
         return request;
     }
 
+    @Override
     public void setRequest(HttpServletRequest request) {
         this.request = request;
     }
 
+    @Override
     public HttpServletResponse getResponse() {
         return response;
     }
 
+    @Override
     public void setResponse(HttpServletResponse response) {
         this.response = response;
     }
 
+    @Override
     public Connection getConnection() {
         return connection;
     }
 
+    @Override
     public void setConnection(Connection connection) {
         this.connection = connection;
     }
 
+    @Override
     public Map<String, Object> getModalParamMap() {
         return modalParamMap;
     }
 
+    @Override
     public Map<String, Object> getApplicationParamMap() {
         return applicationParamMap;
     }
 
+    @Override
     public QuickSession watch(Consumer<QuickSession> consumer) {
         RequireUtils.requireNotNull(consumer);
 
@@ -70,11 +79,13 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickSession requireParamNotNull(String name, ParamScope scope) {
         ParamUtils.requireNotNull(getParam(name, scope), name);
         return this;
     }
 
+    @Override
     public QuickSession requireParamNotEmpty(String... names) {
         RequireUtils.requireNotNull((Object) names);
 
@@ -85,6 +96,7 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickSession requireParamNotEmpty(ParamScope scope, String... names) {
         RequireUtils.requireNotNull(scope, names);
 
@@ -95,6 +107,7 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickSession requireParamEquals(String name, @Nullable Object expectedValue) {
         RequireUtils.requireNotNull(name);
 
@@ -102,6 +115,7 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickSession requireParamEquals(
             String name, ParamScope scope, String expectedName, ParamScope expectedScope) {
         Object actualValue = getParam(name, scope);
@@ -110,11 +124,13 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickSession requireParamEqualsWith(String name, ParamScope expectedScope) {
         requireParamEquals(name, getParam(name, expectedScope));
         return this;
     }
 
+    @Override
     public QuickSession requireParamEqualsWith(
             String name, String expectedName, ParamScope expectedScope) {
         requireParamEquals(name, getParam(expectedName, expectedScope));
@@ -122,6 +138,7 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @SuppressWarnings("unchecked")
+    @Override
     public <T> T getParam(String name) {
         // 按照作用域的优先级排列
         ParamScope[] scopes = {
@@ -137,6 +154,7 @@ public class QuickSessionImpl implements QuickSession {
         return null;
     }
 
+    @Override
     public <T> T getParam(String name, ParamScope scope) {
         RequireUtils.requireNotNull(name, scope);
 
@@ -160,12 +178,14 @@ public class QuickSessionImpl implements QuickSession {
         }
     }
 
+    @Override
     public QuickSession putParam(String name, Object value) {
         if (value != null)
             putParam(name, value, EditableParamScope.CONTEXT);
         return this;
     }
 
+    @Override
     public QuickSession putParam(
             String name, Object value, EditableParamScope scope) {
         RequireUtils.requireNotNull(name, value, scope);
@@ -186,12 +206,14 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickSession putParamBy(
             String name, Function<QuickSession, Object> generator) {
         putParamBy(name, EditableParamScope.CONTEXT, generator);
         return this;
     }
 
+    @Override
     public QuickSession putParamBy(
             String name, EditableParamScope scope,
             Function<QuickSession, Object> generator) {
@@ -199,11 +221,13 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickSession putParamFrom(String name, ParamScope fromScope) {
         putParamFrom(name, fromScope, ParamScope.CONTEXT);
         return this;
     }
 
+    @Override
     public QuickSession putParamFrom(
             String name, ParamScope fromScope,
             ParamScope toScope) {
@@ -213,6 +237,7 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickSession putParamFrom(
             String fromName, ParamScope fromScope, String toName, ParamScope toScope) {
         Object value = getParam(fromName, fromScope);
@@ -221,6 +246,7 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickSession removeParam(String name, EditableParamScope scope) {
         RequireUtils.requireNotNull(name, scope);
 
@@ -238,6 +264,7 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickSession mapParam(
             String name, Function<Object, Object> mapper, EditableParamScope scope) {
         RequireUtils.requireNotNull(mapper);
@@ -247,6 +274,7 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickSession watchParam(String name, Consumer<Object> watcher) {
         RequireUtils.requireNotNull(watcher);
 
@@ -254,6 +282,7 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickSession watchParam(
             String name, ParamScope scope, Consumer<Object> watcher) {
         RequireUtils.requireNotNull(watcher);
@@ -262,10 +291,12 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickModal modal(String table) {
         return new QuickModalImpl(this, table);
     }
 
+    @Override
     public QuickSession startTransaction() {
         connection = DBUtils.getConnection();
         if (connection != null) {
@@ -278,39 +309,58 @@ public class QuickSessionImpl implements QuickSession {
         return this;
     }
 
+    @Override
     public QuickSession endTransaction() {
-        commit();
+        RequireUtils.requireNotNull(connection);
+        try {
+            connection.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
         DBUtils.close(connection);
         connection = null;
         return this;
     }
 
-    public QuickSession commit() {
-        if (connection != null) {
-            try {
-                connection.commit();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+    @Override
+    public QuickSession setSavepoint() {
+        RequireUtils.requireNotNull(connection);
+        try {
+            connection.setSavepoint();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return this;
     }
 
+    @Override
     public QuickSession rollback() {
-        if (connection != null) {
-            try {
-                connection.rollback();
-            } catch (SQLException e) {
-                e.printStackTrace();
-            }
+        RequireUtils.requireNotNull(connection);
+        try {
+            connection.rollback();
+        } catch (SQLException e) {
+            e.printStackTrace();
         }
         return this;
     }
 
+    @Override
+    public QuickSession commit() {
+        RequireUtils.requireNotNull(connection);
+        try {
+            connection.commit();
+        } catch (SQLException e) {
+            e.printStackTrace();
+        }
+        return this;
+    }
+
+    @Override
     public QuickView view() {
         return new QuickViewImpl(this, request, response);
     }
 
+    @Override
     public void view(String path) {
         view().view(path);
     }

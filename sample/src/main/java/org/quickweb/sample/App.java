@@ -1,19 +1,23 @@
 package org.quickweb.sample;
 
+import org.quickweb.session.EditableParamScope;
+import org.quickweb.session.ParamScope;
+
+import java.util.Objects;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class App {
     public static void main(String[] args) {
-        String s = "name = $name and id = $r:id";
-        String pattern  = "\\$((\\w+):)?([\\w_]+)";
+        EditableParamScope editableParamScope = null;
+        ParamScope scope = ParamScope.CONTEXT;
 
-        Pattern compile = Pattern.compile(pattern);
-        Matcher matcher = compile.matcher(s);
-        while (matcher.find()) {
-            for (int i = 0; i <= matcher.groupCount(); i++) {
-                System.out.println(i + ": " + matcher.group(i));
-            }
+        EditableParamScope[] editableParamScopes = EditableParamScope.values();
+        for (EditableParamScope ep : editableParamScopes) {
+            if (Objects.equals(scope.name(), ep.name()))
+                editableParamScope = ep;
         }
+        System.out.println(editableParamScope);
+        System.out.println(editableParamScope.getClass());
     }
 }

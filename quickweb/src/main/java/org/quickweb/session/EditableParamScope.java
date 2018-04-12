@@ -3,25 +3,21 @@ package org.quickweb.session;
 import org.quickweb.exception.ScopeNotMatchedException;
 import org.quickweb.utils.RequireUtils;
 
+import java.util.Objects;
+
 public enum EditableParamScope implements Scope {
     CONTEXT,
     MODAL,
     APPLICATION,
     ;
 
-    @SuppressWarnings("Duplicates")
     public static EditableParamScope of(ParamScope scope) {
         RequireUtils.requireNotNull(scope);
 
-        switch (scope) {
-            case CONTEXT:
-                return CONTEXT;
-            case MODAL:
-                return MODAL;
-            case APPLICATION:
-                return APPLICATION;
-            default:
-                throw new ScopeNotMatchedException(scope);
+        for (EditableParamScope ps : values()) {
+            if (Objects.equals(ps.name(), scope.name()))
+                return ps;
         }
+        throw new ScopeNotMatchedException(scope);
     }
 }

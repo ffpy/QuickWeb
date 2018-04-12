@@ -9,20 +9,20 @@ import java.util.stream.Collectors;
 
 public class SqlUtils {
 
-    public static String insert(String table, String[] params) {
+    public static String insert(String table, String[] columns) {
         RequireUtils.requireNotEmpty(table);
-        RequireUtils.requireCollectionNotEmpty(params);
+        RequireUtils.requireCollectionNotEmpty(columns);
 
         return "INSERT INTO " + table +
-                "(" + StringUtils.join(params, ',') + ")" +
-                " VALUES(" + buildPlaceholders(params.length) + ")";
+                "(" + StringUtils.join(columns, ',') + ")" +
+                " VALUES(" + buildPlaceholders(columns.length) + ")";
     }
 
-    public static String update(String table, String[] params, @Nullable String where) {
+    public static String update(String table, String[] columns, @Nullable String where) {
         RequireUtils.requireNotEmpty(table);
-        RequireUtils.requireCollectionNotEmpty(params);
+        RequireUtils.requireCollectionNotEmpty(columns);
 
-        List<String> sets = Arrays.stream(params)
+        List<String> sets = Arrays.stream(columns)
                 .map(param -> param + " = ?")
                 .collect(Collectors.toList());
 

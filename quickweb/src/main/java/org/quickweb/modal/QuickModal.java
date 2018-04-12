@@ -1,5 +1,6 @@
 package org.quickweb.modal;
 
+import org.quickweb.session.CP;
 import org.quickweb.session.QuickSession;
 
 public interface QuickModal {
@@ -18,9 +19,13 @@ public interface QuickModal {
 
     QuickModal limit(int value);
 
-    QuickSession insert(String... params);
+    QuickSession insert(String... paramNames);
 
-    QuickSession update(String... params);
+    QuickSession insert(CP... cps);
+
+    QuickSession update(String... paramNames);
+
+    QuickSession update(CP... cps);
 
     QuickSession delete();
 

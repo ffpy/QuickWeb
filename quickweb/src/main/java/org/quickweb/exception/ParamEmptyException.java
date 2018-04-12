@@ -8,7 +8,7 @@ public class ParamEmptyException extends RuntimeException {
         this("param");
     }
 
-    public ParamEmptyException(String paramName) {
-        super(Objects.requireNonNull(paramName) + " can't be empty");
+    public ParamEmptyException(String param) {
+        super(Objects.requireNonNull(param) + " can't be empty");
     }
 }

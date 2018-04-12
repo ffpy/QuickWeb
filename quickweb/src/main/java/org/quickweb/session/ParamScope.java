@@ -3,6 +3,8 @@ package org.quickweb.session;
 import org.quickweb.exception.ScopeNotMatchedException;
 import org.quickweb.utils.RequireUtils;
 
+import java.util.Objects;
+
 public enum ParamScope implements Scope {
     CONTEXT,
     MODAL,
@@ -13,19 +15,13 @@ public enum ParamScope implements Scope {
     ALL,
     ;
 
-    @SuppressWarnings("Duplicates")
     public static ParamScope of(EditableParamScope scope) {
         RequireUtils.requireNotNull(scope);
 
-        switch (scope) {
-            case CONTEXT:
-                return CONTEXT;
-            case MODAL:
-                return MODAL;
-            case APPLICATION:
-                return APPLICATION;
-            default:
-                throw new ScopeNotMatchedException(scope);
+        for (ParamScope ps : values()) {
+            if (Objects.equals(ps.name(), scope.name()))
+                return ps;
         }
+        throw new ScopeNotMatchedException(scope);
     }
 }

@@ -1,7 +1,7 @@
 package org.quickweb.sample.servlet;
 
 import org.quickweb.QuickWeb;
-import org.quickweb.modal.ResultType;
+import org.quickweb.session.CP;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -14,20 +14,18 @@ public class HelloServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         QuickWeb.server(req, resp)
+                .putParam("name", "aaa")
+                .putParam("name2", "bbb")
+
                 .startTransaction()
                 .modal("name")
-                .avg("avg", "id")
+                .insert(CP.of("name", "name"))
+                .commit()
                 .modal("name")
-                .count("count")
-                .modal("name")
-                .max("max", "id", ResultType.INT)
-                .modal("name")
-                .sum("sum", "id", ResultType.DOUBLE)
-                .modal("name")
-                .max("maxBirth", "birth", ResultType.DATETIME)
-                .modal("name")
-                .max("maxName", "name", ResultType.STRING)
+                .insert(CP.of("name", "name2"))
+                .rollback()
                 .endTransaction()
+
                 .view("hello");
     }
 }

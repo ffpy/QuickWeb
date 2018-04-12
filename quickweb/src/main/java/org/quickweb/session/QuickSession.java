@@ -80,9 +80,11 @@ public interface QuickSession {
 
     QuickSession endTransaction();
 
-    QuickSession commit();
+    QuickSession setSavepoint();
 
     QuickSession rollback();
+
+    QuickSession commit();
 
     QuickView view();
 

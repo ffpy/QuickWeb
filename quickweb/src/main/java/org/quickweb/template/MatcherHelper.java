@@ -41,22 +41,29 @@ public class MatcherHelper {
             return ParamScope.ALL;
 
         switch (scopeName.toUpperCase()) {
-            case "CT":
+            case "X":
+            case "CONTEXT":
                 return ParamScope.CONTEXT;
-            case "ML":
+            case "M":
+            case "MODAL":
                 return ParamScope.MODAL;
-            case "RT":
+            case "R":
+            case "REQUEST":
                 return ParamScope.REQUEST;
-            case "SN":
+            case "S":
+            case "SESSION":
                 return ParamScope.SESSION;
-            case "CE":
+            case "C":
+            case "COOKIE":
                 return ParamScope.COOKIE;
-            case "AN":
+            case "A":
+            case "APPLICATION":
                 return ParamScope.APPLICATION;
-            case "AL":
+            case "":
+            case "ALL":
                 return ParamScope.ALL;
             default:
-                throw new RuntimeException("unknown scope of '" + scopeName + "'");
+                throw new RuntimeException("unknown scope of " + scopeName);
         }
     }
 
