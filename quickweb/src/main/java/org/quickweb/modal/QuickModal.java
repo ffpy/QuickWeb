@@ -2,7 +2,10 @@ package org.quickweb.modal;
 
 import org.apache.commons.lang3.StringUtils;
 import org.quickweb.session.QuickSession;
+import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.ObjectUtils;
+
+import java.util.Arrays;
 
 public class QuickModal {
     private String table;
@@ -30,18 +33,21 @@ public class QuickModal {
 
     public QuickModal select(String... columns) {
         ObjectUtils.requireCollectionNotEmpty(columns);
+
         this.select = StringUtils.join(columns, ',');
         return this;
     }
 
     public QuickModal where(String condition) {
         ObjectUtils.requireNotNull(condition);
+
         this.where = condition;
         return this;
     }
 
     public QuickModal order(String... columns) {
         ObjectUtils.requireCollectionNotEmpty(columns);
+
         this.order = StringUtils.join(columns, ',');
         return this;
     }

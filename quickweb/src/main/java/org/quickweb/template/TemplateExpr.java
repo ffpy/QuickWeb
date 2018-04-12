@@ -7,12 +7,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
 public class TemplateExpr {
-    private static final String pattern  = "\\$([\\w_])+";
-    private static final Pattern compile = Pattern.compile(pattern);
     private QuickSession quickSession;
     private String template;
 
@@ -23,44 +19,41 @@ public class TemplateExpr {
         this.template = template;
     }
 
+    private MatcherHelper createMatcherHelper() {
+        return new MatcherHelper(quickSession, template);
+    }
+
     public String getString() {
-        Matcher matcher = compile.matcher(template);
-
+        MatcherHelper matcherHelper = createMatcherHelper();
         String s = template;
-        while (matcher.find()) {
-            String match = matcher.group();
-            String name = matcher.group(1);
-            Object value = quickSession.getParam(name);
-
-            s = s.replace(match, value.toString());
+        while (matcherHelper.find()) {
+            s = s.replace(matcherHelper.getMatch(), String.valueOf(matcherHelper.getValue()));
         }
         return s;
     }
 
+    public String getTemplate() {
+        return getTemplate("?");
+    }
+
     public String getTemplate(String placeholder) {
-        return template.replaceAll(pattern, placeholder);
+        return template.replaceAll(MatcherHelper.PATTERN, placeholder);
     }
 
     public List<Object> getVarList() {
-        Matcher matcher = compile.matcher(template);
-
+        MatcherHelper matcherHelper = createMatcherHelper();
         List<Object> list = new ArrayList<>();
-        while (matcher.find()) {
-            String name = matcher.group(1);
-            Object value = quickSession.getParam(name);
-            list.add(value);
+        while (matcherHelper.find()) {
+            list.add(matcherHelper.getValue());
         }
         return list;
     }
 
     public Map<String, Object> getVarMap() {
-        Matcher matcher = compile.matcher(template);
-
+        MatcherHelper matcherHelper = createMatcherHelper();
         Map<String, Object> map = new HashMap<>();
-        while (matcher.find()) {
-            String name = matcher.group(1);
-            Object value = quickSession.getParam(name);
-            map.put(name, value);
+        while (matcherHelper.find()) {
+            map.put(matcherHelper.getName(), matcherHelper.getValue());
         }
         return map;
     }

@@ -9,6 +9,7 @@
         <url>jdbc:mysql://localhost:3306/quickweb_test?useUnicode=true&amp;characterEncoding=utf-8&amp;useSSL=false&amp;serverTimezone=UTC</url>
         <username>root</username>
         <password>123456</password>
+        <showSql>true</showSql>
     </db>
     <view>
         <prefix>/WEB-INF/views/</prefix>

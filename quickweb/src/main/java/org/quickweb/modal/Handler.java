@@ -1,6 +1,7 @@
 package org.quickweb.modal;
 
-import org.quickweb.session.QuickSession;
+import org.quickweb.QuickWeb;
+import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.*;
 
 import java.sql.Connection;
@@ -17,6 +18,10 @@ public class Handler {
         if (conn == null)
             conn = DBUtils.getConnection();
         PreparedStatement stmt = null;
+
+        if (QuickWeb.getConfig().getDb().isShowSql())
+            System.out.println(sql);
+
         try {
             stmt = conn.prepareStatement(sql);
             action.act(conn, stmt);
@@ -29,17 +34,22 @@ public class Handler {
         }
     }
 
-    public static void save(
-            QuickModal quickModal, String table, String[] params) {
+    public static void save(QuickModal quickModal, String table, String[] params) {
         handle(quickModal, SqlUtils.insert(table, params), (conn, stmt) -> {
-            StmtUtils.setParams(quickModal.getQuickSession(), stmt, params);
+            new StmtHelper(quickModal.getQuickSession(), stmt).setParams(params);
             stmt.executeUpdate();
         });
     }
 
-    public static void update(
-            QuickModal quickModal, String table, String[] params, String where) {
+    public static void update(QuickModal quickModal, String table, String[] params, String where) {
+        TemplateExpr templateExpr = new TemplateExpr(quickModal.getQuickSession(), where);
 
+        handle(quickModal, SqlUtils.update(table, params, templateExpr.getTemplate()), (conn, stmt) -> {
+            StmtHelper stmtHelper = new StmtHelper(quickModal.getQuickSession(), stmt);
+            stmtHelper.setParams(params);
+            stmtHelper.setParams(templateExpr.getVarList());
+            stmt.executeUpdate();
+        });
     }
 
     private interface Action {

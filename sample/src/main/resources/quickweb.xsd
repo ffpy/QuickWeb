@@ -17,6 +17,7 @@
                             <xs:element name="url" type="xs:anyURI"/>
                             <xs:element name="username" type="xs:string"/>
                             <xs:element name="password" type="xs:string"/>
+                            <xs:element name="showSql" type="xs:boolean" default="false" minOccurs="0"/>
                         </xs:sequence>
                     </xs:complexType>
                 </xs:element>

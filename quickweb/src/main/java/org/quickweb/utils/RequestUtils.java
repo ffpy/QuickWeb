@@ -22,6 +22,8 @@ public class RequestUtils {
     }
 
     private static String convertCharset(String s, String charset) throws UnsupportedEncodingException {
+        if (s == null)
+            return null;
         return new String(s.getBytes("ISO-8859-1"), charset);
     }
 }

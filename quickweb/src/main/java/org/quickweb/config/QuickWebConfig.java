@@ -62,6 +62,7 @@ public class QuickWebConfig {
         private String url;
         private String username;
         private String password;
+        private boolean showSql;
 
         public String getDriver() {
             return driver;
@@ -95,6 +96,14 @@ public class QuickWebConfig {
             this.password = password;
         }
 
+        public boolean isShowSql() {
+            return showSql;
+        }
+
+        public void setShowSql(boolean showSql) {
+            this.showSql = showSql;
+        }
+
         @Override
         public String toString() {
             return "DB{" +
@@ -102,6 +111,7 @@ public class QuickWebConfig {
                     ", url='" + url + '\'' +
                     ", username='" + username + '\'' +
                     ", password='" + password + '\'' +
+                    ", showSql=" + showSql +
                     '}';
         }
     }
