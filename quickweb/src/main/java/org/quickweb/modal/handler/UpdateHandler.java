@@ -19,7 +19,7 @@ public class UpdateHandler {
 
     public static void update(QuickModal quickModal, CP[] cps,
                               SqlParam sqlParam) throws SQLException {
-        update(quickModal, CP.getColumns(cps), CP.getParams(cps), sqlParam);
+        update(quickModal, CP.getColumns(cps), CP.getParamNames(cps), sqlParam);
     }
 
     public static void update(QuickModal quickModal, String[] columns, String[] params,

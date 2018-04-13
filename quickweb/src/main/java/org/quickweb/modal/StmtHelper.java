@@ -25,11 +25,11 @@ public class StmtHelper {
         this.stmt = stmt;
     }
 
-    public void setParams(String[] params) throws SQLException {
-        RequireUtils.requireNotNull((Object) params);
+    public void setParams(String[] paramNames) throws SQLException {
+        RequireUtils.requireArrayNotNull(paramNames);
 
-        for (String param : params) {
-            stmt.setObject(index++, quickSession.getParam(param));
+        for (String paramName : paramNames) {
+            stmt.setObject(index++, quickSession.getParam(paramName));
         }
     }
 

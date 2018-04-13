@@ -17,14 +17,14 @@ public class InsertHandler {
     }
 
     public static void insert(QuickModal quickModal, CP[] cps, SqlParam sqlParam) throws SQLException {
-        insert(quickModal, CP.getColumns(cps), CP.getParams(cps), sqlParam);
+        insert(quickModal, CP.getColumns(cps), CP.getParamNames(cps), sqlParam);
     }
 
-    public static void insert(QuickModal quickModal, String[] columns, String[] params,
+    public static void insert(QuickModal quickModal, String[] columns, String[] paramNames,
                               SqlParam sqlParam) throws SQLException {
         String sql = SqlUtils.insert(sqlParam.getTable(), columns);
         DataHandler.handle(quickModal, sql, (conn, stmt) -> {
-            new StmtHelper(quickModal.getQuickSession(), stmt).setParams(params);
+            new StmtHelper(quickModal.getQuickSession(), stmt).setParams(paramNames);
             stmt.executeUpdate();
         });
     }

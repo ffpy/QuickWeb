@@ -60,9 +60,9 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickSession insert(String... columnAndParams) {
+    public QuickSession insert(String... columnAndParamNames) {
         try {
-            InsertHandler.insert(this, columnAndParams, sqlParam);
+            InsertHandler.insert(this, columnAndParamNames, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -82,9 +82,9 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickSession update(String... columnAndParams) {
+    public QuickSession update(String... columnAndParamNames) {
         try {
-            UpdateHandler.update(this, columnAndParams, sqlParam);
+            UpdateHandler.update(this, columnAndParamNames, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -115,9 +115,9 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickSession findFirst(String param) {
+    public QuickSession findFirst(String paramName) {
         try {
-            QueryHandler.findFirst(this, param, sqlParam);
+            QueryHandler.findFirst(this, paramName, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -126,9 +126,9 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickSession find(String param) {
+    public QuickSession find(String paramName) {
         try {
-            QueryHandler.find(this, param, sqlParam);
+            QueryHandler.find(this, paramName, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -137,9 +137,9 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickSession count(String param) {
+    public QuickSession count(String paramName) {
         try {
-            QueryHandler.count(this, param, sqlParam);
+            QueryHandler.count(this, paramName, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -148,9 +148,9 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickSession avg(String param, String column) {
+    public QuickSession avg(String paramName, String column) {
         try {
-            QueryHandler.avg(this, param, column, sqlParam);
+            QueryHandler.avg(this, paramName, column, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -159,9 +159,9 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickSession max(String param, String column, ResultType resultType) {
+    public QuickSession max(String paramName, String column, ResultType resultType) {
         try {
-            QueryHandler.max(this, param, column, sqlParam, resultType);
+            QueryHandler.max(this, paramName, column, sqlParam, resultType);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -170,9 +170,9 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickSession min(String param, String column, ResultType resultType) {
+    public QuickSession min(String paramName, String column, ResultType resultType) {
         try {
-            QueryHandler.min(this, param, column, sqlParam, resultType);
+            QueryHandler.min(this, paramName, column, sqlParam, resultType);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -181,9 +181,9 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickSession sum(String param, String column, ResultType resultType) {
+    public QuickSession sum(String paramName, String column, ResultType resultType) {
         try {
-            QueryHandler.sum(this, param, column, sqlParam, resultType);
+            QueryHandler.sum(this, paramName, column, sqlParam, resultType);
         } catch (SQLException e) {
             quickSession.error(e);
         }
