@@ -9,6 +9,7 @@ import org.quickweb.session.param.ParamHelper;
 import org.quickweb.session.param.ParamMapper;
 import org.quickweb.session.scope.EditableScope;
 import org.quickweb.session.scope.Scope;
+import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.*;
 import org.quickweb.view.QuickView;
 import org.quickweb.view.QuickViewImpl;
@@ -279,26 +280,26 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession setSession(String name, Object value) {
-        SessionUtils.setAttribute(request, name, value);
+        SessionUtils.setAttribute(request, TemplateExpr.getString(this, name), value);
         return this;
     }
 
     @Override
     public QuickSession setSessionBy(String name, ParamGenerator generator) {
         RequireUtils.requireNotNull(generator);
-        setSession(name, generator.apply(this));
+        setSession(TemplateExpr.getString(this, name), generator.apply(this));
         return this;
     }
 
     @Override
     public QuickSession setSessionFrom(String name, String paramName) {
-        setSession(name, getParam(paramName));
+        setSession(TemplateExpr.getString(this, name), getParam(paramName));
         return this;
     }
 
     @Override
     public QuickSession removeSession(String name) {
-        SessionUtils.removeAttribute(request, name);
+        SessionUtils.removeAttribute(request, TemplateExpr.getString(this, name));
         return this;
     }
 
@@ -310,7 +311,8 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession addCookie(String name, String value) {
-        CookieUtils.addCookie(response, new Cookie(name, value));
+        CookieUtils.addCookie(response,
+                new Cookie(TemplateExpr.getString(this, name), value));
         return this;
     }
 
@@ -323,7 +325,7 @@ public class QuickSessionImpl implements QuickSession {
     @Override
     public QuickSession addCookieBy(String name, Function<QuickSession, String> generator) {
         RequireUtils.requireNotNull(generator);
-        addCookie(name, generator.apply(this));
+        addCookie(TemplateExpr.getString(this, name), generator.apply(this));
         return this;
     }
 
@@ -336,13 +338,13 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession addCookieFrom(String name, String paramName) {
-        addCookie(name, getParam(paramName));
+        addCookie(TemplateExpr.getString(this, name), getParam(paramName));
         return this;
     }
 
     @Override
     public QuickSession removeCookie(String name) {
-        CookieUtils.deleteCookie(response, name);
+        CookieUtils.deleteCookie(response, TemplateExpr.getString(this, name));
         return this;
     }
 

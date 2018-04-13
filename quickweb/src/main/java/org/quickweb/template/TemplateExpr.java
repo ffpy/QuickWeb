@@ -61,4 +61,8 @@ public class TemplateExpr {
     private Object getValue(MatcherHelper matcherHelper) {
         return quickSession.getParam(matcherHelper.getParam());
     }
+
+    public static String getString(QuickSession quickSession, String template) {
+        return new TemplateExpr(quickSession, template).toString();
+    }
 }
