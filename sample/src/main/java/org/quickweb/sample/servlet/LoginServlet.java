@@ -36,7 +36,7 @@ public class LoginServlet extends HttpServlet {
                         session.putParam("m:name", user.get("name"));
                     }
                 })
-                .requireParamNotNull("m:password")
+                .requireParamNotNull(new Exception("user not found"), "m:password")
                 .requireParamEqualsWith("r:password", "m:password")
                 .setSessionFrom("name", "m:name")
                 .viewPath("/");

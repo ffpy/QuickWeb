@@ -40,22 +40,30 @@ public interface QuickSession {
 
     QuickSession onError(@Nullable ErrorHandler handler);
 
-    QuickSession requireParamNotNull(String name);
+    QuickSession requireParamNotNull(String... names);
 
-    QuickSession requireParamNotNull(String name, RequireEmptyAction act);
+    QuickSession requireParamNotNull(RequireEmptyAction act, String... names);
+
+    QuickSession requireParamNotNull(Exception e, String... names);
 
     QuickSession requireParamNotEmpty(String... names);
 
     QuickSession requireParamNotEmpty(RequireEmptyAction act, String... names);
+
+    QuickSession requireParamNotEmpty(Exception e, String... names);
 
     QuickSession requireParamEquals(String name, @Nullable Object expectedValue);
 
     QuickSession requireParamEquals(String name, @Nullable Object expectedValue,
                                     RequireEqualsAction act);
 
+    QuickSession requireParamEquals(String name, @Nullable Object expectedValue, Exception e);
+
     QuickSession requireParamEqualsWith(String name, String expectedName);
 
     QuickSession requireParamEqualsWith(String name, String expectedName, RequireEqualsAction act);
+
+    QuickSession requireParamEqualsWith(String name, String expectedName, Exception e);
 
     <T> T getParam(String name);
 

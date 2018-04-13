@@ -1,6 +1,5 @@
 package org.quickweb.session;
 
-import com.sun.istack.internal.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.quickweb.exception.*;
 import org.quickweb.modal.QuickModal;
@@ -92,29 +91,38 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession onError(@Nullable ErrorHandler handler) {
+    public QuickSession onError(ErrorHandler handler) {
         this.errorHandler = handler;
         return quickSessionProxy;
     }
 
     @Override
-    public QuickSession requireParamNotNull(String name) {
-        requireParamNotNull(name, (paramName, quickSession) -> {
+    public QuickSession requireParamNotNull(String... names) {
+        requireParamNotNull((paramName, quickSession) -> {
             throw new ParamNullException(paramName);
-        });
+        }, names);
         return quickSessionProxy;
     }
 
     @Override
-    public QuickSession requireParamNotNull(String name, RequireEmptyAction act) {
+    public QuickSession requireParamNotNull(RequireEmptyAction act, String... names) {
         RequireUtils.requireNotNull(act);
-        if (getParam(name) == null) {
-            try {
-                act.act(name, quickSessionProxy);
-            } catch (Exception e) {
-                error(e);
+        for (String n : names) {
+            if (getParam(n) == null) {
+                try {
+                    act.act(n, quickSessionProxy);
+                } catch (Exception e) {
+                    error(e);
+                }
+                break;
             }
         }
+        return quickSessionProxy;
+    }
+
+    @Override
+    public QuickSession requireParamNotNull(Exception e, String... names) {
+        requireParamNotNull((paramName, quickSession) -> { throw e; }, names);
         return quickSessionProxy;
     }
 
@@ -144,15 +152,22 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession requireParamEquals(String name, @Nullable Object expectedValue) {
-        requireParamEquals(name, expectedValue, (paramName, actualValue, expectedValue1, quickSession) -> {
+    public QuickSession requireParamNotEmpty(Exception e, String... names) {
+        requireParamNotEmpty((paramName, quickSession) -> { throw e; }, names);
+        return quickSessionProxy;
+    }
+
+    @Override
+    public QuickSession requireParamEquals(String name, Object expectedValue) {
+        requireParamEquals(name, expectedValue,
+                (paramName, actualValue, expectedValue1, quickSession) -> {
             throw new ParamNotEqualsException(paramName, actualValue, expectedValue1);
         });
         return quickSessionProxy;
     }
 
     @Override
-    public QuickSession requireParamEquals(String name, @Nullable Object expectedValue,
+    public QuickSession requireParamEquals(String name, Object expectedValue,
                                            RequireEqualsAction act) {
         RequireUtils.requireNotNull(act);
         Object actualValue = getParam(name);
@@ -167,8 +182,16 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
+    public QuickSession requireParamEquals(String name, Object expectedValue, Exception e) {
+        requireParamEquals(name, expectedValue,
+                (paramName, actualValue, expectedValue1, quickSession) -> { throw e; });
+        return quickSessionProxy;
+    }
+
+    @Override
     public QuickSession requireParamEqualsWith(String name, String expectedName) {
-        requireParamEqualsWith(name, expectedName, (paramName, actualValue, expectedValue, quickSession) -> {
+        requireParamEqualsWith(name, expectedName,
+                (paramName, actualValue, expectedValue, quickSession) -> {
             throw new ParamNotEqualsException(paramName, actualValue, expectedValue);
         });
         return quickSessionProxy;
@@ -185,6 +208,13 @@ public class QuickSessionImpl implements QuickSession {
                 error(e);
             }
         }
+        return quickSessionProxy;
+    }
+
+    @Override
+    public QuickSession requireParamEqualsWith(String name, String expectedName, Exception e) {
+        requireParamEqualsWith(name, expectedName,
+                (paramName, actualValue, expectedValue, quickSession) -> { throw e; });
         return quickSessionProxy;
     }
 
@@ -483,7 +513,7 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public void error(@Nullable Exception e) {
+    public void error(Exception e) {
         if (errorHandler != null)
             errorHandler.onError(e, quickSessionProxy);
     }

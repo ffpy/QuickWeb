@@ -1,6 +1,5 @@
 package org.quickweb.view;
 
-import com.sun.istack.internal.Nullable;
 import org.quickweb.QuickWeb;
 import org.quickweb.QuickWebConfig;
 import org.quickweb.session.QuickSession;
@@ -97,10 +96,11 @@ public class QuickViewImpl implements QuickView {
             }
         });
 
-        Arrays.stream(request.getCookies()).forEach(cookie -> putParam(cookie.getName(), cookie.getValue()));
+        Arrays.stream(request.getCookies())
+                .forEach(cookie -> putParam(cookie.getName(), cookie.getValue()));
     }
 
-    private void putParam(String name, @Nullable Object value) {
+    private void putParam(String name, Object value) {
         RequireUtils.requireNotNull(name);
         if (value != null && request.getAttribute(name) == null)
             request.setAttribute(name, value);
