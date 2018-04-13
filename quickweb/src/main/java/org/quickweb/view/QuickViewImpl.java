@@ -48,20 +48,27 @@ public class QuickViewImpl implements QuickView {
     @Override
     public void view(String name) {
         RequireUtils.requireNotNull(name);
+        quickSession.end();
+
         name = TemplateExpr.getString(quickSession, name);
         QuickWebConfig.View view = QuickWeb.getConfig().getView();
         String path = view.getPrefix() + name + view.getSuffix();
-        viewPath(path);
+
+        mergeParams();
+        try {
+            request.getRequestDispatcher(path).forward(request, response);
+        } catch (ServletException | IOException e) {
+            ExceptionUtils.throwException(e);
+        }
     }
 
     @Override
     public void viewPath(String path) {
         RequireUtils.requireNotNull(path);
 
-        mergeParams();
         try {
-            request.getRequestDispatcher(path).forward(request, response);
-        } catch (ServletException | IOException e) {
+            response.sendRedirect(path);
+        } catch (IOException e) {
             ExceptionUtils.throwException(e);
         }
     }

@@ -16,11 +16,5 @@
         </div>
         <button type="submit">登录</button>
     </form>
-
-    <%
-        Object error = request.getAttribute("error");
-        if (error != null)
-            response.getWriter().write("<script>alert('" + error + "')</script>");
-    %>
 </body>
 </html>

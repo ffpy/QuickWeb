@@ -119,5 +119,7 @@ public interface QuickSession {
 
     void error(@Nullable Exception e);
 
+    boolean isEnd();
+
     void end();
 }

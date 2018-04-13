@@ -20,8 +20,8 @@ public class LoginServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         QuickWeb.server(req, resp)
                 .onError((e, quickSession) -> {
-                    quickSession.putParam("error", e);
                     quickSession.view("login");
+                    System.out.println("error: " + e);
                 })
                 .invalidateSession()
                 .requireParamNotEmpty("username", "password")
@@ -36,6 +36,6 @@ public class LoginServlet extends HttpServlet {
                 })
                 .requireParamEqualsWith("r:password", "m:password")
                 .setSessionFrom("name", "name")
-                .view("index");
+                .viewPath("/");
     }
 }

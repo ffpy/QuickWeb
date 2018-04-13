@@ -24,6 +24,6 @@ public class RegisterServlet extends HttpServlet {
                 .putParam("ctime", new Timestamp(Calendar.getInstance().getTimeInMillis()))
                 .modal("user")
                 .insert("name", "username", "password", "ctime")
-                .view("login");
+                .viewPath("/login");
     }
 }
