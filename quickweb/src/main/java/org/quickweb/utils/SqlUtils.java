@@ -65,7 +65,7 @@ public class SqlUtils {
 
     private static String buildPlaceholders(int n) {
         if (n <= 0)
-            throw new RuntimeException("n must be more than zero");
+            ExceptionUtils.throwMustMoreThanException("n", 0);
 
         char[] placeholders = new char[n];
         for (int i = 0; i < n; i++) {

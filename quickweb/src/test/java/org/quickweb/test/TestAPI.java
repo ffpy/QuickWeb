@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.quickweb.MoocRequest;
 import org.quickweb.MoocResponse;
 import org.quickweb.QuickWeb;
-import org.quickweb.session.scope.ParamScope;
+import org.quickweb.session.scope.Scope;
 
 import java.util.Calendar;
 
@@ -47,16 +47,16 @@ public class TestAPI {
     public void test3() {
         QuickWeb.server(new MoocRequest(), new MoocResponse())
                 .requireParamNotEmpty("username", "password", "code")
-                .requireParamEqualsWith("code", ParamScope.SESSION)
+                .requireParamEqualsWith("code", Scope.SESSION)
 
                 .modal("user")
                 .select("password", "salt")
                 .find()
 
                 .putParamBy("password", quickSession -> encrypt(
-                        quickSession.getParam("password", ParamScope.MODAL),
-                        quickSession.getParam("salt", ParamScope.MODAL)))
-                .requireParamEqualsWith("password", ParamScope.MODAL)
+                        quickSession.getParam("password", Scope.MODAL),
+                        quickSession.getParam("salt", Scope.MODAL)))
+                .requireParamEqualsWith("password", Scope.MODAL)
 
                 .view("index.jsp");
     }
@@ -72,7 +72,7 @@ public class TestAPI {
     public void test4() {
         QuickWeb.server(new MoocRequest(), new MoocResponse())
                 .requireParamNotEmpty("username", "password", "name", "code")
-                .requireParamEqualsWith("code", ParamScope.SESSION)
+                .requireParamEqualsWith("code", Scope.SESSION)
                 .putParam("ctime", Calendar.getInstance().getTimeInMillis())
 
                 .modal("user")

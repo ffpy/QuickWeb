@@ -1,4 +1,4 @@
-package org.quickweb.config;
+package org.quickweb;
 
 public class QuickWebConfig {
     private Session session;

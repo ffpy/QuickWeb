@@ -5,7 +5,7 @@ import org.quickweb.modal.QuickModal;
 import org.quickweb.modal.ResultType;
 import org.quickweb.modal.SqlParam;
 import org.quickweb.modal.StmtHelper;
-import org.quickweb.session.scope.EditableParamScope;
+import org.quickweb.session.scope.EditableScope;
 import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.RequireUtils;
 import org.quickweb.utils.SqlUtils;
@@ -32,7 +32,7 @@ public class QueryHandler {
                 }
                 rowList.add(rowMap);
             }
-            quickModal.getQuickSession().putParam(param, rowList, EditableParamScope.MODAL);
+            quickModal.getQuickSession().putParam(param, rowList, EditableScope.MODAL);
         });
     }
 
@@ -46,7 +46,7 @@ public class QueryHandler {
                     rowMap.put(metaData.getColumnLabel(i), obj);
                 }
             }
-            quickModal.getQuickSession().putParam(param, rowMap, EditableParamScope.MODAL);
+            quickModal.getQuickSession().putParam(param, rowMap, EditableScope.MODAL);
         });
     }
 
@@ -114,7 +114,7 @@ public class QueryHandler {
                 else
                     value = rs.getObject(1, resultType.getType());
 
-                quickModal.getQuickSession().putParam(param, value, EditableParamScope.MODAL);
+                quickModal.getQuickSession().putParam(param, value, EditableScope.MODAL);
             }
         });
     }

@@ -2,8 +2,8 @@ package org.quickweb.session;
 
 import com.sun.istack.internal.Nullable;
 import org.quickweb.modal.QuickModal;
-import org.quickweb.session.scope.EditableParamScope;
-import org.quickweb.session.scope.ParamScope;
+import org.quickweb.session.scope.EditableScope;
+import org.quickweb.session.scope.Scope;
 import org.quickweb.view.QuickView;
 
 import javax.servlet.http.HttpServletRequest;
@@ -43,22 +43,22 @@ public interface QuickSession {
 
     <T> T getParam(String name);
 
-    <T> T getParam(String name, ParamScope scope);
+    <T> T getParam(String name, Scope scope);
 
     QuickSession putParam(String name, Object value);
 
-    QuickSession putParam(String name, Object value, EditableParamScope scope);
+    QuickSession putParam(String name, Object value, EditableScope scope);
 
     QuickSession putParamBy(String name, Function<QuickSession, Object> generator);
 
-    QuickSession putParamBy(String name, EditableParamScope scope,
+    QuickSession putParamBy(String name, EditableScope scope,
                                 Function<QuickSession, Object> generator);
 
     QuickSession putParamFrom(String name, String fromName);
 
-    QuickSession removeParam(String name, EditableParamScope scope);
+    QuickSession removeParam(String name, EditableScope scope);
 
-    QuickSession mapParam(String name, Function<Object, Object> mapper, EditableParamScope scope);
+    QuickSession mapParam(String name, Function<Object, Object> mapper, EditableScope scope);
 
     QuickSession watchParam(String name, Consumer<Object> watcher);
 

@@ -1,6 +1,7 @@
 package org.quickweb.modal;
 
 import org.apache.commons.lang3.StringUtils;
+import org.quickweb.utils.ExceptionUtils;
 
 public class SqlParam {
     private String table = "";
@@ -48,7 +49,7 @@ public class SqlParam {
 
     public void setOffset(int value) {
         if (value < 0)
-            throw new RuntimeException("offset must be more than -1");
+            ExceptionUtils.throwMustMoreThanException("offset", -1);
         this.offset = value;
     }
 
@@ -58,7 +59,7 @@ public class SqlParam {
 
     public void setLimit(int value) {
         if (value < 0)
-            throw new RuntimeException("limit must be more than -1");
+            ExceptionUtils.throwMustMoreThanException("limit", -1);
         this.limit = value;
     }
 

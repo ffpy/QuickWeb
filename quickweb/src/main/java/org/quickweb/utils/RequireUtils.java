@@ -1,7 +1,6 @@
 package org.quickweb.utils;
 
 import org.apache.commons.lang3.StringUtils;
-import org.quickweb.exception.ParamEmptyException;
 
 import java.util.Objects;
 
@@ -22,12 +21,12 @@ public class RequireUtils {
         Objects.requireNonNull(ss);
         for (String s : ss) {
             if (StringUtils.isEmpty(s))
-                throw new ParamEmptyException();
+                ExceptionUtils.throwEmptyException();
         }
     }
 
     public static void requireArrayNotEmpty(String[] ss) {
         if (EmptyUtils.isEmpty(ss))
-            throw new ParamEmptyException();
+            ExceptionUtils.throwEmptyException();
     }
 }

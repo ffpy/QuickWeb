@@ -2,7 +2,7 @@ package org.quickweb.utils;
 
 import com.sun.istack.internal.Nullable;
 import org.quickweb.QuickWeb;
-import org.quickweb.config.QuickWebConfig;
+import org.quickweb.QuickWebConfig;
 
 import java.sql.Connection;
 import java.sql.DriverManager;

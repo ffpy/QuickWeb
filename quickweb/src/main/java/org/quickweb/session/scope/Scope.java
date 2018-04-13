@@ -1,4 +1,28 @@
 package org.quickweb.session.scope;
 
-public interface Scope {
+import org.quickweb.utils.ExceptionUtils;
+import org.quickweb.utils.RequireUtils;
+
+import java.util.Objects;
+
+public enum Scope implements IScope {
+    CONTEXT,
+    MODAL,
+    REQUEST,
+    SESSION,
+    COOKIE,
+    APPLICATION,
+    ALL,
+    ;
+
+    public static Scope of(EditableScope scope) {
+        RequireUtils.requireNotNull(scope);
+
+        for (Scope ps : values()) {
+            if (Objects.equals(ps.name(), scope.name()))
+                return ps;
+        }
+        ExceptionUtils.throwScopeNotMatchedException(scope);
+        return null;
+    }
 }

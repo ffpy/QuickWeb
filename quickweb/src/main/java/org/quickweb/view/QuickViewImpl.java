@@ -2,8 +2,9 @@ package org.quickweb.view;
 
 import com.sun.istack.internal.Nullable;
 import org.quickweb.QuickWeb;
-import org.quickweb.config.QuickWebConfig;
+import org.quickweb.QuickWebConfig;
 import org.quickweb.session.QuickSession;
+import org.quickweb.utils.ExceptionUtils;
 import org.quickweb.utils.RequireUtils;
 import org.quickweb.utils.RequestUtils;
 
@@ -54,7 +55,7 @@ public class QuickViewImpl implements QuickView {
         try {
             request.getRequestDispatcher(path).forward(request, response);
         } catch (ServletException | IOException e) {
-            throw new RuntimeException(e);
+            ExceptionUtils.throwException(e);
         }
     }
 

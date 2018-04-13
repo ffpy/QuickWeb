@@ -1,14 +1,15 @@
 package org.quickweb.session.param;
 
 import org.apache.commons.lang3.StringUtils;
-import org.quickweb.session.scope.ParamScope;
+import org.quickweb.session.scope.Scope;
+import org.quickweb.utils.ExceptionUtils;
 import org.quickweb.utils.RequireUtils;
 
 public class ParamHelper {
     private String param;
     private String scopeName;
     private String paramName;
-    private ParamScope scope;
+    private Scope scope;
 
     public ParamHelper() {
     }
@@ -32,7 +33,7 @@ public class ParamHelper {
         return paramName;
     }
 
-    public ParamScope getScope() {
+    public Scope getScope() {
         if (scope == null)
             scope = matchScope();
         return scope;
@@ -43,7 +44,7 @@ public class ParamHelper {
         if (param.contains(":")) {
             String[] split = StringUtils.split(param, ':');
             if (split.length != 2)
-                throw new RuntimeException("the name format of " + param + " is incorrect");
+                ExceptionUtils.throwFormatIncorrectException(param);
 
             scopeName = split[0];
             paramName = split[1];
@@ -52,34 +53,35 @@ public class ParamHelper {
         }
     }
 
-    private ParamScope matchScope() {
+    private Scope matchScope() {
         if (scopeName == null)
-            return ParamScope.ALL;
+            return Scope.ALL;
 
         switch (scopeName.toUpperCase()) {
             case "X":
             case "CONTEXT":
-                return ParamScope.CONTEXT;
+                return Scope.CONTEXT;
             case "M":
             case "MODAL":
-                return ParamScope.MODAL;
+                return Scope.MODAL;
             case "R":
             case "REQUEST":
-                return ParamScope.REQUEST;
+                return Scope.REQUEST;
             case "S":
             case "SESSION":
-                return ParamScope.SESSION;
+                return Scope.SESSION;
             case "C":
             case "COOKIE":
-                return ParamScope.COOKIE;
+                return Scope.COOKIE;
             case "A":
             case "APPLICATION":
-                return ParamScope.APPLICATION;
+                return Scope.APPLICATION;
             case "":
             case "ALL":
-                return ParamScope.ALL;
+                return Scope.ALL;
             default:
-                throw new RuntimeException("unknown scope of " + scopeName);
+                ExceptionUtils.throwUnknownScopeException(scopeName);
         }
+        return null;
     }
 }
