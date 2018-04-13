@@ -15,7 +15,7 @@ public class QuickModalImpl implements QuickModal {
     public QuickModalImpl(QuickSession quickSession, String table) {
         RequireUtils.requireNotNull(table, quickSession);
         this.quickSession = quickSession;
-        this.sqlParam.setTable(new TemplateExpr(quickSession, table).getString());
+        this.sqlParam.setTable(TemplateExpr.getString(quickSession, table));
     }
 
     @Override

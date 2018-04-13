@@ -156,6 +156,7 @@ public class QuickSessionImpl implements QuickSession {
         return null;
     }
 
+    @SuppressWarnings("unchecked")
     @Override
     public <T> T getParam(String name, Scope scope) {
         RequireUtils.requireNotNull(name, scope);

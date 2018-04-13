@@ -63,6 +63,6 @@ public class TemplateExpr {
     }
 
     public static String getString(QuickSession quickSession, String template) {
-        return new TemplateExpr(quickSession, template).toString();
+        return new TemplateExpr(quickSession, template).getString();
     }
 }
