@@ -7,25 +7,23 @@ import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
+import java.sql.Timestamp;
+import java.util.Calendar;
 
-public class HelloServlet extends HttpServlet {
+public class RegisterServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
-        QuickWeb.server(req, resp)
-//                .putParam("lt", 2)
-//                .modal("name")
-//                .limitFrom("lt")
-//                .find("names")
-                .view("hello");
+        QuickWeb.server(req, resp).view("register");
     }
 
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         QuickWeb.server(req, resp)
-//                .requireParamNotEmpty("name")
-//                .modal("name")
-//                .insert("name")
-                .view("hello");
+                .requireParamNotEmpty("name", "username", "password")
+                .putParam("ctime", new Timestamp(Calendar.getInstance().getTimeInMillis()))
+                .modal("user")
+                .insert("name", "username", "password", "ctime")
+                .view("login");
     }
 }

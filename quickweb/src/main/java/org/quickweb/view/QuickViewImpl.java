@@ -46,12 +46,17 @@ public class QuickViewImpl implements QuickView {
     }
 
     @Override
-    public void view(String path) {
-        RequireUtils.requireNotNull(path);
-        path = TemplateExpr.getString(quickSession, path);
-
+    public void view(String name) {
+        RequireUtils.requireNotNull(name);
+        name = TemplateExpr.getString(quickSession, name);
         QuickWebConfig.View view = QuickWeb.getConfig().getView();
-        path = view.getPrefix() + path + view.getSuffix();
+        String path = view.getPrefix() + name + view.getSuffix();
+        viewPath(path);
+    }
+
+    @Override
+    public void viewPath(String path) {
+        RequireUtils.requireNotNull(path);
 
         mergeParams();
         try {

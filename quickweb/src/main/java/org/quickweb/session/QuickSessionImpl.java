@@ -1,9 +1,11 @@
 package org.quickweb.session;
 
 import com.sun.istack.internal.Nullable;
-import org.quickweb.exception.DefaultErrorHandler;
-import org.quickweb.exception.ErrorHandler;
+import org.apache.commons.lang3.StringUtils;
+import org.quickweb.exception.*;
 import org.quickweb.modal.QuickModal;
+import org.quickweb.session.action.RequireEmptyAction;
+import org.quickweb.session.action.RequireEqualsAction;
 import org.quickweb.session.param.ParamGenerator;
 import org.quickweb.session.param.ParamHelper;
 import org.quickweb.session.param.ParamMapper;
@@ -21,6 +23,7 @@ import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
+import java.util.Objects;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -36,7 +39,6 @@ public class QuickSessionImpl implements QuickSession {
 
     public QuickSessionImpl(HttpServletRequest request, HttpServletResponse response) {
         RequireUtils.requireNotNull(request, response);
-
         this.request = request;
         this.response = response;
     }
@@ -47,28 +49,13 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public void setRequest(HttpServletRequest request) {
-        this.request = request;
-    }
-
-    @Override
     public HttpServletResponse getResponse() {
         return response;
     }
 
     @Override
-    public void setResponse(HttpServletResponse response) {
-        this.response = response;
-    }
-
-    @Override
     public Connection getConnection() {
         return connection;
-    }
-
-    @Override
-    public void setConnection(Connection connection) {
-        this.connection = connection;
     }
 
     @Override
@@ -103,34 +90,92 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession requireParamNotNull(String name) {
-        ParamUtils.requireNotNull(getParam(name), name);
+        requireParamNotNull(name, (paramName, quickSession) -> {
+            throw new ParamNullException(paramName);
+        });
+        return this;
+    }
+
+    @Override
+    public QuickSession requireParamNotNull(String name, RequireEmptyAction act) {
+        RequireUtils.requireNotNull(act);
+        if (getParam(name) == null) {
+            try {
+                act.act(name, this);
+            } catch (Exception e) {
+                error(e);
+            }
+        }
         return this;
     }
 
     @Override
     public QuickSession requireParamNotEmpty(String... names) {
-        RequireUtils.requireNotNull((Object) names);
+        requireParamNotEmpty((paramName, quickSession) -> {
+            throw new ParamEmptyException(paramName);
+        }, names);
+        return this;
+    }
 
+    @Override
+    public QuickSession requireParamNotEmpty(RequireEmptyAction act, String... names) {
+        RequireUtils.requireNotNull(act);
         for (String n : names) {
-            String value = ParamUtils.requireNotNull(getParam(n), n);
-            ParamUtils.requireNotEmpty(value, n);
+            String value = getParam(n);
+            if (StringUtils.isEmpty(value)) {
+                try {
+                    act.act(n, this);
+                } catch (Exception e) {
+                    error(e);
+                }
+                break;
+            }
         }
         return this;
     }
 
     @Override
     public QuickSession requireParamEquals(String name, @Nullable Object expectedValue) {
-        RequireUtils.requireNotNull(name);
+        requireParamEquals(name, expectedValue, (paramName, actualValue, expectedValue1, quickSession) -> {
+            throw new ParamNotEqualsException(paramName, actualValue, expectedValue1);
+        });
+        return this;
+    }
 
-        ParamUtils.requireEquals(name, expectedValue, getParam(name));
+    @Override
+    public QuickSession requireParamEquals(String name, @Nullable Object expectedValue,
+                                           RequireEqualsAction act) {
+        RequireUtils.requireNotNull(act);
+        Object actualValue = getParam(name);
+        if (!Objects.equals(actualValue, expectedValue)) {
+            try {
+                act.act(name, actualValue, expectedValue, this);
+            } catch (Exception e) {
+                error(e);
+            }
+        }
         return this;
     }
 
     @Override
     public QuickSession requireParamEqualsWith(String name, String expectedName) {
+        requireParamEqualsWith(name, expectedName, (paramName, actualValue, expectedValue, quickSession) -> {
+            throw new ParamNotEqualsException(paramName, actualValue, expectedValue);
+        });
+        return this;
+    }
+
+    @Override
+    public QuickSession requireParamEqualsWith(String name, String expectedName, RequireEqualsAction act) {
         Object actualValue = getParam(name);
         Object expectedValue = getParam(expectedName);
-        ParamUtils.requireEquals(name, expectedValue, actualValue);
+        if (!Objects.equals(actualValue, expectedValue)) {
+            try {
+                act.act(name, actualValue, expectedValue, this);
+            } catch (Exception e) {
+                error(e);
+            }
+        }
         return this;
     }
 
@@ -139,7 +184,7 @@ public class QuickSessionImpl implements QuickSession {
     public <T> T getParam(String name) {
         // 按照作用域的优先级排列
         Scope[] scopes = {
-                Scope.CONTEXT, Scope.MODAL, Scope.REQUEST,
+                Scope.CONTEXT, Scope.REQUEST, Scope.MODAL,
                 Scope.SESSION, Scope.COOKIE, Scope.APPLICATION
         };
 
@@ -419,13 +464,23 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public void view(String path) {
-        view().view(path);
+    public void view(String name) {
+        view().view(name);
+    }
+
+    @Override
+    public void viewPath(String path) {
+        view().viewPath(path);
     }
 
     @Override
     public void error(@Nullable Exception e) {
         if (errorHandler != null)
             errorHandler.onError(e, this);
+    }
+
+    @Override
+    public void end() {
+
     }
 }

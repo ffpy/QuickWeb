@@ -3,6 +3,8 @@ package org.quickweb.session;
 import com.sun.istack.internal.Nullable;
 import org.quickweb.exception.ErrorHandler;
 import org.quickweb.modal.QuickModal;
+import org.quickweb.session.action.RequireEmptyAction;
+import org.quickweb.session.action.RequireEqualsAction;
 import org.quickweb.session.param.ParamGenerator;
 import org.quickweb.session.param.ParamMapper;
 import org.quickweb.session.scope.EditableScope;
@@ -22,15 +24,9 @@ public interface QuickSession {
 
     HttpServletRequest getRequest();
 
-    void setRequest(HttpServletRequest request);
-
     HttpServletResponse getResponse();
 
-    void setResponse(HttpServletResponse response);
-
     Connection getConnection();
-
-    void setConnection(Connection connection);
 
     Map<String, Object> getModalParamMap();
 
@@ -44,11 +40,20 @@ public interface QuickSession {
 
     QuickSession requireParamNotNull(String name);
 
+    QuickSession requireParamNotNull(String name, RequireEmptyAction act);
+
     QuickSession requireParamNotEmpty(String... names);
+
+    QuickSession requireParamNotEmpty(RequireEmptyAction act, String... names);
 
     QuickSession requireParamEquals(String name, @Nullable Object expectedValue);
 
+    QuickSession requireParamEquals(String name, @Nullable Object expectedValue,
+                                    RequireEqualsAction act);
+
     QuickSession requireParamEqualsWith(String name, String expectedName);
+
+    QuickSession requireParamEqualsWith(String name, String expectedName, RequireEqualsAction act);
 
     <T> T getParam(String name);
 
@@ -108,7 +113,11 @@ public interface QuickSession {
 
     QuickView view();
 
-    void view(String path);
+    void view(String name);
+
+    void viewPath(String path);
 
     void error(@Nullable Exception e);
+
+    void end();
 }

@@ -12,12 +12,12 @@ import java.net.URL;
 public class QuickWeb {
     private static QuickWebConfig config;
 
-    public static void init() {
+    public static void initConfig() {
         final String CONFIG_FILENAME = "quickweb.xml";
-        init(CONFIG_FILENAME);
+        initConfig(CONFIG_FILENAME);
     }
 
-    public static void init(String configFilename) {
+    public static void initConfig(String configFilename) {
         final String ROOT_NAME = "quickweb";
 
         URL resource = QuickWeb.class.getClassLoader().getResource(configFilename);
@@ -30,7 +30,7 @@ public class QuickWeb {
 
     public static QuickSession server(HttpServletRequest request, HttpServletResponse response) {
         if (config == null)
-            init();
+            initConfig();
         return new QuickSessionImpl(request, response);
     }
 

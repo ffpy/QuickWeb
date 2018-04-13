@@ -7,8 +7,8 @@ import java.util.Objects;
 
 public enum Scope implements IScope {
     CONTEXT,
-    MODAL,
     REQUEST,
+    MODAL,
     SESSION,
     COOKIE,
     APPLICATION,

@@ -13,5 +13,7 @@ public interface QuickView {
 
     HttpServletResponse getResponse();
 
-    void view(String path);
+    void view(String name);
+
+    void viewPath(String path);
 }
