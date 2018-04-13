@@ -14,20 +14,20 @@ public class TemplateExpr {
 
     public TemplateExpr(QuickSession quickSession, String template) {
         RequireUtils.requireNotNull(quickSession, template);
-
         this.quickSession = quickSession;
         this.template = template;
     }
 
     private MatcherHelper createMatcherHelper() {
-        return new MatcherHelper(quickSession, template);
+        return new MatcherHelper(template);
     }
 
     public String getString() {
         MatcherHelper matcherHelper = createMatcherHelper();
         String s = template;
         while (matcherHelper.find()) {
-            s = s.replace(matcherHelper.getMatch(), String.valueOf(matcherHelper.getValue()));
+            s = s.replace(matcherHelper.getMatch(),
+                    String.valueOf(getValue(matcherHelper)));
         }
         return s;
     }
@@ -44,7 +44,7 @@ public class TemplateExpr {
         MatcherHelper matcherHelper = createMatcherHelper();
         List<Object> list = new ArrayList<>();
         while (matcherHelper.find()) {
-            list.add(matcherHelper.getValue());
+            list.add(getValue(matcherHelper));
         }
         return list;
     }
@@ -53,8 +53,12 @@ public class TemplateExpr {
         MatcherHelper matcherHelper = createMatcherHelper();
         Map<String, Object> map = new HashMap<>();
         while (matcherHelper.find()) {
-            map.put(matcherHelper.getName(), matcherHelper.getValue());
+            map.put(matcherHelper.getParamName(), getValue(matcherHelper));
         }
         return map;
+    }
+
+    private Object getValue(MatcherHelper matcherHelper) {
+        return quickSession.getParam(matcherHelper.getParam());
     }
 }

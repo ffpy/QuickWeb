@@ -1,4 +1,4 @@
-package org.quickweb.session;
+package org.quickweb.session.param;
 
 import java.util.Objects;
 

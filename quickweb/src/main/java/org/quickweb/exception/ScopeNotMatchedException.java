@@ -1,6 +1,6 @@
 package org.quickweb.exception;
 
-import org.quickweb.session.Scope;
+import org.quickweb.session.scope.Scope;
 
 public class ScopeNotMatchedException extends RuntimeException {
 

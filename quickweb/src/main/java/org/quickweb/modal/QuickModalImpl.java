@@ -1,7 +1,7 @@
 package org.quickweb.modal;
 
 import org.quickweb.modal.handler.*;
-import org.quickweb.session.CP;
+import org.quickweb.session.param.CP;
 import org.quickweb.session.QuickSession;
 import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.RequireUtils;

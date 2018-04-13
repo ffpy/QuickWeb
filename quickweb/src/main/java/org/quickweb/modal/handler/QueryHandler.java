@@ -5,7 +5,7 @@ import org.quickweb.modal.QuickModal;
 import org.quickweb.modal.ResultType;
 import org.quickweb.modal.SqlParam;
 import org.quickweb.modal.StmtHelper;
-import org.quickweb.session.EditableParamScope;
+import org.quickweb.session.scope.EditableParamScope;
 import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.RequireUtils;
 import org.quickweb.utils.SqlUtils;

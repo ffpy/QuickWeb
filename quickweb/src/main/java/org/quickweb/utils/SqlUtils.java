@@ -11,7 +11,7 @@ public class SqlUtils {
 
     public static String insert(String table, String[] columns) {
         RequireUtils.requireNotEmpty(table);
-        RequireUtils.requireCollectionNotEmpty(columns);
+        RequireUtils.requireArrayNotEmpty(columns);
 
         return "INSERT INTO " + table +
                 "(" + StringUtils.join(columns, ',') + ")" +
@@ -20,7 +20,7 @@ public class SqlUtils {
 
     public static String update(String table, String[] columns, @Nullable String where) {
         RequireUtils.requireNotEmpty(table);
-        RequireUtils.requireCollectionNotEmpty(columns);
+        RequireUtils.requireArrayNotEmpty(columns);
 
         List<String> sets = Arrays.stream(columns)
                 .map(param -> param + " = ?")

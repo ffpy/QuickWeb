@@ -2,6 +2,8 @@ package org.quickweb.session;
 
 import com.sun.istack.internal.Nullable;
 import org.quickweb.modal.QuickModal;
+import org.quickweb.session.scope.EditableParamScope;
+import org.quickweb.session.scope.ParamScope;
 import org.quickweb.view.QuickView;
 
 import javax.servlet.http.HttpServletRequest;

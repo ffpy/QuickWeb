@@ -1,6 +1,6 @@
 package org.quickweb.modal;
 
-import org.quickweb.session.CP;
+import org.quickweb.session.param.CP;
 import org.quickweb.session.QuickSession;
 
 public interface QuickModal {

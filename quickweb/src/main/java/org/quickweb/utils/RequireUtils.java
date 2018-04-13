@@ -14,6 +14,10 @@ public class RequireUtils {
         }
     }
 
+    public static void requireArrayNotNull(Object[] obj) {
+        Objects.requireNonNull(obj);
+    }
+
     public static void requireNotEmpty(String... ss) {
         Objects.requireNonNull(ss);
         for (String s : ss) {
@@ -22,7 +26,7 @@ public class RequireUtils {
         }
     }
 
-    public static void requireCollectionNotEmpty(String[] ss) {
+    public static void requireArrayNotEmpty(String[] ss) {
         if (EmptyUtils.isEmpty(ss))
             throw new ParamEmptyException();
     }

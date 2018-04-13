@@ -1,4 +1,4 @@
-package org.quickweb.session;
+package org.quickweb.session.scope;
 
 import org.quickweb.exception.ScopeNotMatchedException;
 import org.quickweb.utils.RequireUtils;

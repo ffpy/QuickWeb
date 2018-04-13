@@ -3,14 +3,15 @@ package org.quickweb.modal.handler;
 import org.quickweb.modal.QuickModal;
 import org.quickweb.modal.SqlParam;
 import org.quickweb.modal.StmtHelper;
-import org.quickweb.session.CP;
+import org.quickweb.session.param.CP;
 import org.quickweb.template.TemplateExpr;
+import org.quickweb.utils.ColumnUtils;
 import org.quickweb.utils.SqlUtils;
 
 public class UpdateHandler {
 
-    public static void update(QuickModal quickModal, String[] columnAndParamNames, SqlParam sqlParam) {
-        update(quickModal, columnAndParamNames, columnAndParamNames, sqlParam);
+    public static void update(QuickModal quickModal, String[] columnAndParams, SqlParam sqlParam) {
+        update(quickModal, ColumnUtils.getColumns(columnAndParams), columnAndParams, sqlParam);
     }
 
     public static void update(QuickModal quickModal, CP[] cps, SqlParam sqlParam) {

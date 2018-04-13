@@ -4,7 +4,7 @@ import org.junit.Test;
 import org.quickweb.MoocRequest;
 import org.quickweb.MoocResponse;
 import org.quickweb.QuickWeb;
-import org.quickweb.session.ParamScope;
+import org.quickweb.session.scope.ParamScope;
 
 import java.util.Calendar;
 

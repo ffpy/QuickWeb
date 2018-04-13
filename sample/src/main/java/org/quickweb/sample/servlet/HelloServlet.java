@@ -13,6 +13,11 @@ public class HelloServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         QuickWeb.server(req, resp)
+                .putParam("id", 20)
+                .putParam("name", "abc")
+                .modal("name")
+                .where("id = $r:id")
+                .update("r:name")
                 .view("hello");
     }
 

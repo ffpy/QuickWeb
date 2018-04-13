@@ -3,6 +3,9 @@ package org.quickweb.session;
 import com.sun.istack.internal.Nullable;
 import org.quickweb.exception.ScopeNotMatchedException;
 import org.quickweb.modal.QuickModal;
+import org.quickweb.session.param.ParamHelper;
+import org.quickweb.session.scope.EditableParamScope;
+import org.quickweb.session.scope.ParamScope;
 import org.quickweb.utils.*;
 import org.quickweb.view.QuickView;
 import org.quickweb.view.QuickViewImpl;
@@ -146,10 +149,15 @@ public class QuickSessionImpl implements QuickSession {
                 ParamScope.SESSION, ParamScope.COOKIE, ParamScope.APPLICATION
         };
 
-        for (ParamScope scope : scopes) {
-            Object value = getParam(name, scope);
-            if (value != null)
-                return (T) value;
+        ParamHelper helper = new ParamHelper(name);
+        if (helper.getScope() == ParamScope.ALL) {
+            for (ParamScope scope : scopes) {
+                Object value = getParam(helper.getParamName(), scope);
+                if (value != null)
+                    return (T) value;
+            }
+        } else {
+            return getParam(helper.getParamName(), helper.getScope());
         }
         return null;
     }
