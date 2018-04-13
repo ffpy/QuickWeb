@@ -22,6 +22,8 @@ import java.util.function.Function;
 
 public interface QuickSession {
 
+    void initProxy(QuickSession quickSessionProxy);
+
     HttpServletRequest getRequest();
 
     HttpServletResponse getResponse();
@@ -119,7 +121,7 @@ public interface QuickSession {
 
     void error(@Nullable Exception e);
 
-    boolean isEnd();
+    default boolean isEnd() { return false; }
 
-    void end();
+    default void end() {}
 }

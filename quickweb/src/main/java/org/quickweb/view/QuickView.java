@@ -7,6 +7,8 @@ import javax.servlet.http.HttpServletResponse;
 
 public interface QuickView {
 
+    void initProxy(QuickView quickViewProxy);
+
     QuickSession getQuickSession();
 
     HttpServletRequest getRequest();

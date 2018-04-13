@@ -24,18 +24,21 @@ public class LoginServlet extends HttpServlet {
                     System.out.println("error: " + e);
                 })
                 .invalidateSession()
-                .requireParamNotEmpty("username", "password")
+                .requireParamNotEmpty("r:username", "r:password")
                 .modal("user")
                 .select("password, name")
-                .where("username = $username")
+                .where("username = $r:username")
                 .findFirst("user")
                 .watch(session -> {
                     Map<String, Object> user = session.getParam("user");
-                    session.putParam("m:password", user.get("password"));
-                    session.putParam("m:name", user.get("name"));
+                    if (user != null) {
+                        session.putParam("m:password", user.get("password"));
+                        session.putParam("m:name", user.get("name"));
+                    }
                 })
+                .requireParamNotNull("m:password")
                 .requireParamEqualsWith("r:password", "m:password")
-                .setSessionFrom("name", "name")
+                .setSessionFrom("name", "m:name")
                 .viewPath("/");
     }
 }

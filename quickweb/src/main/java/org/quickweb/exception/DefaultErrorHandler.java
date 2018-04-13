@@ -10,6 +10,7 @@ public class DefaultErrorHandler implements ErrorHandler {
 
     @Override
     public void onError(Exception e, QuickSession quickSession) {
+        quickSession.end();
         e.printStackTrace();
     }
 

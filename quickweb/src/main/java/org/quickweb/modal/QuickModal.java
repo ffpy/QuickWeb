@@ -5,6 +5,8 @@ import org.quickweb.session.QuickSession;
 
 public interface QuickModal {
 
+    void initProxy(QuickModal quickModalProxy);
+
     String getTable();
 
     QuickSession getQuickSession();

@@ -11,6 +11,7 @@ import org.quickweb.utils.RequireUtils;
 import java.sql.SQLException;
 
 public class QuickModalImpl implements QuickModal {
+    private QuickModal quickModalProxy;
     private QuickSession quickSession;
     private SqlParam sqlParam = new SqlParam();
 
@@ -18,6 +19,12 @@ public class QuickModalImpl implements QuickModal {
         RequireUtils.requireNotNull(table, quickSession);
         this.quickSession = quickSession;
         this.sqlParam.setTable(TemplateExpr.getString(quickSession, table));
+    }
+
+    @Override
+    public void initProxy(QuickModal quickModalProxy) {
+        RequireUtils.requireNotNull(quickModalProxy);
+        this.quickModalProxy = quickModalProxy;
     }
 
     @Override
@@ -32,119 +39,108 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickModal select(String... columns) {
-        if (quickSession.isEnd()) return this;
-        this.sqlParam.setSelect(columns);
-        return this;
+        sqlParam.setSelect(columns);
+        return quickModalProxy;
     }
 
     @Override
     public QuickModal selectFrom(String paramName) {
-        if (quickSession.isEnd()) return this;
         Object value = quickSession.getParam(paramName);
         if (value == null)
             ExceptionUtils.throwParamNotExistsException(paramName);
         if (value instanceof String) {
-            this.sqlParam.setSelect(StringUtils.split((String) value, ','));
+            sqlParam.setSelect(StringUtils.split((String) value, ','));
         } else if (value instanceof String[]){
-            this.sqlParam.setSelect((String[]) value);
+            sqlParam.setSelect((String[]) value);
         } else {
             ExceptionUtils.throwUnsupportedClassException(value.getClass(), "String", "String[]");
         }
-        return this;
+        return quickModalProxy;
     }
 
     @Override
     public QuickModal where(String condition) {
         RequireUtils.requireNotNull(condition);
-        if (quickSession.isEnd()) return this;
-        this.sqlParam.setWhere(condition);
-        return this;
+        sqlParam.setWhere(condition);
+        return quickModalProxy;
     }
 
     @Override
     public QuickModal whereFrom(String paramName) {
-        if (quickSession.isEnd()) return this;
         Object value = quickSession.getParam(paramName);
         if (value == null)
             ExceptionUtils.throwParamNotExistsException(paramName);
         if (value instanceof String) {
-            this.sqlParam.setWhere((String) value);
+            sqlParam.setWhere((String) value);
         } else {
             ExceptionUtils.throwUnsupportedClassException(value.getClass(), "String");
         }
-        return this;
+        return quickModalProxy;
     }
 
     @Override
     public QuickModal order(String... columns) {
-        if (quickSession.isEnd()) return this;
-        this.sqlParam.setOrder(columns);
-        return this;
+        sqlParam.setOrder(columns);
+        return quickModalProxy;
     }
 
     @Override
     public QuickModal orderFrom(String paramName) {
-        if (quickSession.isEnd()) return this;
         Object value = quickSession.getParam(paramName);
         if (value == null)
             ExceptionUtils.throwParamNotExistsException(paramName);
         if (value instanceof String) {
-            this.sqlParam.setOrder(StringUtils.split((String) value, ','));
+            sqlParam.setOrder(StringUtils.split((String) value, ','));
         } else if (value instanceof String[]){
-            this.sqlParam.setOrder((String[]) value);
+            sqlParam.setOrder((String[]) value);
         } else {
             ExceptionUtils.throwUnsupportedClassException(value.getClass(), "String", "String[]");
         }
-        return this;
+        return quickModalProxy;
     }
 
     @Override
     public QuickModal offset(int value) {
-        if (quickSession.isEnd()) return this;
-        this.sqlParam.setOffset(value);
-        return this;
+        sqlParam.setOffset(value);
+        return quickModalProxy;
     }
 
     @Override
     public QuickModal offsetFrom(String paramName) {
-        if (quickSession.isEnd()) return this;
         Object value = quickSession.getParam(paramName);
         if (value == null)
             ExceptionUtils.throwParamNotExistsException(paramName);
         if (value instanceof Integer) {
-            this.sqlParam.setOffset((Integer) value);
+            sqlParam.setOffset((Integer) value);
         } else {
             ExceptionUtils.throwUnsupportedClassException(value.getClass(), "Integer");
         }
-        return this;
+        return quickModalProxy;
     }
 
     @Override
     public QuickModal limit(int value) {
-        if (quickSession.isEnd()) return this;
-        this.sqlParam.setLimit(value);
-        return this;
+        sqlParam.setLimit(value);
+        return quickModalProxy;
     }
 
     @Override
     public QuickModal limitFrom(String paramName) {
-        if (quickSession.isEnd()) return this;
         Object value = quickSession.getParam(paramName);
         if (value == null)
             ExceptionUtils.throwParamNotExistsException(paramName);
         if (value instanceof Integer) {
-            this.sqlParam.setLimit((Integer) value);
+            sqlParam.setLimit((Integer) value);
         } else {
             ExceptionUtils.throwUnsupportedClassException(value.getClass(), "Integer");
         }
-        return this;
+        return quickModalProxy;
     }
 
     @Override
     public QuickSession insert(String... columnAndParamNames) {
-        if (quickSession.isEnd()) return quickSession;
         try {
-            InsertHandler.insert(this, columnAndParamNames, sqlParam);
+            InsertHandler.insert(quickModalProxy, columnAndParamNames, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -154,9 +150,8 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickSession insert(CP... cps) {
-        if (quickSession.isEnd()) return quickSession;
         try {
-            InsertHandler.insert(this, cps, sqlParam);
+            InsertHandler.insert(quickModalProxy, cps, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -166,9 +161,8 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickSession update(String... columnAndParamNames) {
-        if (quickSession.isEnd()) return quickSession;
         try {
-            UpdateHandler.update(this, columnAndParamNames, sqlParam);
+            UpdateHandler.update(quickModalProxy, columnAndParamNames, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -178,9 +172,8 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickSession update(CP... cps) {
-        if (quickSession.isEnd()) return quickSession;
         try {
-            UpdateHandler.update(this, cps, sqlParam);
+            UpdateHandler.update(quickModalProxy, cps, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -190,9 +183,8 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickSession delete() {
-        if (quickSession.isEnd()) return quickSession;
         try {
-            DeleteHandler.delete(this, sqlParam);
+            DeleteHandler.delete(quickModalProxy, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -202,9 +194,8 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickSession findFirst(String paramName) {
-        if (quickSession.isEnd()) return quickSession;
         try {
-            QueryHandler.findFirst(this, paramName, sqlParam);
+            QueryHandler.findFirst(quickModalProxy, paramName, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -214,9 +205,8 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickSession find(String paramName) {
-        if (quickSession.isEnd()) return quickSession;
         try {
-            QueryHandler.find(this, paramName, sqlParam);
+            QueryHandler.find(quickModalProxy, paramName, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -226,9 +216,8 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickSession count(String paramName) {
-        if (quickSession.isEnd()) return quickSession;
         try {
-            QueryHandler.count(this, paramName, sqlParam);
+            QueryHandler.count(quickModalProxy, paramName, sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
         }
@@ -238,9 +227,8 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickSession avg(String paramName, String column) {
-        if (quickSession.isEnd()) return quickSession;
         try {
-            QueryHandler.avg(this, paramName, TemplateExpr.getString(quickSession, column),
+            QueryHandler.avg(quickModalProxy, paramName, TemplateExpr.getString(quickSession, column),
                     sqlParam);
         } catch (SQLException e) {
             quickSession.error(e);
@@ -251,9 +239,8 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickSession max(String paramName, String column, ResultType resultType) {
-        if (quickSession.isEnd()) return quickSession;
         try {
-            QueryHandler.max(this, paramName, TemplateExpr.getString(quickSession, column),
+            QueryHandler.max(quickModalProxy, paramName, TemplateExpr.getString(quickSession, column),
                     sqlParam, resultType);
         } catch (SQLException e) {
             quickSession.error(e);
@@ -264,9 +251,8 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickSession min(String paramName, String column, ResultType resultType) {
-        if (quickSession.isEnd()) return quickSession;
         try {
-            QueryHandler.min(this, paramName, TemplateExpr.getString(quickSession, column),
+            QueryHandler.min(quickModalProxy, paramName, TemplateExpr.getString(quickSession, column),
                     sqlParam, resultType);
         } catch (SQLException e) {
             quickSession.error(e);
@@ -277,9 +263,8 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickSession sum(String paramName, String column, ResultType resultType) {
-        if (quickSession.isEnd()) return quickSession;
         try {
-            QueryHandler.sum(this, paramName, TemplateExpr.getString(quickSession, column),
+            QueryHandler.sum(quickModalProxy, paramName, TemplateExpr.getString(quickSession, column),
                     sqlParam, resultType);
         } catch (SQLException e) {
             quickSession.error(e);
@@ -289,6 +274,6 @@ public class QuickModalImpl implements QuickModal {
     }
 
     private void resetSqlParam() {
-        this.sqlParam = new SqlParam();
+        sqlParam = new SqlParam();
     }
 }

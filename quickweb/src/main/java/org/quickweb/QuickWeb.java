@@ -2,6 +2,7 @@ package org.quickweb;
 
 import org.quickweb.session.QuickSession;
 import org.quickweb.session.QuickSessionImpl;
+import org.quickweb.session.QuickSessionProxy;
 import org.quickweb.utils.ExceptionUtils;
 import org.quickweb.utils.XMLUtils;
 
@@ -31,7 +32,7 @@ public class QuickWeb {
     public static QuickSession server(HttpServletRequest request, HttpServletResponse response) {
         if (config == null)
             initConfig();
-        return new QuickSessionImpl(request, response);
+        return QuickSessionProxy.of(new QuickSessionImpl(request, response));
     }
 
     public static QuickWebConfig getConfig() {

@@ -4,6 +4,7 @@ import com.sun.istack.internal.Nullable;
 import org.apache.commons.lang3.StringUtils;
 import org.quickweb.exception.*;
 import org.quickweb.modal.QuickModal;
+import org.quickweb.modal.QuickModalProxy;
 import org.quickweb.session.action.RequireEmptyAction;
 import org.quickweb.session.action.RequireEqualsAction;
 import org.quickweb.session.param.ParamGenerator;
@@ -16,6 +17,7 @@ import org.quickweb.utils.*;
 import org.quickweb.view.QuickView;
 import org.quickweb.view.QuickViewImpl;
 import org.quickweb.modal.QuickModalImpl;
+import org.quickweb.view.QuickViewProxy;
 
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
@@ -30,10 +32,10 @@ import java.util.function.Consumer;
 import java.util.function.Function;
 
 public class QuickSessionImpl implements QuickSession {
+    private QuickSession quickSessionProxy;
     private HttpServletRequest request;
     private HttpServletResponse response;
     private Connection connection;
-    private boolean isEnd = false;
     private ErrorHandler errorHandler = DefaultErrorHandler.getInstance();
     private Map<String, Object> modalParamMap = new ConcurrentHashMap<>();
     private static Map<String, Object> applicationParamMap = new ConcurrentHashMap<>();
@@ -42,6 +44,12 @@ public class QuickSessionImpl implements QuickSession {
         RequireUtils.requireNotNull(request, response);
         this.request = request;
         this.response = response;
+    }
+
+    @Override
+    public void initProxy(QuickSession quickSessionProxy) {
+        RequireUtils.requireNotNull(quickSessionProxy);
+        this.quickSessionProxy = quickSessionProxy;
     }
 
     @Override
@@ -72,123 +80,112 @@ public class QuickSessionImpl implements QuickSession {
     @Override
     public QuickSession watch(Consumer<QuickSession> consumer) {
         RequireUtils.requireNotNull(consumer);
-        if (isEnd) return this;
-        consumer.accept(this);
-        return this;
+        consumer.accept(quickSessionProxy);
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession watchRequest(BiConsumer<HttpServletRequest, HttpServletResponse> watcher) {
         RequireUtils.requireNotNull(watcher);
-        if (isEnd) return this;
         watcher.accept(request, response);
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession onError(@Nullable ErrorHandler handler) {
-        if (isEnd) return this;
         this.errorHandler = handler;
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession requireParamNotNull(String name) {
-        if (isEnd) return this;
         requireParamNotNull(name, (paramName, quickSession) -> {
             throw new ParamNullException(paramName);
         });
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession requireParamNotNull(String name, RequireEmptyAction act) {
         RequireUtils.requireNotNull(act);
-        if (isEnd) return this;
         if (getParam(name) == null) {
             try {
-                act.act(name, this);
+                act.act(name, quickSessionProxy);
             } catch (Exception e) {
                 error(e);
             }
         }
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession requireParamNotEmpty(String... names) {
-        if (isEnd) return this;
         requireParamNotEmpty((paramName, quickSession) -> {
             throw new ParamEmptyException(paramName);
         }, names);
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession requireParamNotEmpty(RequireEmptyAction act, String... names) {
         RequireUtils.requireNotNull(act);
-        if (isEnd) return this;
         for (String n : names) {
             String value = getParam(n);
             if (StringUtils.isEmpty(value)) {
                 try {
-                    act.act(n, this);
+                    act.act(n, quickSessionProxy);
                 } catch (Exception e) {
                     error(e);
                 }
                 break;
             }
         }
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession requireParamEquals(String name, @Nullable Object expectedValue) {
-        if (isEnd) return this;
         requireParamEquals(name, expectedValue, (paramName, actualValue, expectedValue1, quickSession) -> {
             throw new ParamNotEqualsException(paramName, actualValue, expectedValue1);
         });
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession requireParamEquals(String name, @Nullable Object expectedValue,
                                            RequireEqualsAction act) {
         RequireUtils.requireNotNull(act);
-        if (isEnd) return this;
         Object actualValue = getParam(name);
         if (!Objects.equals(actualValue, expectedValue)) {
             try {
-                act.act(name, actualValue, expectedValue, this);
+                act.act(name, actualValue, expectedValue, quickSessionProxy);
             } catch (Exception e) {
                 error(e);
             }
         }
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession requireParamEqualsWith(String name, String expectedName) {
-        if (isEnd) return this;
         requireParamEqualsWith(name, expectedName, (paramName, actualValue, expectedValue, quickSession) -> {
             throw new ParamNotEqualsException(paramName, actualValue, expectedValue);
         });
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession requireParamEqualsWith(String name, String expectedName, RequireEqualsAction act) {
-        if (isEnd) return this;
         Object actualValue = getParam(name);
         Object expectedValue = getParam(expectedName);
         if (!Objects.equals(actualValue, expectedValue)) {
             try {
-                act.act(name, actualValue, expectedValue, this);
+                act.act(name, actualValue, expectedValue, quickSessionProxy);
             } catch (Exception e) {
                 error(e);
             }
         }
-        return this;
+        return quickSessionProxy;
     }
 
     @SuppressWarnings("unchecked")
@@ -241,7 +238,6 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession putParam(String name, Object value) {
-        if (isEnd) return this;
         if (value != null) {
             ParamHelper helper = new ParamHelper(name);
             Scope scope = helper.getScope();
@@ -254,12 +250,11 @@ public class QuickSessionImpl implements QuickSession {
 
             putParam(helper.getParamName(), value, eScope);
         }
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession putParam(String name, Object value, EditableScope scope) {
-        if (isEnd) return this;
         if (value != null) {
             RequireUtils.requireNotNull(name, scope);
             switch (scope) {
@@ -276,36 +271,32 @@ public class QuickSessionImpl implements QuickSession {
                     ExceptionUtils.throwScopeNotMatchedException(scope);
             }
         }
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession putParamBy(String name, ParamGenerator generator) {
         RequireUtils.requireNotNull(generator);
-        if (isEnd) return this;
-        putParam(name, generator.apply(this));
-        return this;
+        putParam(name, generator.apply(quickSessionProxy));
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession putParamFrom(String name, String fromName) {
-        if (isEnd) return this;
         putParam(name, getParam(fromName));
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession removeParam(String name) {
-        if (isEnd) return this;
         Scope scope = new ParamHelper(name).getScope();
         removeParam(name, EditableScope.of(scope));
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession removeParam(String name, EditableScope scope) {
         RequireUtils.requireNotNull(name, scope);
-        if (isEnd) return this;
         switch (scope) {
             case CONTEXT:
                 request.removeAttribute(name);
@@ -317,123 +308,108 @@ public class QuickSessionImpl implements QuickSession {
                 applicationParamMap.remove(name);
                 break;
         }
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession mapParam(String name, ParamMapper mapper) {
-        if (isEnd) return this;
         Scope scope = new ParamHelper(name).getScope();
         mapParam(name, mapper, EditableScope.of(scope));
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession mapParam(String name, ParamMapper mapper, EditableScope scope) {
         RequireUtils.requireNotNull(mapper);
-        if (isEnd) return this;
         Object value = getParam(name, Scope.of(scope));
         putParam(name, mapper.apply(value), scope);
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession watchParam(String name, Consumer<Object> watcher) {
         RequireUtils.requireNotNull(watcher);
-        if (isEnd) return this;
         watcher.accept(getParam(name));
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession setSession(String name, Object value) {
-        if (isEnd) return this;
-        SessionUtils.setAttribute(request, TemplateExpr.getString(this, name), value);
-        return this;
+        SessionUtils.setAttribute(request, TemplateExpr.getString(quickSessionProxy, name), value);
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession setSessionBy(String name, ParamGenerator generator) {
         RequireUtils.requireNotNull(generator);
-        if (isEnd) return this;
-        setSession(TemplateExpr.getString(this, name), generator.apply(this));
-        return this;
+        setSession(TemplateExpr.getString(quickSessionProxy, name), generator.apply(quickSessionProxy));
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession setSessionFrom(String name, String paramName) {
-        if (isEnd) return this;
-        setSession(TemplateExpr.getString(this, name), getParam(paramName));
-        return this;
+        setSession(TemplateExpr.getString(quickSessionProxy, name), getParam(paramName));
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession removeSession(String name) {
-        if (isEnd) return this;
-        SessionUtils.removeAttribute(request, TemplateExpr.getString(this, name));
-        return this;
+        SessionUtils.removeAttribute(request, TemplateExpr.getString(quickSessionProxy, name));
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession invalidateSession() {
-        if (isEnd) return this;
         SessionUtils.invalidateSession(request);
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession addCookie(String name, String value) {
-        if (isEnd) return this;
         CookieUtils.addCookie(response,
-                new Cookie(TemplateExpr.getString(this, name), value));
-        return this;
+                new Cookie(TemplateExpr.getString(quickSessionProxy, name), value));
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession addCookie(Cookie cookie) {
-        if (isEnd) return this;
         CookieUtils.addCookie(response, cookie);
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession addCookieBy(String name, Function<QuickSession, String> generator) {
         RequireUtils.requireNotNull(generator);
-        if (isEnd) return this;
-        addCookie(TemplateExpr.getString(this, name), generator.apply(this));
-        return this;
+        addCookie(TemplateExpr.getString(quickSessionProxy, name), generator.apply(quickSessionProxy));
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession addCookieBy(Function<QuickSession, Cookie> generator) {
         RequireUtils.requireNotNull(generator);
-        if (isEnd) return this;
-        addCookie(generator.apply(this));
-        return this;
+        addCookie(generator.apply(quickSessionProxy));
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession addCookieFrom(String name, String paramName) {
-        if (isEnd) return this;
-        addCookie(TemplateExpr.getString(this, name), getParam(paramName));
-        return this;
+        addCookie(TemplateExpr.getString(quickSessionProxy, name), getParam(paramName));
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession removeCookie(String name) {
-        if (isEnd) return this;
-        CookieUtils.deleteCookie(response, TemplateExpr.getString(this, name));
-        return this;
+        CookieUtils.deleteCookie(response, TemplateExpr.getString(quickSessionProxy, name));
+        return quickSessionProxy;
     }
 
     @Override
     public QuickModal modal(String table) {
-        return new QuickModalImpl(this, table);
+        return QuickModalProxy.of(new QuickModalImpl(quickSessionProxy, table));
     }
 
     @Override
     public QuickSession startTransaction() {
-        if (isEnd) return this;
         connection = DBUtils.getConnection();
         if (connection != null) {
             try {
@@ -442,12 +418,11 @@ public class QuickSessionImpl implements QuickSession {
                 e.printStackTrace();
             }
         }
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession endTransaction() {
-        if (isEnd) return this;
         RequireUtils.requireNotNull(connection);
         try {
             connection.commit();
@@ -456,75 +431,60 @@ public class QuickSessionImpl implements QuickSession {
         }
         DBUtils.close(connection);
         connection = null;
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession setSavepoint() {
-        if (isEnd) return this;
         RequireUtils.requireNotNull(connection);
         try {
             connection.setSavepoint();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession rollback() {
-        if (isEnd) return this;
         RequireUtils.requireNotNull(connection);
         try {
             connection.rollback();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickSession commit() {
-        if (isEnd) return this;
         RequireUtils.requireNotNull(connection);
         try {
             connection.commit();
         } catch (SQLException e) {
             e.printStackTrace();
         }
-        return this;
+        return quickSessionProxy;
     }
 
     @Override
     public QuickView view() {
-        return new QuickViewImpl(this, request, response);
+        return QuickViewProxy.of(new QuickViewImpl(quickSessionProxy, request, response));
     }
 
     @Override
     public void view(String name) {
-        if (isEnd) return;
         view().view(name);
     }
 
     @Override
     public void viewPath(String path) {
-        if (isEnd) return;
         view().viewPath(path);
     }
 
     @Override
     public void error(@Nullable Exception e) {
         if (errorHandler != null)
-            errorHandler.onError(e, this);
-    }
-
-    @Override
-    public boolean isEnd() {
-        return isEnd;
-    }
-
-    @Override
-    public void end() {
-        isEnd = true;
+            errorHandler.onError(e, quickSessionProxy);
     }
 }

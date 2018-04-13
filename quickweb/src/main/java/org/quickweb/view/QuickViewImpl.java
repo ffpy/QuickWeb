@@ -18,6 +18,7 @@ import java.util.Enumeration;
 import java.util.Optional;
 
 public class QuickViewImpl implements QuickView {
+    private QuickView quickViewProxy;
     private QuickSession quickSession;
     private HttpServletRequest request;
     private HttpServletResponse response;
@@ -28,6 +29,12 @@ public class QuickViewImpl implements QuickView {
         this.quickSession = quickSession;
         this.request = request;
         this.response = response;
+    }
+
+    @Override
+    public void initProxy(QuickView quickViewProxy) {
+        RequireUtils.requireNotNull(quickViewProxy);
+        this.quickViewProxy = quickViewProxy;
     }
 
     @Override
