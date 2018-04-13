@@ -11,13 +11,23 @@ public interface QuickModal {
 
     QuickModal select(String... columns);
 
+    QuickModal selectFrom(String paramName);
+
     QuickModal where(String condition);
+
+    QuickModal whereFrom(String paramName);
 
     QuickModal order(String... columns);
 
+    QuickModal orderFrom(String paramName);
+
     QuickModal offset(int value);
 
+    QuickModal offsetFrom(String paramName);
+
     QuickModal limit(int value);
+
+    QuickModal limitFrom(String paramName);
 
     QuickSession insert(String... paramNames);
 

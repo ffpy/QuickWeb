@@ -4,6 +4,7 @@ import com.sun.istack.internal.Nullable;
 import org.quickweb.QuickWeb;
 import org.quickweb.QuickWebConfig;
 import org.quickweb.session.QuickSession;
+import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.ExceptionUtils;
 import org.quickweb.utils.RequireUtils;
 import org.quickweb.utils.RequestUtils;
@@ -47,6 +48,7 @@ public class QuickViewImpl implements QuickView {
     @Override
     public void view(String path) {
         RequireUtils.requireNotNull(path);
+        path = TemplateExpr.getString(quickSession, path);
 
         QuickWebConfig.View view = QuickWeb.getConfig().getView();
         path = view.getPrefix() + path + view.getSuffix();

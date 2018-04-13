@@ -1,7 +1,6 @@
 package org.quickweb.template;
 
 import org.quickweb.session.QuickSession;
-import org.quickweb.utils.RequireUtils;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -13,7 +12,6 @@ public class TemplateExpr {
     private String template;
 
     public TemplateExpr(QuickSession quickSession, String template) {
-        RequireUtils.requireNotNull(quickSession, template);
         this.quickSession = quickSession;
         this.template = template;
     }

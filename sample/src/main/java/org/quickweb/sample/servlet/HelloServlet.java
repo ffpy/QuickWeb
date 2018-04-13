@@ -13,8 +13,10 @@ public class HelloServlet extends HttpServlet {
     @Override
     protected void doGet(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         QuickWeb.server(req, resp)
-                .putParam("cookieName", "use")
-                .addCookieFrom("$cookieName", "name")
+                .putParam("lt", 2)
+                .modal("name")
+                .limitFrom("lt")
+                .find("names")
                 .view("hello");
     }
 
