@@ -83,8 +83,8 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession requireParamNotNull(String name, ParamScope scope) {
-        ParamUtils.requireNotNull(getParam(name, scope), name);
+    public QuickSession requireParamNotNull(String name) {
+        ParamUtils.requireNotNull(getParam(name), name);
         return this;
     }
 
@@ -100,17 +100,6 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession requireParamNotEmpty(ParamScope scope, String... names) {
-        RequireUtils.requireNotNull(scope, names);
-
-        for (String n : names) {
-            String value = ParamUtils.requireNotNull(getParam(n, scope), n);
-            ParamUtils.requireNotEmpty(value, n);
-        }
-        return this;
-    }
-
-    @Override
     public QuickSession requireParamEquals(String name, @Nullable Object expectedValue) {
         RequireUtils.requireNotNull(name);
 
@@ -119,24 +108,10 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession requireParamEquals(
-            String name, ParamScope scope, String expectedName, ParamScope expectedScope) {
-        Object actualValue = getParam(name, scope);
-        Object expectedValue = getParam(expectedName, expectedScope);
+    public QuickSession requireParamEqualsWith(String name, String expectedName) {
+        Object actualValue = getParam(name);
+        Object expectedValue = getParam(expectedName);
         ParamUtils.requireEquals(name, expectedValue, actualValue);
-        return this;
-    }
-
-    @Override
-    public QuickSession requireParamEqualsWith(String name, ParamScope expectedScope) {
-        requireParamEquals(name, getParam(name, expectedScope));
-        return this;
-    }
-
-    @Override
-    public QuickSession requireParamEqualsWith(
-            String name, String expectedName, ParamScope expectedScope) {
-        requireParamEquals(name, getParam(expectedName, expectedScope));
         return this;
     }
 
@@ -188,28 +163,39 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession putParam(String name, Object value) {
-        if (value != null)
-            putParam(name, value, EditableParamScope.CONTEXT);
+        if (value != null) {
+            ParamHelper helper = new ParamHelper(name);
+            ParamScope scope = helper.getScope();
+            EditableParamScope eScope;
+            if (scope == ParamScope.ALL) {
+                eScope = EditableParamScope.CONTEXT;
+            } else {
+                eScope = EditableParamScope.of(helper.getScope());
+            }
+
+            putParam(helper.getParamName(), value, eScope);
+        }
         return this;
     }
 
     @Override
-    public QuickSession putParam(
-            String name, Object value, EditableParamScope scope) {
-        RequireUtils.requireNotNull(name, value, scope);
+    public QuickSession putParam(String name, Object value, EditableParamScope scope) {
+        if (value != null) {
+            RequireUtils.requireNotNull(name, scope);
 
-        switch (scope) {
-            case CONTEXT:
-                request.setAttribute(name, value);
-                break;
-            case MODAL:
-                modalParamMap.put(name, value);
-                break;
-            case APPLICATION:
-                applicationParamMap.put(name, value);
-                break;
-            default:
-                throw new ScopeNotMatchedException(scope);
+            switch (scope) {
+                case CONTEXT:
+                    request.setAttribute(name, value);
+                    break;
+                case MODAL:
+                    modalParamMap.put(name, value);
+                    break;
+                case APPLICATION:
+                    applicationParamMap.put(name, value);
+                    break;
+                default:
+                    throw new ScopeNotMatchedException(scope);
+            }
         }
         return this;
     }
@@ -230,27 +216,8 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession putParamFrom(String name, ParamScope fromScope) {
-        putParamFrom(name, fromScope, ParamScope.CONTEXT);
-        return this;
-    }
-
-    @Override
-    public QuickSession putParamFrom(
-            String name, ParamScope fromScope,
-            ParamScope toScope) {
-        Object value = getParam(name, fromScope);
-        if (value != null)
-            putParam(name, value, EditableParamScope.of(toScope));
-        return this;
-    }
-
-    @Override
-    public QuickSession putParamFrom(
-            String fromName, ParamScope fromScope, String toName, ParamScope toScope) {
-        Object value = getParam(fromName, fromScope);
-        if (value != null)
-            putParam(toName, value, EditableParamScope.of(toScope));
+    public QuickSession putParamFrom(String name, String fromName) {
+        putParam(name, getParam(fromName));
         return this;
     }
 
@@ -287,15 +254,6 @@ public class QuickSessionImpl implements QuickSession {
         RequireUtils.requireNotNull(watcher);
 
         watcher.accept(getParam(name));
-        return this;
-    }
-
-    @Override
-    public QuickSession watchParam(
-            String name, ParamScope scope, Consumer<Object> watcher) {
-        RequireUtils.requireNotNull(watcher);
-
-        watcher.accept(getParam(name, scope));
         return this;
     }
 

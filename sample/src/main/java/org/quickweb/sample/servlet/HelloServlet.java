@@ -15,6 +15,7 @@ public class HelloServlet extends HttpServlet {
         QuickWeb.server(req, resp)
                 .putParam("id", 20)
                 .putParam("name", "abc")
+                .putParamFrom("requestName", "r:name")
                 .modal("name")
                 .where("id = $r:id")
                 .update("r:name")

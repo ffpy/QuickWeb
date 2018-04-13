@@ -33,20 +33,13 @@ public interface QuickSession {
 
     QuickSession watch(Consumer<QuickSession> consumer);
 
-    QuickSession requireParamNotNull(String name, ParamScope scope);
+    QuickSession requireParamNotNull(String name);
 
     QuickSession requireParamNotEmpty(String... names);
 
-    QuickSession requireParamNotEmpty(ParamScope scope, String... names);
-
     QuickSession requireParamEquals(String name, @Nullable Object expectedValue);
 
-    QuickSession requireParamEquals(String name, ParamScope scope, String expectedName,
-                                        ParamScope expectedScope);
-
-    QuickSession requireParamEqualsWith(String name, ParamScope expectedScope);
-
-    QuickSession requireParamEqualsWith(String name, String expectedName, ParamScope expectedScope);
+    QuickSession requireParamEqualsWith(String name, String expectedName);
 
     <T> T getParam(String name);
 
@@ -61,20 +54,13 @@ public interface QuickSession {
     QuickSession putParamBy(String name, EditableParamScope scope,
                                 Function<QuickSession, Object> generator);
 
-    QuickSession putParamFrom(String name, ParamScope fromScope);
-
-    QuickSession putParamFrom(String name, ParamScope fromScope, ParamScope toScope);
-
-    QuickSession putParamFrom(String fromName, ParamScope fromScope,
-                                  String toName, ParamScope toScope);
+    QuickSession putParamFrom(String name, String fromName);
 
     QuickSession removeParam(String name, EditableParamScope scope);
 
     QuickSession mapParam(String name, Function<Object, Object> mapper, EditableParamScope scope);
 
     QuickSession watchParam(String name, Consumer<Object> watcher);
-
-    QuickSession watchParam(String name, ParamScope scope, Consumer<Object> watcher);
 
     QuickModal modal(String table);
 

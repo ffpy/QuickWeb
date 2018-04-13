@@ -18,6 +18,6 @@ public enum EditableParamScope implements Scope {
             if (Objects.equals(ps.name(), scope.name()))
                 return ps;
         }
-        throw new ScopeNotMatchedException(scope);
+        throw new RuntimeException(scope + " is not EditableParamScope");
     }
 }
