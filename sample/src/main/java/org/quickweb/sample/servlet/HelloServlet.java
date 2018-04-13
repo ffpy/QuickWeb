@@ -17,7 +17,7 @@ public class HelloServlet extends HttpServlet {
                 .putParam("name", "abc")
                 .putParamFrom("requestName", "r:name")
                 .modal("name")
-                .where("id = $r:id")
+                .where("id1 = $r:id")
                 .update("r:name")
                 .view("hello");
     }

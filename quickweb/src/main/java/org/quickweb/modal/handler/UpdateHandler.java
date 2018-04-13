@@ -8,17 +8,22 @@ import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.ColumnUtils;
 import org.quickweb.utils.SqlUtils;
 
+import java.sql.SQLException;
+
 public class UpdateHandler {
 
-    public static void update(QuickModal quickModal, String[] columnAndParams, SqlParam sqlParam) {
+    public static void update(QuickModal quickModal, String[] columnAndParams,
+                              SqlParam sqlParam) throws SQLException {
         update(quickModal, ColumnUtils.getColumns(columnAndParams), columnAndParams, sqlParam);
     }
 
-    public static void update(QuickModal quickModal, CP[] cps, SqlParam sqlParam) {
+    public static void update(QuickModal quickModal, CP[] cps,
+                              SqlParam sqlParam) throws SQLException {
         update(quickModal, CP.getColumns(cps), CP.getParams(cps), sqlParam);
     }
 
-    public static void update(QuickModal quickModal, String[] columns, String[] params, SqlParam sqlParam) {
+    public static void update(QuickModal quickModal, String[] columns, String[] params,
+                              SqlParam sqlParam) throws SQLException {
         TemplateExpr whereExpr = new TemplateExpr(quickModal.getQuickSession(), sqlParam.getWhere());
         String sql = SqlUtils.update(sqlParam.getTable(), columns, whereExpr.getTemplate());
 

@@ -6,6 +6,8 @@ import org.quickweb.session.QuickSession;
 import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.RequireUtils;
 
+import java.sql.SQLException;
+
 public class QuickModalImpl implements QuickModal {
     private QuickSession quickSession;
     private SqlParam sqlParam = new SqlParam();
@@ -59,84 +61,132 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickSession insert(String... columnAndParams) {
-        InsertHandler.insert(this, columnAndParams, sqlParam);
+        try {
+            InsertHandler.insert(this, columnAndParams, sqlParam);
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
         resetSqlParam();
         return quickSession;
     }
 
     @Override
     public QuickSession insert(CP... cps) {
-        InsertHandler.insert(this, cps, sqlParam);
+        try {
+            InsertHandler.insert(this, cps, sqlParam);
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
         resetSqlParam();
         return quickSession;
     }
 
     @Override
     public QuickSession update(String... columnAndParams) {
-        UpdateHandler.update(this, columnAndParams, sqlParam);
+        try {
+            UpdateHandler.update(this, columnAndParams, sqlParam);
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
         resetSqlParam();
         return quickSession;
     }
 
     @Override
     public QuickSession update(CP... cps) {
-        UpdateHandler.update(this, cps, sqlParam);
+        try {
+            UpdateHandler.update(this, cps, sqlParam);
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
         resetSqlParam();
         return quickSession;
     }
 
     @Override
     public QuickSession delete() {
-        DeleteHandler.delete(this, sqlParam);
+        try {
+            DeleteHandler.delete(this, sqlParam);
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
         resetSqlParam();
         return quickSession;
     }
 
     @Override
     public QuickSession findFirst(String param) {
-        QueryHandler.findFirst(this, param, sqlParam);
+        try {
+            QueryHandler.findFirst(this, param, sqlParam);
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
         resetSqlParam();
         return quickSession;
     }
 
     @Override
     public QuickSession find(String param) {
-        QueryHandler.find(this, param, sqlParam);
+        try {
+            QueryHandler.find(this, param, sqlParam);
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
         resetSqlParam();
         return quickSession;
     }
 
     @Override
     public QuickSession count(String param) {
-        QueryHandler.count(this, param, sqlParam);
+        try {
+            QueryHandler.count(this, param, sqlParam);
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
         resetSqlParam();
         return quickSession;
     }
 
     @Override
     public QuickSession avg(String param, String column) {
-        QueryHandler.avg(this, param, column, sqlParam);
+        try {
+            QueryHandler.avg(this, param, column, sqlParam);
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
         resetSqlParam();
         return quickSession;
     }
 
     @Override
     public QuickSession max(String param, String column, ResultType resultType) {
-        QueryHandler.max(this, param, column, sqlParam, resultType);
+        try {
+            QueryHandler.max(this, param, column, sqlParam, resultType);
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
         resetSqlParam();
         return quickSession;
     }
 
     @Override
     public QuickSession min(String param, String column, ResultType resultType) {
-        QueryHandler.min(this, param, column, sqlParam, resultType);
+        try {
+            QueryHandler.min(this, param, column, sqlParam, resultType);
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
         resetSqlParam();
         return quickSession;
     }
 
     @Override
     public QuickSession sum(String param, String column, ResultType resultType) {
-        QueryHandler.sum(this, param, column, sqlParam, resultType);
+        try {
+            QueryHandler.sum(this, param, column, sqlParam, resultType);
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
         resetSqlParam();
         return quickSession;
     }

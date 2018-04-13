@@ -8,7 +8,7 @@ import java.sql.*;
 
 public class DataHandler {
 
-    public static void handle(QuickModal quickModal, String sql, Action action) {
+    public static void handle(QuickModal quickModal, String sql, Action action) throws SQLException {
         RequireUtils.requireNotNull(quickModal);
 
         Connection transConn = quickModal.getQuickSession().getConnection();
@@ -26,8 +26,6 @@ public class DataHandler {
 
             stmt = conn.prepareStatement(sql);
             action.act(conn, stmt);
-        } catch (SQLException e) {
-            e.printStackTrace();
         } finally {
             if (transConn == null)
                 DBUtils.close(conn);

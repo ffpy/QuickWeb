@@ -1,6 +1,7 @@
 package org.quickweb.session;
 
 import com.sun.istack.internal.Nullable;
+import org.quickweb.exception.ErrorHandler;
 import org.quickweb.modal.QuickModal;
 import org.quickweb.session.scope.EditableScope;
 import org.quickweb.session.scope.Scope;
@@ -32,6 +33,8 @@ public interface QuickSession {
     Map<String, Object> getApplicationParamMap();
 
     QuickSession watch(Consumer<QuickSession> consumer);
+
+    QuickSession onError(@Nullable ErrorHandler handler);
 
     QuickSession requireParamNotNull(String name);
 
@@ -77,4 +80,6 @@ public interface QuickSession {
     QuickView view();
 
     void view(String path);
+
+    void error(@Nullable Exception e);
 }

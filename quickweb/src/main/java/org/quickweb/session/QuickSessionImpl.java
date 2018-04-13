@@ -1,6 +1,8 @@
 package org.quickweb.session;
 
 import com.sun.istack.internal.Nullable;
+import org.quickweb.exception.DefaultErrorHandler;
+import org.quickweb.exception.ErrorHandler;
 import org.quickweb.modal.QuickModal;
 import org.quickweb.session.param.ParamHelper;
 import org.quickweb.session.scope.EditableScope;
@@ -23,6 +25,7 @@ public class QuickSessionImpl implements QuickSession {
     private HttpServletRequest request;
     private HttpServletResponse response;
     private Connection connection;
+    private ErrorHandler errorHandler = DefaultErrorHandler.getInstance();
     private Map<String, Object> modalParamMap = new ConcurrentHashMap<>();
     private static Map<String, Object> applicationParamMap = new ConcurrentHashMap<>();
 
@@ -78,6 +81,12 @@ public class QuickSessionImpl implements QuickSession {
         RequireUtils.requireNotNull(consumer);
 
         consumer.accept(this);
+        return this;
+    }
+
+    @Override
+    public QuickSession onError(@Nullable ErrorHandler handler) {
+        this.errorHandler = handler;
         return this;
     }
 
@@ -329,5 +338,11 @@ public class QuickSessionImpl implements QuickSession {
     @Override
     public void view(String path) {
         view().view(path);
+    }
+
+    @Override
+    public void error(@Nullable Exception e) {
+        if (errorHandler != null)
+            errorHandler.onError(e, this);
     }
 }

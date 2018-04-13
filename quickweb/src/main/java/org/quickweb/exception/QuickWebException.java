@@ -1,4 +1,4 @@
-package org.quickweb;
+package org.quickweb.exception;
 
 public class QuickWebException extends RuntimeException {
 

@@ -6,9 +6,11 @@ import org.quickweb.modal.StmtHelper;
 import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.SqlUtils;
 
+import java.sql.SQLException;
+
 public class DeleteHandler {
 
-    public static void delete(QuickModal quickModal, SqlParam sqlParam) {
+    public static void delete(QuickModal quickModal, SqlParam sqlParam) throws SQLException {
         TemplateExpr whereExpr = new TemplateExpr(quickModal.getQuickSession(), sqlParam.getWhere());
         String sql = SqlUtils.delete(sqlParam.getTable(), whereExpr.getTemplate());
 

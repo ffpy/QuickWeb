@@ -12,6 +12,7 @@ import org.quickweb.utils.SqlUtils;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
+import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -19,7 +20,8 @@ import java.util.Map;
 
 public class QueryHandler {
 
-    public static void find(QuickModal quickModal, String param, SqlParam sqlParam) {
+    public static void find(QuickModal quickModal, String param,
+                            SqlParam sqlParam) throws SQLException {
         findAction(quickModal, param, sqlParam, (stmt, rs) -> {
             List<Map<String, Object>> rowList = new ArrayList<>();
             ResultSetMetaData metaData = rs.getMetaData();
@@ -36,7 +38,8 @@ public class QueryHandler {
         });
     }
 
-    public static void findFirst(QuickModal quickModal, String param, SqlParam sqlParam) {
+    public static void findFirst(QuickModal quickModal, String param,
+                                 SqlParam sqlParam) throws SQLException {
         findAction(quickModal, param, sqlParam, (stmt, rs) -> {
             ResultSetMetaData metaData = rs.getMetaData();
             Map<String, Object> rowMap = new HashMap<>();
@@ -50,31 +53,33 @@ public class QueryHandler {
         });
     }
 
-    public static void count(QuickModal quickModal, String param, SqlParam sqlParam) {
+    public static void count(QuickModal quickModal, String param,
+                             SqlParam sqlParam) throws SQLException {
         aggregateAction(quickModal, param, "*", sqlParam, "COUNT", ResultType.INT);
     }
 
-    public static void avg(QuickModal quickModal, String param, String column, SqlParam sqlParam) {
+    public static void avg(QuickModal quickModal, String param, String column,
+                           SqlParam sqlParam) throws SQLException {
         aggregateAction(quickModal, param, column, sqlParam, "AVG", ResultType.DOUBLE);
     }
 
     public static void max(QuickModal quickModal, String param, String column,
-                           SqlParam sqlParam, ResultType resultType) {
+                           SqlParam sqlParam, ResultType resultType) throws SQLException {
         aggregateAction(quickModal, param, column, sqlParam, "MAX", resultType);
     }
 
     public static void min(QuickModal quickModal, String param, String column,
-                           SqlParam sqlParam, ResultType resultType) {
+                           SqlParam sqlParam, ResultType resultType) throws SQLException {
         aggregateAction(quickModal, param, column, sqlParam, "MIN", resultType);
     }
 
     public static void sum(QuickModal quickModal, String param, String column,
-                           SqlParam sqlParam, ResultType resultType) {
+                           SqlParam sqlParam, ResultType resultType) throws SQLException {
         aggregateAction(quickModal, param, column, sqlParam, "SUM", resultType);
     }
 
     private static void findAction(QuickModal quickModal, String param, SqlParam sqlParam,
-                                   FindAction action) {
+                                   FindAction action) throws SQLException {
         RequireUtils.requireNotEmpty(param);
         RequireUtils.requireNotNull(sqlParam, action);
 
@@ -85,8 +90,9 @@ public class QueryHandler {
         TemplateExpr selectExpr = new TemplateExpr(quickModal.getQuickSession(), select);
         TemplateExpr whereExpr = new TemplateExpr(quickModal.getQuickSession(), sqlParam.getWhere());
         TemplateExpr orderExpr = new TemplateExpr(quickModal.getQuickSession(), sqlParam.getOrder());
-        String sql = SqlUtils.find(sqlParam.getTable(), selectExpr.getTemplate(), whereExpr.getTemplate(),
-                orderExpr.getTemplate(), sqlParam.getOffset(), sqlParam.getLimit());
+        String sql = SqlUtils.find(sqlParam.getTable(), selectExpr.getTemplate(),
+                whereExpr.getTemplate(), orderExpr.getTemplate(), sqlParam.getOffset(),
+                sqlParam.getLimit());
 
         DataHandler.handle(quickModal, sql, (conn, stmt) -> {
             StmtHelper stmtHelper = new StmtHelper(quickModal.getQuickSession(), stmt);
@@ -99,8 +105,9 @@ public class QueryHandler {
         });
     }
 
-    private static void aggregateAction(QuickModal quickModal, String param, String column,
-                                        SqlParam sqlParam, String method, ResultType resultType) {
+    private static void aggregateAction(QuickModal quickModal, String param,
+                                        String column, SqlParam sqlParam,
+                                        String method, ResultType resultType) throws SQLException {
         RequireUtils.requireNotEmpty(method, column);
         RequireUtils.requireNotNull(resultType);
 
