@@ -9,6 +9,7 @@ import java.util.Objects;
 public class CookieUtils {
 
     public static void addCookie(HttpServletResponse response, Cookie cookie) {
+        RequireUtils.requireNotNull(response, cookie);
         response.addCookie(cookie);
     }
 
@@ -28,6 +29,7 @@ public class CookieUtils {
     }
 
     public static void deleteCookie(HttpServletResponse response, String name) {
+        RequireUtils.requireNotNull(response, name);
         Cookie cookie = new Cookie(name, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");
