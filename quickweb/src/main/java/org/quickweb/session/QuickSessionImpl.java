@@ -4,7 +4,9 @@ import com.sun.istack.internal.Nullable;
 import org.quickweb.exception.DefaultErrorHandler;
 import org.quickweb.exception.ErrorHandler;
 import org.quickweb.modal.QuickModal;
+import org.quickweb.session.param.ParamGenerator;
 import org.quickweb.session.param.ParamHelper;
+import org.quickweb.session.param.ParamMapper;
 import org.quickweb.session.scope.EditableScope;
 import org.quickweb.session.scope.Scope;
 import org.quickweb.utils.*;
@@ -12,12 +14,14 @@ import org.quickweb.view.QuickView;
 import org.quickweb.view.QuickViewImpl;
 import org.quickweb.modal.QuickModalImpl;
 
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
+import java.util.function.BiConsumer;
 import java.util.function.Consumer;
 import java.util.function.Function;
 
@@ -79,8 +83,14 @@ public class QuickSessionImpl implements QuickSession {
     @Override
     public QuickSession watch(Consumer<QuickSession> consumer) {
         RequireUtils.requireNotNull(consumer);
-
         consumer.accept(this);
+        return this;
+    }
+
+    @Override
+    public QuickSession watchRequest(BiConsumer<HttpServletRequest, HttpServletResponse> watcher) {
+        RequireUtils.requireNotNull(watcher);
+        watcher.accept(request, response);
         return this;
     }
 
@@ -191,7 +201,6 @@ public class QuickSessionImpl implements QuickSession {
     public QuickSession putParam(String name, Object value, EditableScope scope) {
         if (value != null) {
             RequireUtils.requireNotNull(name, scope);
-
             switch (scope) {
                 case CONTEXT:
                     request.setAttribute(name, value);
@@ -210,17 +219,9 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession putParamBy(
-            String name, Function<QuickSession, Object> generator) {
-        putParamBy(name, EditableScope.CONTEXT, generator);
-        return this;
-    }
-
-    @Override
-    public QuickSession putParamBy(
-            String name, EditableScope scope,
-            Function<QuickSession, Object> generator) {
-        putParam(name, generator.apply(this), scope);
+    public QuickSession putParamBy(String name, ParamGenerator generator) {
+        RequireUtils.requireNotNull(generator);
+        putParam(name, generator.apply(this));
         return this;
     }
 
@@ -231,9 +232,15 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
+    public QuickSession removeParam(String name) {
+        Scope scope = new ParamHelper(name).getScope();
+        removeParam(name, EditableScope.of(scope));
+        return this;
+    }
+
+    @Override
     public QuickSession removeParam(String name, EditableScope scope) {
         RequireUtils.requireNotNull(name, scope);
-
         switch (scope) {
             case CONTEXT:
                 request.removeAttribute(name);
@@ -249,10 +256,15 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession mapParam(
-            String name, Function<Object, Object> mapper, EditableScope scope) {
-        RequireUtils.requireNotNull(mapper);
+    public QuickSession mapParam(String name, ParamMapper mapper) {
+        Scope scope = new ParamHelper(name).getScope();
+        mapParam(name, mapper, EditableScope.of(scope));
+        return this;
+    }
 
+    @Override
+    public QuickSession mapParam(String name, ParamMapper mapper, EditableScope scope) {
+        RequireUtils.requireNotNull(mapper);
         Object value = getParam(name, Scope.of(scope));
         putParam(name, mapper.apply(value), scope);
         return this;
@@ -261,8 +273,76 @@ public class QuickSessionImpl implements QuickSession {
     @Override
     public QuickSession watchParam(String name, Consumer<Object> watcher) {
         RequireUtils.requireNotNull(watcher);
-
         watcher.accept(getParam(name));
+        return this;
+    }
+
+    @Override
+    public QuickSession setSession(String name, Object value) {
+        SessionUtils.setAttribute(request, name, value);
+        return this;
+    }
+
+    @Override
+    public QuickSession setSessionBy(String name, ParamGenerator generator) {
+        RequireUtils.requireNotNull(generator);
+        setSession(name, generator.apply(this));
+        return this;
+    }
+
+    @Override
+    public QuickSession setSessionFrom(String name, String paramName) {
+        setSession(name, getParam(paramName));
+        return this;
+    }
+
+    @Override
+    public QuickSession removeSession(String name) {
+        SessionUtils.removeAttribute(request, name);
+        return this;
+    }
+
+    @Override
+    public QuickSession invalidateSession() {
+        SessionUtils.invalidateSession(request);
+        return this;
+    }
+
+    @Override
+    public QuickSession addCookie(String name, String value) {
+        CookieUtils.addCookie(response, new Cookie(name, value));
+        return this;
+    }
+
+    @Override
+    public QuickSession addCookie(Cookie cookie) {
+        CookieUtils.addCookie(response, cookie);
+        return this;
+    }
+
+    @Override
+    public QuickSession addCookieBy(String name, Function<QuickSession, String> generator) {
+        RequireUtils.requireNotNull(generator);
+        addCookie(name, generator.apply(this));
+        return this;
+    }
+
+    @Override
+    public QuickSession addCookieBy(Function<QuickSession, Cookie> generator) {
+        RequireUtils.requireNotNull(generator);
+        addCookie(generator.apply(this));
+        return this;
+    }
+
+    @Override
+    public QuickSession addCookieFrom(String name, String paramName) {
+        addCookie(name, getParam(paramName));
+        return this;
+    }
+
+    @Override
+    public QuickSession removeCookie(String name) {
+        CookieUtils.deleteCookie(response, name);
         return this;
     }
 
