@@ -1,6 +1,5 @@
 package org.quickweb.session;
 
-import org.apache.commons.lang3.StringUtils;
 import org.quickweb.exception.*;
 import org.quickweb.modal.QuickModal;
 import org.quickweb.modal.QuickModalProxy;
@@ -22,8 +21,6 @@ import org.quickweb.view.QuickViewProxy;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
-import java.lang.reflect.InvocationTargetException;
-import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;

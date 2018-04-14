@@ -14,12 +14,13 @@ public class ParamMemberHelper {
         if (!paramHelper.hasMember())
             return value;
 
-        String member = paramHelper.findMember();
+        ParamMember paramMember = paramHelper.findMember();
+        String member = paramMember.getMember();
 
-        if (value instanceof Object[]) {
+        if (value instanceof Object[] && paramMember.isArrayMember()) {
             Object[] objs = (Object[]) value;
             value = objs[getIndexMember(member)];
-        } else if (value instanceof List) {
+        } else if (value instanceof List && paramMember.isArrayMember()) {
             List list = (List) value;
             value = list.get(getIndexMember(member));
         } else if (value instanceof Map) {

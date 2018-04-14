@@ -59,7 +59,7 @@ public class ParamHelper {
             members = param;
         }
 
-        paramName = findMember();
+        paramName = findMember().getMember();
         if (paramName == null)
             ExceptionUtils.throwException("get paramName fail");
     }
@@ -100,11 +100,12 @@ public class ParamHelper {
         return !StringUtils.isEmpty(members);
     }
 
-    public String findMember() {
+    public ParamMember findMember() {
         if (StringUtils.isEmpty(members))
             return null;
 
         String member;
+        boolean isArrayMember = false;
         char[] cs = members.toCharArray();
         int index, beginIndex = -1;
         for (index = 0; index < cs.length; index++) {
@@ -125,10 +126,12 @@ public class ParamHelper {
             members = null;
         }
 
-        if (isArrayMember(member))
+        if (isArrayMember(member)) {
             member = member.substring(1, member.length() - 1);
+            isArrayMember = true;
+        }
 
-        return member;
+        return new ParamMember(member, isArrayMember);
     }
 
     private static boolean isArrayMember(String member) {
