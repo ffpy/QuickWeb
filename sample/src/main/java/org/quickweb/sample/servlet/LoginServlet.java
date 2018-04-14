@@ -29,16 +29,7 @@ public class LoginServlet extends HttpServlet {
                 .select("password, name")
                 .where("username = $r:username")
                 .findFirst("m:user")
-//                .watch(session -> {
-//                    Map<String, Object> user = session.getParam("user");
-//                    if (user != null) {
-//                        session.putParam("m:password", user.get("password"));
-//                        session.putParam("m:name", user.get("name"));
-//                    }
-//                })
-//                .requireParamNotNull(new Exception("user not found"), "m:password")
-//                .requireParamEqualsWith("r:password", "m:password")
-                .requireParamNotNull(new Exception("user not found"), "m:user")
+                .requireParamNotEmpty(new Exception("user not found"), "m:user")
                 .requireParamEqualsWith("r:password", "m:user.password")
                 .setSessionFrom("name", "m:user.name")
                 .viewPath("/");

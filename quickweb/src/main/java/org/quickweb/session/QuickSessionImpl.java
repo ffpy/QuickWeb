@@ -26,10 +26,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
-import java.util.Set;
+import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -143,8 +140,26 @@ public class QuickSessionImpl implements QuickSession {
     public QuickSession requireParamNotEmpty(RequireEmptyAction act, String... names) {
         RequireUtils.requireNotNull(act);
         for (String n : names) {
-            String value = getParam(n);
-            if (StringUtils.isEmpty(value)) {
+            boolean isEmpty = false;
+            Object value = getParam(n);
+
+            if (value == null) {
+                isEmpty = true;
+            } else if (value instanceof String) {
+                String str = (String) value;
+                isEmpty = str.isEmpty();
+            } else if (value instanceof Object[]) {
+                Object[] objs = (Object[]) value;
+                isEmpty = objs.length == 0;
+            } else if (value instanceof Collection) {
+                Collection c = (Collection) value;
+                isEmpty = c.isEmpty();
+            } else if (value instanceof Map) {
+                Map map = (Map) value;
+                isEmpty = map.isEmpty();
+            }
+
+            if (isEmpty) {
                 try {
                     act.act(n, quickSessionProxy);
                 } catch (Exception e) {
