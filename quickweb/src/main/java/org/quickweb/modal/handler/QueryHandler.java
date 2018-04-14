@@ -34,7 +34,7 @@ public class QueryHandler {
                 }
                 rowList.add(rowMap);
             }
-            quickModal.getQuickSession().putParam(paramName, rowList, EditableScope.MODAL);
+            quickModal.getQuickSession().putParam(paramName, rowList);
         });
     }
 
@@ -49,7 +49,7 @@ public class QueryHandler {
                     rowMap.put(metaData.getColumnLabel(i), obj);
                 }
             }
-            quickModal.getQuickSession().putParam(paramName, rowMap, EditableScope.MODAL);
+            quickModal.getQuickSession().putParam(paramName, rowMap);
         });
     }
 
@@ -121,7 +121,7 @@ public class QueryHandler {
                 else
                     value = rs.getObject(1, resultType.getType());
 
-                quickModal.getQuickSession().putParam(paramName, value, EditableScope.MODAL);
+                quickModal.getQuickSession().putParam(paramName, value);
             }
         });
     }

@@ -9,6 +9,7 @@ import org.quickweb.session.action.RequireEqualsAction;
 import org.quickweb.session.param.ParamGenerator;
 import org.quickweb.session.param.ParamHelper;
 import org.quickweb.session.param.ParamMapper;
+import org.quickweb.session.param.ParamMemberHelper;
 import org.quickweb.session.scope.EditableScope;
 import org.quickweb.session.scope.Scope;
 import org.quickweb.template.TemplateExpr;
@@ -21,10 +22,14 @@ import org.quickweb.view.QuickViewProxy;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
+import java.lang.reflect.Method;
 import java.sql.Connection;
 import java.sql.SQLException;
+import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.Set;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.function.BiConsumer;
 import java.util.function.Consumer;
@@ -230,40 +235,48 @@ public class QuickSessionImpl implements QuickSession {
         ParamHelper helper = new ParamHelper(name);
         if (helper.getScope() == Scope.ALL) {
             for (Scope scope : scopes) {
-                Object value = getParam(helper.getParamName(), scope);
+                Object value = getParam(helper, scope);
                 if (value != null)
                     return (T) value;
             }
         } else {
-            return getParam(helper.getParamName(), helper.getScope());
+            return getParam(helper, helper.getScope());
         }
         return null;
     }
 
     @SuppressWarnings("unchecked")
-    @Override
-    public <T> T getParam(String name, Scope scope) {
-        RequireUtils.requireNotNull(name, scope);
+    private <T> T getParam(ParamHelper paramHelper, Scope scope) {
+        RequireUtils.requireNotNull(paramHelper, scope);
 
+        String name = paramHelper.getParamName();
+        Object value = null;
         switch (scope) {
             case CONTEXT:
-                return (T) request.getAttribute(name);
+                value =  request.getAttribute(name);
+                break;
             case MODAL:
-                return (T) modalParamMap.get(name);
+                value = modalParamMap.get(name);
+                break;
             case REQUEST:
-                return (T) RequestUtils.getParam(request, name);
+                value = RequestUtils.getParam(request, name);
+                break;
             case SESSION:
-                return SessionUtils.getAttribute(request, name);
+                value = SessionUtils.getAttribute(request, name);
+                break;
             case COOKIE:
-                return (T) CookieUtils.getValue(request, name);
+                value = CookieUtils.getValue(request, name);
+                break;
             case APPLICATION:
-                return (T) applicationParamMap.get(name);
+                value = applicationParamMap.get(name);
+                break;
             case ALL:
-                return getParam(name);
+                value = getParam(name);
+                break;
             default:
                 ExceptionUtils.throwScopeNotMatchedException(scope);
         }
-        return null;
+        return (T) ParamMemberHelper.getMemberValue(value, paramHelper);
     }
 
     @Override
@@ -283,8 +296,7 @@ public class QuickSessionImpl implements QuickSession {
         return quickSessionProxy;
     }
 
-    @Override
-    public QuickSession putParam(String name, Object value, EditableScope scope) {
+    private QuickSession putParam(String name, Object value, EditableScope scope) {
         if (value != null) {
             RequireUtils.requireNotNull(name, scope);
             switch (scope) {
@@ -324,8 +336,7 @@ public class QuickSessionImpl implements QuickSession {
         return quickSessionProxy;
     }
 
-    @Override
-    public QuickSession removeParam(String name, EditableScope scope) {
+    private QuickSession removeParam(String name, EditableScope scope) {
         RequireUtils.requireNotNull(name, scope);
         switch (scope) {
             case CONTEXT:
@@ -343,16 +354,9 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession mapParam(String name, ParamMapper mapper) {
-        Scope scope = new ParamHelper(name).getScope();
-        mapParam(name, mapper, EditableScope.of(scope));
-        return quickSessionProxy;
-    }
-
-    @Override
-    public QuickSession mapParam(String name, ParamMapper mapper, EditableScope scope) {
         RequireUtils.requireNotNull(mapper);
-        Object value = getParam(name, Scope.of(scope));
-        putParam(name, mapper.apply(value), scope);
+        Object value = getParam(name);
+        putParam(name, mapper.apply(value));
         return quickSessionProxy;
     }
 

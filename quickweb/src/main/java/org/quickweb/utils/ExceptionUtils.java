@@ -64,4 +64,8 @@ public class ExceptionUtils {
     public static void throwException(Throwable throwable) {
         throw new QuickWebException(throwable);
     }
+
+    public static void throwException(String message, Throwable cause) {
+        throw new QuickWebException(message, cause);
+    }
 }

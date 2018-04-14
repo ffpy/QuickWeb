@@ -1,19 +1,31 @@
 package org.quickweb.sample;
 
+import org.quickweb.session.param.ParamHelper;
+
+import java.util.Arrays;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class App {
     public static void main(String[] args) {
-        System.out.println(null + "a");
-//        String pattern = "\\$((\\w+:)?([\\w_]+))";
-//        String s = "name = $name and id = $x:id";
+//        String pattern = "\\$((\\w*):?([\\w_]*)([\\w_.]*))";
+//        String s = "name = $x:name.aaa.bbb";
+////        String s = "name = $x:name";
 //        Pattern compile = Pattern.compile(pattern);
 //        Matcher matcher = compile.matcher(s);
 //        while (matcher.find()) {
 //            for (int i = 0; i <= matcher.groupCount(); i++) {
-//                System.out.println(matcher.group(i));
+//                System.out.println(i + ":" + matcher.group(i));
 //            }
 //        }
+
+        String s = "x:name[2][1].aaa.bbb";
+        ParamHelper helper = new ParamHelper(s);
+        System.out.println(helper.getScopeName());
+        System.out.println(helper.getParamName());
+        System.out.println(helper.getMembers());
+        while (helper.hasMember()) {
+            System.out.println(helper.findMember());
+        }
     }
 }

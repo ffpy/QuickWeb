@@ -44,4 +44,12 @@ public class CP {
         }
         return paramNames;
     }
+
+    @Override
+    public String toString() {
+        return "CP{" +
+                "column='" + column + '\'' +
+                ", paramName='" + paramName + '\'' +
+                '}';
+    }
 }

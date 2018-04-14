@@ -6,7 +6,8 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MatcherHelper {
-    public static final String PATTERN = "\\$((\\w+:)?([\\w_]+))";
+//    public static final String PATTERN = "\\$((\\w+):?([\\w_]+))";
+    public static final String PATTERN = "\\$((\\w*):?([\\w_]*)([\\w_.]*))";
     private static final Pattern COMPILE = Pattern.compile(PATTERN);
     private final Matcher matcher;
 
@@ -20,7 +21,7 @@ public class MatcherHelper {
     }
 
     public String getMatch() {
-        return matcher.group();
+        return matcher.group(0);
     }
 
     public String getParam() {

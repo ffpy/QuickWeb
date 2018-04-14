@@ -9,6 +9,7 @@ public class ParamHelper {
     private String param;
     private String scopeName;
     private String paramName;
+    private String members;
     private Scope scope;
 
     public ParamHelper() {
@@ -33,6 +34,10 @@ public class ParamHelper {
         return paramName;
     }
 
+    public String getMembers() {
+        return members;
+    }
+
     public Scope getScope() {
         if (scope == null)
             scope = matchScope();
@@ -41,16 +46,22 @@ public class ParamHelper {
 
     private void init() {
         scope = null;
+        members = null;
+
         if (param.contains(":")) {
             String[] split = StringUtils.split(param, ':');
             if (split.length != 2)
                 ExceptionUtils.throwFormatIncorrectException(param);
 
             scopeName = split[0];
-            paramName = split[1];
+            members = split[1];
         } else {
-            paramName = param;
+            members = param;
         }
+
+        paramName = findMember();
+        if (paramName == null)
+            ExceptionUtils.throwException("get paramName fail");
     }
 
     private Scope matchScope() {
@@ -83,5 +94,37 @@ public class ParamHelper {
                 ExceptionUtils.throwUnknownScopeException(scopeName);
         }
         return null;
+    }
+
+    public boolean hasMember() {
+        return !StringUtils.isEmpty(members);
+    }
+
+    public String findMember() {
+        if (StringUtils.isEmpty(members))
+            return null;
+
+        String member;
+        int index, beginIndex = -1;
+        char[] cs = members.toCharArray();
+        for (index = 0; index < cs.length; index++) {
+            if (cs[index] == '.') {
+                beginIndex = index + 1;
+                break;
+            } else if (index != 0 && cs[index] == '[') {
+                beginIndex = index;
+                break;
+            }
+        }
+
+        if (index != cs.length && beginIndex >= 0) {
+            member = members.substring(0, index);
+            members = members.substring(beginIndex, members.length());
+        } else {
+            member = members;
+            members = null;
+        }
+
+        return member;
     }
 }

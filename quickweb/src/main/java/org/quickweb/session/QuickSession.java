@@ -67,11 +67,7 @@ public interface QuickSession {
 
     <T> T getParam(String name);
 
-    <T> T getParam(String name, Scope scope);
-
     QuickSession putParam(String name, Object value);
-
-    QuickSession putParam(String name, Object value, EditableScope scope);
 
     QuickSession putParamBy(String name, ParamGenerator generator);
 
@@ -79,11 +75,7 @@ public interface QuickSession {
 
     QuickSession removeParam(String name);
 
-    QuickSession removeParam(String name, EditableScope scope);
-
     QuickSession mapParam(String name, ParamMapper mapper);
-
-    QuickSession mapParam(String name, ParamMapper mapper, EditableScope scope);
 
     QuickSession watchParam(String name, Consumer<Object> watcher);
 
