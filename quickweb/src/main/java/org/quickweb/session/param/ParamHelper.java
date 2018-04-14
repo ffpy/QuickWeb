@@ -105,8 +105,8 @@ public class ParamHelper {
             return null;
 
         String member;
-        int index, beginIndex = -1;
         char[] cs = members.toCharArray();
+        int index, beginIndex = -1;
         for (index = 0; index < cs.length; index++) {
             if (cs[index] == '.') {
                 beginIndex = index + 1;
@@ -117,7 +117,7 @@ public class ParamHelper {
             }
         }
 
-        if (index != cs.length && beginIndex >= 0) {
+        if (index < cs.length && beginIndex >= 0) {
             member = members.substring(0, index);
             members = members.substring(beginIndex, members.length());
         } else {
@@ -125,6 +125,16 @@ public class ParamHelper {
             members = null;
         }
 
+        if (isArrayMember(member))
+            member = member.substring(1, member.length() - 1);
+
         return member;
+    }
+
+    private static boolean isArrayMember(String member) {
+        if (member.length() < 2)
+            return false;
+        char[] cs = member.toCharArray();
+        return cs[0] == '[' && cs[cs.length - 1] == ']';
     }
 }

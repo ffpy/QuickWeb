@@ -21,12 +21,12 @@ public class HelloServlet extends HttpServlet {
         integerList.add(2);
         QuickWeb.server(req, resp)
                 .putParam("aaa", CP.of("col", "param"))
-                .putParamFrom("column", "aaa.column")
-                .putParamFrom("paramName", "aaa.paramName")
+                .putParamFrom("column", "aaa[column]")
+                .putParamFrom("paramName", "aaa[paramName]")
                 .putParam("arr", new String[]{"this is str1", "this is str2"})
                 .putParamFrom("str2", "arr[1]")
                 .putParam("intList", integerList)
-                .putParamFrom("int2", "intList[2]")
+                .putParamFrom("int2", "intList.2")
                 .view("hello");
     }
 

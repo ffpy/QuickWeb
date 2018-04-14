@@ -15,67 +15,55 @@ public class ParamMemberHelper {
             return value;
 
         String member = paramHelper.findMember();
-        // a[1], a[2]
-        if (isArrayMember(member)) {
-            int index = 0;
+
+        if (value instanceof Object[]) {
+            Object[] objs = (Object[]) value;
+            value = objs[getIndexMember(member)];
+        } else if (value instanceof List) {
+            List list = (List) value;
+            value = list.get(getIndexMember(member));
+        } else if (value instanceof Map) {
+            Map map = (Map) value;
+            value = map.get(member);
+        } else {
+            Method method = null;
+            String upperCaseMember = CharUtils.firstUpperCase(member);
+            String getMethodName = "get" + upperCaseMember;
+            String isMethodName = "is" + upperCaseMember;
+
             try {
-                index = Integer.parseInt(
-                        member.substring(1, member.length() - 1));
-            } catch (NumberFormatException e) {
-                ExceptionUtils.throwException("the index must be integer", e);
+                method = value.getClass().getMethod(getMethodName);
+
+            } catch (NoSuchMethodException ignored) {
             }
 
-            if (value instanceof Object[]) {
-                Object[] objs = (Object[]) value;
-                value = objs[index];
-            } else if (value instanceof List) {
-                List list = (List) value;
-                value = list.get(index);
-            }
-        }
-        // a.b, a.c
-        else {
-            if (value instanceof Map) {
-                Map map = (Map) value;
-                value = map.get(member);
-            } else {
-                Method method = null;
-                String upperCaseMember = CharUtils.firstUpperCase(member);
-                String getMethodName = "get" + upperCaseMember;
-                String isMethodName = "is" + upperCaseMember;
-
+            if (method == null) {
                 try {
-                    method = value.getClass().getMethod(getMethodName);
-
+                    method = value.getClass().getMethod(isMethodName);
                 } catch (NoSuchMethodException ignored) {
                 }
+            }
 
-                if (method == null) {
-                    try {
-                        method = value.getClass().getMethod(isMethodName);
-                    } catch (NoSuchMethodException ignored) {
-                    }
-                }
+            if (method == null)
+                ExceptionUtils.throwException("the getter method of " + member + " is not found" +
+                        ", the expected method is " + getMethodName + " or " + isMethodName);
 
-                if (method == null)
-                    ExceptionUtils.throwException("the getter method of " + member + " is not found" +
-                            ", the expected method is " + getMethodName + " or " + isMethodName);
-
-                try {
-                    value = method.invoke(value);
-                } catch (IllegalAccessException | InvocationTargetException e) {
-                    ExceptionUtils.throwException(e);
-                }
+            try {
+                value = method.invoke(value);
+            } catch (IllegalAccessException | InvocationTargetException e) {
+                ExceptionUtils.throwException(e);
             }
         }
 
         return getMemberValue(value, paramHelper);
     }
 
-    public static boolean isArrayMember(String member) {
-        if (member.length() < 3)
-            return false;
-        char[] cs = member.toCharArray();
-        return cs[0] == '[' && cs[cs.length - 1] == ']';
+    private static int getIndexMember(String member) {
+        try {
+            return Integer.parseInt(member);
+        } catch (NumberFormatException e) {
+            ExceptionUtils.throwException("the index must be integer", e);
+        }
+        return 0;
     }
 }
