@@ -215,6 +215,16 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
+    public QuickSession find(OnQueryResult onQueryResult) {
+        try {
+            QueryHandler.find(quickModalProxy, sqlParam, onQueryResult);
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
+        return quickSession;
+    }
+
+    @Override
     public QuickSession count(String paramName) {
         try {
             QueryHandler.count(quickModalProxy, paramName, sqlParam);

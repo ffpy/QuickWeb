@@ -1,11 +1,7 @@
 package org.quickweb.modal.handler;
 
 import org.apache.commons.lang3.StringUtils;
-import org.quickweb.modal.QuickModal;
-import org.quickweb.modal.ResultType;
-import org.quickweb.modal.SqlParam;
-import org.quickweb.modal.StmtHelper;
-import org.quickweb.session.scope.EditableScope;
+import org.quickweb.modal.*;
 import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.RequireUtils;
 import org.quickweb.utils.SqlUtils;
@@ -22,7 +18,7 @@ public class QueryHandler {
 
     public static void find(QuickModal quickModal, String paramName,
                             SqlParam sqlParam) throws SQLException {
-        findAction(quickModal, paramName, sqlParam, (stmt, rs) -> {
+        findAction(quickModal, sqlParam, (stmt, rs) -> {
             List<Map<String, Object>> rowList = new ArrayList<>();
             ResultSetMetaData metaData = rs.getMetaData();
 
@@ -38,9 +34,16 @@ public class QueryHandler {
         });
     }
 
+    public static void find(QuickModal quickModal, SqlParam sqlParam,
+                            OnQueryResult onQueryResult) throws SQLException {
+        RequireUtils.requireNotNull(onQueryResult);
+        findAction(quickModal, sqlParam, (stmt, rs) ->
+                onQueryResult.onResult(rs, stmt, quickModal.getQuickSession()));
+    }
+
     public static void findFirst(QuickModal quickModal, String paramName,
                                  SqlParam sqlParam) throws SQLException {
-        findAction(quickModal, paramName, sqlParam, (stmt, rs) -> {
+        findAction(quickModal, sqlParam, (stmt, rs) -> {
             ResultSetMetaData metaData = rs.getMetaData();
             Map<String, Object> rowMap = new HashMap<>();
             if (rs.next()) {
@@ -78,9 +81,8 @@ public class QueryHandler {
         aggregateAction(quickModal, paramName, column, sqlParam, "SUM", resultType);
     }
 
-    private static void findAction(QuickModal quickModal, String paramName, SqlParam sqlParam,
+    private static void findAction(QuickModal quickModal, SqlParam sqlParam,
                                    FindAction action) throws SQLException {
-        RequireUtils.requireNotEmpty(paramName);
         RequireUtils.requireNotNull(sqlParam, action);
 
         String select = sqlParam.getSelect();
@@ -102,6 +104,7 @@ public class QueryHandler {
 
             ResultSet rs = stmt.executeQuery();
             action.act(stmt, rs);
+            rs.close();
         });
     }
 
@@ -113,7 +116,7 @@ public class QueryHandler {
 
         sqlParam.setSelect(method + "(" + column + ")");
 
-        findAction(quickModal, paramName, sqlParam, (stmt, rs) -> {
+        findAction(quickModal, sqlParam, (stmt, rs) -> {
             if (rs.next()) {
                 Object value;
                 if (resultType == null)

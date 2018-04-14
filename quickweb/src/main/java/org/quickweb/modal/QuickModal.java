@@ -45,6 +45,8 @@ public interface QuickModal {
 
     QuickSession find(String paramName);
 
+    QuickSession find(OnQueryResult onQueryResult);
+
     QuickSession count(String paramName);
 
     QuickSession avg(String paramName, String column);
