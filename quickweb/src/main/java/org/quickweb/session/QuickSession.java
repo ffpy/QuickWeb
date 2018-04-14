@@ -1,7 +1,7 @@
 package org.quickweb.session;
 
 import com.sun.istack.internal.Nullable;
-import org.quickweb.exception.ErrorHandler;
+import org.quickweb.error.ErrorHandler;
 import org.quickweb.modal.QuickModal;
 import org.quickweb.session.action.ExecSQLAction;
 import org.quickweb.session.action.RequireEmptyAction;

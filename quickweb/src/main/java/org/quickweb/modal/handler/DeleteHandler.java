@@ -14,7 +14,7 @@ public class DeleteHandler {
         TemplateExpr whereExpr = new TemplateExpr(quickModal.getQuickSession(), sqlParam.getWhere());
         String sql = SqlUtils.delete(sqlParam.getTable(), whereExpr.getTemplate());
 
-        DataHandler.handle(quickModal, sql, (conn, stmt) -> {
+        DataHandler.handle(quickModal.getQuickSession(), sql, (stmt) -> {
             StmtHelper stmtHelper = new StmtHelper(quickModal.getQuickSession(), stmt);
             stmtHelper.setParams(whereExpr.getValues());
             stmt.executeUpdate();

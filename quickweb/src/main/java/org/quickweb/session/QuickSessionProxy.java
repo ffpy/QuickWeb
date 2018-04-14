@@ -39,9 +39,6 @@ public class QuickSessionProxy implements InvocationHandler {
                         return null;
                 }
         }
-        Object o = method.invoke(quickSession, args);
-        if (quickSession.equals(o))
-            return proxy;
-        return o;
+        return method.invoke(quickSession, args);
     }
 }

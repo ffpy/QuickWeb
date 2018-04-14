@@ -1,4 +1,4 @@
-package org.quickweb.exception;
+package org.quickweb.error;
 
 import org.quickweb.session.QuickSession;
 

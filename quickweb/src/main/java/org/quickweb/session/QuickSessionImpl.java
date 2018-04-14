@@ -1,5 +1,7 @@
 package org.quickweb.session;
 
+import org.quickweb.error.DefaultErrorHandler;
+import org.quickweb.error.ErrorHandler;
 import org.quickweb.exception.*;
 import org.quickweb.modal.QuickModal;
 import org.quickweb.modal.QuickModalProxy;
@@ -268,7 +270,7 @@ public class QuickSessionImpl implements QuickSession {
         Object value = null;
         switch (scope) {
             case CONTEXT:
-                value =  request.getAttribute(name);
+                value = request.getAttribute(name);
                 break;
             case MODAL:
                 value = modalParamMap.get(name);
@@ -311,9 +313,9 @@ public class QuickSessionImpl implements QuickSession {
         return quickSessionProxy;
     }
 
-    private QuickSession putParam(String name, Object value, EditableScope scope) {
+    private void putParam(String name, Object value, EditableScope scope) {
+        RequireUtils.requireNotNull(name, scope);
         if (value != null) {
-            RequireUtils.requireNotNull(name, scope);
             switch (scope) {
                 case CONTEXT:
                     request.setAttribute(name, value);
@@ -328,7 +330,6 @@ public class QuickSessionImpl implements QuickSession {
                     ExceptionUtils.throwScopeNotMatchedException(scope);
             }
         }
-        return quickSessionProxy;
     }
 
     @Override
@@ -351,7 +352,7 @@ public class QuickSessionImpl implements QuickSession {
         return quickSessionProxy;
     }
 
-    private QuickSession removeParam(String name, EditableScope scope) {
+    private void removeParam(String name, EditableScope scope) {
         RequireUtils.requireNotNull(name, scope);
         switch (scope) {
             case CONTEXT:
@@ -364,7 +365,6 @@ public class QuickSessionImpl implements QuickSession {
                 applicationParamMap.remove(name);
                 break;
         }
-        return quickSessionProxy;
     }
 
     @Override
@@ -464,7 +464,7 @@ public class QuickSessionImpl implements QuickSession {
             try {
                 connection.setAutoCommit(false);
             } catch (SQLException e) {
-                e.printStackTrace();
+                error(e);
             }
         }
         return quickSessionProxy;
@@ -476,7 +476,7 @@ public class QuickSessionImpl implements QuickSession {
         try {
             connection.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
+            error(e);
         }
         DBUtils.close(connection);
         connection = null;
@@ -489,7 +489,7 @@ public class QuickSessionImpl implements QuickSession {
         try {
             connection.setSavepoint();
         } catch (SQLException e) {
-            e.printStackTrace();
+            error(e);
         }
         return quickSessionProxy;
     }
@@ -500,7 +500,7 @@ public class QuickSessionImpl implements QuickSession {
         try {
             connection.rollback();
         } catch (SQLException e) {
-            e.printStackTrace();
+            error(e);
         }
         return quickSessionProxy;
     }
@@ -511,7 +511,7 @@ public class QuickSessionImpl implements QuickSession {
         try {
             connection.commit();
         } catch (SQLException e) {
-            e.printStackTrace();
+            error(e);
         }
         return quickSessionProxy;
     }
@@ -546,7 +546,7 @@ public class QuickSessionImpl implements QuickSession {
     public QuickSession execSQL(String sql, ExecSQLAction action) {
         TemplateExpr expr = new TemplateExpr(quickSessionProxy, sql);
         try {
-            DataHandler.handle(quickSessionProxy, expr.getTemplate(), (conn, stmt) -> {
+            DataHandler.handle(quickSessionProxy, expr.getTemplate(), (stmt) -> {
                 new StmtHelper(quickSessionProxy, stmt).setParams(expr.getValues());
                 stmt.execute();
                 if (action != null)

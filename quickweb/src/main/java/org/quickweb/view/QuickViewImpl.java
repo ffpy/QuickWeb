@@ -80,14 +80,17 @@ public class QuickViewImpl implements QuickView {
     }
 
     private void mergeParams() {
+        // modal
         quickSession.getModalParamMap().forEach(this::putParam);
 
+        // request
         Enumeration<String> parameterNames = request.getParameterNames();
         while (parameterNames.hasMoreElements()) {
             String name = parameterNames.nextElement();
             putParam(name, RequestUtils.getParam(request, name));
         }
 
+        // session
         Optional.ofNullable(request.getSession(false)).ifPresent(session -> {
             Enumeration<String> names = session.getAttributeNames();
             while (names.hasMoreElements()) {
@@ -96,8 +99,12 @@ public class QuickViewImpl implements QuickView {
             }
         });
 
+        // cookie
         Arrays.stream(request.getCookies())
                 .forEach(cookie -> putParam(cookie.getName(), cookie.getValue()));
+
+        // application
+        quickSession.getApplicationParamMap().forEach(this::putParam);
     }
 
     private void putParam(String name, Object value) {

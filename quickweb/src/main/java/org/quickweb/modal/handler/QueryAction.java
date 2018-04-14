@@ -4,6 +4,6 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 
-public interface FindAction {
+public interface QueryAction {
     void act(PreparedStatement stmt, ResultSet rs) throws SQLException;
 }

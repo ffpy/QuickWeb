@@ -34,10 +34,6 @@ public class QuickViewProxy implements InvocationHandler {
             if (returnType.equals(void.class))
                 return null;
         }
-
-        Object o = method.invoke(quickView, args);
-        if (quickView.equals(o))
-            return proxy;
-        return o;
+        return method.invoke(quickView, args);
     }
 }

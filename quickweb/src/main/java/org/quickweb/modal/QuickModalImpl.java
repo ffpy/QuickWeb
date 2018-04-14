@@ -221,6 +221,7 @@ public class QuickModalImpl implements QuickModal {
         } catch (SQLException e) {
             quickSession.error(e);
         }
+        resetSqlParam();
         return quickSession;
     }
 

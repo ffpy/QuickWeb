@@ -23,7 +23,7 @@ public class InsertHandler {
     public static void insert(QuickModal quickModal, String[] columns, String[] paramNames,
                               SqlParam sqlParam) throws SQLException {
         String sql = SqlUtils.insert(sqlParam.getTable(), columns);
-        DataHandler.handle(quickModal, sql, (conn, stmt) -> {
+        DataHandler.handle(quickModal.getQuickSession(), sql, (stmt) -> {
             new StmtHelper(quickModal.getQuickSession(), stmt).setParams(paramNames);
             stmt.executeUpdate();
         });

@@ -27,7 +27,7 @@ public class UpdateHandler {
         TemplateExpr whereExpr = new TemplateExpr(quickModal.getQuickSession(), sqlParam.getWhere());
         String sql = SqlUtils.update(sqlParam.getTable(), columns, whereExpr.getTemplate());
 
-        DataHandler.handle(quickModal, sql, (conn, stmt) -> {
+        DataHandler.handle(quickModal.getQuickSession(), sql, (stmt) -> {
             StmtHelper stmtHelper = new StmtHelper(quickModal.getQuickSession(), stmt);
             stmtHelper.setParams(params);
             stmtHelper.setParams(whereExpr.getValues());

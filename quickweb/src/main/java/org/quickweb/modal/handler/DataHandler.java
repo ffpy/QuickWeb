@@ -9,19 +9,14 @@ import java.sql.*;
 
 public class DataHandler {
 
-    public static void handle(QuickModal quickModal, String sql, Action action) throws SQLException {
-        RequireUtils.requireNotNull(quickModal);
-        handle(quickModal.getQuickSession(), sql, action);
-    }
-
     public static void handle(QuickSession quickSession, String sql, Action action) throws SQLException {
         RequireUtils.requireNotNull(quickSession);
 
         setQuickSessionUpdateCount(quickSession, null);
         setQuickSessionGeneratedKey(quickSession, null);
 
-        Connection transConn = quickSession.getConnection();
-        Connection conn = transConn;
+        Connection sessionConn = quickSession.getConnection();
+        Connection conn = sessionConn;
         if (conn == null)
             conn = DBUtils.getConnection();
         PreparedStatement stmt = null;
@@ -30,16 +25,16 @@ public class DataHandler {
             System.out.println(sql);
 
         try {
-            if (transConn == null)
+            if (sessionConn == null)
                 conn.setAutoCommit(true);
 
             stmt = conn.prepareStatement(sql, Statement.RETURN_GENERATED_KEYS);
-            action.act(conn, stmt);
+            action.act(stmt);
 
             setQuickSessionUpdateCount(quickSession, stmt);
             setQuickSessionGeneratedKey(quickSession, stmt);
         } finally {
-            if (transConn == null)
+            if (sessionConn == null)
                 DBUtils.close(conn);
             DBUtils.close(stmt);
         }

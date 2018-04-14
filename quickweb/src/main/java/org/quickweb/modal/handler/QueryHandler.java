@@ -38,7 +38,7 @@ public class QueryHandler {
                             OnQueryResult onQueryResult) throws SQLException {
         RequireUtils.requireNotNull(onQueryResult);
         findAction(quickModal, sqlParam, (stmt, rs) ->
-                onQueryResult.onResult(rs, stmt, quickModal.getQuickSession()));
+                onQueryResult.onResult(rs, quickModal.getQuickSession()));
     }
 
     public static void findFirst(QuickModal quickModal, String paramName,
@@ -82,7 +82,7 @@ public class QueryHandler {
     }
 
     private static void findAction(QuickModal quickModal, SqlParam sqlParam,
-                                   FindAction action) throws SQLException {
+                                   QueryAction action) throws SQLException {
         RequireUtils.requireNotNull(sqlParam, action);
 
         String select = sqlParam.getSelect();
@@ -96,7 +96,7 @@ public class QueryHandler {
                 whereExpr.getTemplate(), orderExpr.getTemplate(), sqlParam.getOffset(),
                 sqlParam.getLimit());
 
-        DataHandler.handle(quickModal, sql, (conn, stmt) -> {
+        DataHandler.handle(quickModal.getQuickSession(), sql, (stmt) -> {
             StmtHelper stmtHelper = new StmtHelper(quickModal.getQuickSession(), stmt);
             stmtHelper.setParams(selectExpr.getValues());
             stmtHelper.setParams(whereExpr.getValues());

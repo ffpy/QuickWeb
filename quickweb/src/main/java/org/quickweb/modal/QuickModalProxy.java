@@ -34,9 +34,6 @@ public class QuickModalProxy implements InvocationHandler {
             if (returnType.equals(void.class))
                 return null;
         }
-        Object o = method.invoke(quickModal, args);
-        if (quickModal.equals(o))
-            return proxy;
-        return o;
+        return method.invoke(quickModal, args);
     }
 }
