@@ -14,14 +14,7 @@ public class StmtHelper {
 
     public StmtHelper(QuickSession quickSession, PreparedStatement stmt) {
         RequireUtils.requireNotNull(quickSession, stmt);
-
         this.quickSession = quickSession;
-        this.stmt = stmt;
-    }
-
-    public StmtHelper(PreparedStatement stmt) {
-        RequireUtils.requireNotNull(stmt);
-
         this.stmt = stmt;
     }
 

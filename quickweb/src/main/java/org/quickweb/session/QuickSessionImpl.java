@@ -3,6 +3,9 @@ package org.quickweb.session;
 import org.quickweb.exception.*;
 import org.quickweb.modal.QuickModal;
 import org.quickweb.modal.QuickModalProxy;
+import org.quickweb.modal.StmtHelper;
+import org.quickweb.modal.handler.DataHandler;
+import org.quickweb.session.action.ExecSQLAction;
 import org.quickweb.session.action.RequireEmptyAction;
 import org.quickweb.session.action.RequireEqualsAction;
 import org.quickweb.session.param.ParamGenerator;
@@ -532,5 +535,26 @@ public class QuickSessionImpl implements QuickSession {
     public void error(Exception e) {
         if (errorHandler != null)
             errorHandler.onError(e, quickSessionProxy);
+    }
+
+    @Override
+    public QuickSession execSQL(String sql) {
+        return execSQL(sql, null);
+    }
+
+    @Override
+    public QuickSession execSQL(String sql, ExecSQLAction action) {
+        TemplateExpr expr = new TemplateExpr(quickSessionProxy, sql);
+        try {
+            DataHandler.handle(quickSessionProxy, expr.getTemplate(), (conn, stmt) -> {
+                new StmtHelper(quickSessionProxy, stmt).setParams(expr.getValues());
+                stmt.execute();
+                if (action != null)
+                    action.exec(stmt, quickSessionProxy);
+            });
+        } catch (SQLException e) {
+            error(e);
+        }
+        return quickSessionProxy;
     }
 }

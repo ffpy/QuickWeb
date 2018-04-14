@@ -3,12 +3,11 @@ package org.quickweb.session;
 import com.sun.istack.internal.Nullable;
 import org.quickweb.exception.ErrorHandler;
 import org.quickweb.modal.QuickModal;
+import org.quickweb.session.action.ExecSQLAction;
 import org.quickweb.session.action.RequireEmptyAction;
 import org.quickweb.session.action.RequireEqualsAction;
 import org.quickweb.session.param.ParamGenerator;
 import org.quickweb.session.param.ParamMapper;
-import org.quickweb.session.scope.EditableScope;
-import org.quickweb.session.scope.Scope;
 import org.quickweb.view.QuickView;
 
 import javax.servlet.http.Cookie;
@@ -102,6 +101,10 @@ public interface QuickSession {
     QuickSession removeCookie(String name);
 
     QuickModal modal(String table);
+
+    QuickSession execSQL(String sql);
+
+    QuickSession execSQL(String sql, @Nullable ExecSQLAction action);
 
     QuickSession startTransaction();
 

@@ -11,8 +11,11 @@ public class DataHandler {
 
     public static void handle(QuickModal quickModal, String sql, Action action) throws SQLException {
         RequireUtils.requireNotNull(quickModal);
+        handle(quickModal.getQuickSession(), sql, action);
+    }
 
-        QuickSession quickSession = quickModal.getQuickSession();
+    public static void handle(QuickSession quickSession, String sql, Action action) throws SQLException {
+        RequireUtils.requireNotNull(quickSession);
 
         setQuickSessionUpdateCount(quickSession, null);
         setQuickSessionGeneratedKey(quickSession, null);
