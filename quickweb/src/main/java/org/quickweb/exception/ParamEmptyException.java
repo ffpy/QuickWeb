@@ -1,5 +1,8 @@
 package org.quickweb.exception;
 
+/**
+ * 参数为空异常
+ */
 public class ParamEmptyException extends Exception {
     private String paramName;
 

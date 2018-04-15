@@ -81,6 +81,13 @@ public class QueryHandler {
         aggregateAction(quickModal, paramName, column, sqlParam, "SUM", resultType);
     }
 
+    /**
+     * 处理查询操作
+     * @param quickModal
+     * @param sqlParam
+     * @param action
+     * @throws SQLException
+     */
     private static void findAction(QuickModal quickModal, SqlParam sqlParam,
                                    QueryAction action) throws SQLException {
         RequireUtils.requireNotNull(sqlParam, action);
@@ -92,6 +99,7 @@ public class QueryHandler {
         TemplateExpr selectExpr = new TemplateExpr(quickModal.getQuickSession(), select);
         TemplateExpr whereExpr = new TemplateExpr(quickModal.getQuickSession(), sqlParam.getWhere());
         TemplateExpr orderExpr = new TemplateExpr(quickModal.getQuickSession(), sqlParam.getOrder());
+
         String sql = SqlUtils.find(sqlParam.getTable(), selectExpr.getTemplate(),
                 whereExpr.getTemplate(), orderExpr.getTemplate(), sqlParam.getOffset(),
                 sqlParam.getLimit());
@@ -108,11 +116,23 @@ public class QueryHandler {
         });
     }
 
+    /**
+     * 处理聚合函数操作
+     * @param quickModal
+     * @param paramName
+     * @param column
+     * @param sqlParam
+     * @param method
+     * @param resultType
+     * @throws SQLException
+     */
     private static void aggregateAction(QuickModal quickModal, String paramName,
                                         String column, SqlParam sqlParam,
                                         String method, ResultType resultType) throws SQLException {
         RequireUtils.requireNotEmpty(method, column);
         RequireUtils.requireNotNull(resultType);
+
+        column = TemplateExpr.getString(quickModal.getQuickSession(), column);
 
         sqlParam.setSelect(method + "(" + column + ")");
 

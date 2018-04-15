@@ -1,5 +1,8 @@
 package org.quickweb.exception;
 
+/**
+ * 用来包装QuickWeb异常
+ */
 public class QuickWebException extends RuntimeException {
 
     public QuickWebException() {

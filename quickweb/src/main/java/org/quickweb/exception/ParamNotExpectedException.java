@@ -1,11 +1,14 @@
 package org.quickweb.exception;
 
-public class ParamNotEqualsException extends Exception {
+/**
+ * 参数不是期待值异常
+ */
+public class ParamNotExpectedException extends Exception {
     private String paramName;
     private Object actualValue;
     private Object expectedValue;
 
-    public ParamNotEqualsException(String paramName, Object actualValue, Object expectedValue) {
+    public ParamNotExpectedException(String paramName, Object actualValue, Object expectedValue) {
         super(paramName + " is not expected value");
         this.paramName = paramName;
         this.actualValue = actualValue;

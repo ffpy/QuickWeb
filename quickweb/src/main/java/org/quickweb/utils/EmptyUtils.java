@@ -13,11 +13,7 @@ public class EmptyUtils {
         return list == null || list.isEmpty();
     }
 
-    public static boolean isEmpty(@Nullable String str) {
-        return str == null || str.isEmpty();
-    }
-
-    public static boolean isEmpty(@Nullable String[] strs) {
-        return strs == null || strs.length == 0;
+    public static boolean isEmpty(@Nullable Object[] objc) {
+        return objc == null || objc.length == 0;
     }
 }

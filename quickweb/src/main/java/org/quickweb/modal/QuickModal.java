@@ -4,7 +4,9 @@ import org.quickweb.session.param.CP;
 import org.quickweb.session.QuickSession;
 
 public interface QuickModal {
+    // update_count参数名
     String UPDATE_COUNT = "m:quick_modal_update_count";
+    // 主键参数名
     String GENERATED_KEY = "m:quick_modal_generated_key";
 
     void initProxy(QuickModal quickModalProxy);

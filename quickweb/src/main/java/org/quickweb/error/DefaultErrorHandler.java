@@ -2,6 +2,9 @@ package org.quickweb.error;
 
 import org.quickweb.session.QuickSession;
 
+/**
+ * 默认错误处理
+ */
 public class DefaultErrorHandler implements ErrorHandler {
     private static final DefaultErrorHandler INSTANCE = new DefaultErrorHandler();
 

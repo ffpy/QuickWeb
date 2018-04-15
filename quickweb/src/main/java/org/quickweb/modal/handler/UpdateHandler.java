@@ -25,6 +25,7 @@ public class UpdateHandler {
     public static void update(QuickModal quickModal, String[] columns, String[] params,
                               SqlParam sqlParam) throws SQLException {
         TemplateExpr whereExpr = new TemplateExpr(quickModal.getQuickSession(), sqlParam.getWhere());
+
         String sql = SqlUtils.update(sqlParam.getTable(), columns, whereExpr.getTemplate());
 
         DataHandler.handle(quickModal.getQuickSession(), sql, (stmt) -> {

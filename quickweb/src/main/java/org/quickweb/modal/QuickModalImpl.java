@@ -139,152 +139,96 @@ public class QuickModalImpl implements QuickModal {
 
     @Override
     public QuickSession insert(String... columnAndParamNames) {
-        try {
-            InsertHandler.insert(quickModalProxy, columnAndParamNames, sqlParam);
-        } catch (SQLException e) {
-            quickSession.error(e);
-        }
-        resetSqlParam();
+        exec(() -> InsertHandler.insert(quickModalProxy, columnAndParamNames, sqlParam));
         return quickSession;
     }
 
     @Override
     public QuickSession insert(CP... cps) {
-        try {
-            InsertHandler.insert(quickModalProxy, cps, sqlParam);
-        } catch (SQLException e) {
-            quickSession.error(e);
-        }
-        resetSqlParam();
+        exec(() -> InsertHandler.insert(quickModalProxy, cps, sqlParam));
         return quickSession;
     }
 
     @Override
     public QuickSession update(String... columnAndParamNames) {
-        try {
-            UpdateHandler.update(quickModalProxy, columnAndParamNames, sqlParam);
-        } catch (SQLException e) {
-            quickSession.error(e);
-        }
-        resetSqlParam();
+        exec(() -> UpdateHandler.update(quickModalProxy, columnAndParamNames, sqlParam));
         return quickSession;
     }
 
     @Override
     public QuickSession update(CP... cps) {
-        try {
-            UpdateHandler.update(quickModalProxy, cps, sqlParam);
-        } catch (SQLException e) {
-            quickSession.error(e);
-        }
-        resetSqlParam();
+        exec(() -> UpdateHandler.update(quickModalProxy, cps, sqlParam));
         return quickSession;
     }
 
     @Override
     public QuickSession delete() {
-        try {
-            DeleteHandler.delete(quickModalProxy, sqlParam);
-        } catch (SQLException e) {
-            quickSession.error(e);
-        }
-        resetSqlParam();
+        exec(() -> DeleteHandler.delete(quickModalProxy, sqlParam));
         return quickSession;
     }
 
     @Override
     public QuickSession findFirst(String paramName) {
-        try {
-            QueryHandler.findFirst(quickModalProxy, paramName, sqlParam);
-        } catch (SQLException e) {
-            quickSession.error(e);
-        }
-        resetSqlParam();
+        exec(() -> QueryHandler.findFirst(quickModalProxy, paramName, sqlParam));
         return quickSession;
     }
 
     @Override
     public QuickSession find(String paramName) {
-        try {
-            QueryHandler.find(quickModalProxy, paramName, sqlParam);
-        } catch (SQLException e) {
-            quickSession.error(e);
-        }
-        resetSqlParam();
+        exec(() -> QueryHandler.find(quickModalProxy, paramName, sqlParam));
         return quickSession;
     }
 
     @Override
     public QuickSession find(OnQueryResult onQueryResult) {
-        try {
-            QueryHandler.find(quickModalProxy, sqlParam, onQueryResult);
-        } catch (SQLException e) {
-            quickSession.error(e);
-        }
-        resetSqlParam();
+        exec(() -> QueryHandler.find(quickModalProxy, sqlParam, onQueryResult));
         return quickSession;
     }
 
     @Override
     public QuickSession count(String paramName) {
-        try {
-            QueryHandler.count(quickModalProxy, paramName, sqlParam);
-        } catch (SQLException e) {
-            quickSession.error(e);
-        }
-        resetSqlParam();
+        exec(() -> QueryHandler.count(quickModalProxy, paramName, sqlParam));
         return quickSession;
     }
 
     @Override
     public QuickSession avg(String paramName, String column) {
-        try {
-            QueryHandler.avg(quickModalProxy, paramName, TemplateExpr.getString(quickSession, column),
-                    sqlParam);
-        } catch (SQLException e) {
-            quickSession.error(e);
-        }
-        resetSqlParam();
+        exec(() -> QueryHandler.avg(quickModalProxy, paramName, column, sqlParam));
         return quickSession;
     }
 
     @Override
     public QuickSession max(String paramName, String column, ResultType resultType) {
-        try {
-            QueryHandler.max(quickModalProxy, paramName, TemplateExpr.getString(quickSession, column),
-                    sqlParam, resultType);
-        } catch (SQLException e) {
-            quickSession.error(e);
-        }
-        resetSqlParam();
+        exec(() -> QueryHandler.max(quickModalProxy, paramName, column, sqlParam, resultType));
         return quickSession;
     }
 
     @Override
     public QuickSession min(String paramName, String column, ResultType resultType) {
-        try {
-            QueryHandler.min(quickModalProxy, paramName, TemplateExpr.getString(quickSession, column),
-                    sqlParam, resultType);
-        } catch (SQLException e) {
-            quickSession.error(e);
-        }
-        resetSqlParam();
+        exec(() -> QueryHandler.min(quickModalProxy, paramName, column, sqlParam, resultType));
         return quickSession;
     }
 
     @Override
     public QuickSession sum(String paramName, String column, ResultType resultType) {
-        try {
-            QueryHandler.sum(quickModalProxy, paramName, TemplateExpr.getString(quickSession, column),
-                    sqlParam, resultType);
-        } catch (SQLException e) {
-            quickSession.error(e);
-        }
-        resetSqlParam();
+        exec(() -> QueryHandler.sum(quickModalProxy, paramName, column, sqlParam, resultType));
         return quickSession;
     }
 
     private void resetSqlParam() {
         sqlParam = new SqlParam();
+    }
+
+    private void exec(ExecAction action) {
+        try {
+            action.exec();
+        } catch (SQLException e) {
+            quickSession.error(e);
+        }
+        resetSqlParam();
+    }
+
+    private interface ExecAction {
+        void exec() throws SQLException;
     }
 }

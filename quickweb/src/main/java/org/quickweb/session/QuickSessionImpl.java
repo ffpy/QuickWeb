@@ -148,15 +148,19 @@ public class QuickSessionImpl implements QuickSession {
             if (value == null) {
                 isEmpty = true;
             } else if (value instanceof String) {
+                // String
                 String str = (String) value;
                 isEmpty = str.isEmpty();
             } else if (value instanceof Object[]) {
+                // Object[]
                 Object[] objs = (Object[]) value;
                 isEmpty = objs.length == 0;
             } else if (value instanceof Collection) {
+                // Collection
                 Collection c = (Collection) value;
                 isEmpty = c.isEmpty();
             } else if (value instanceof Map) {
+                // Map
                 Map map = (Map) value;
                 isEmpty = map.isEmpty();
             }
@@ -183,7 +187,7 @@ public class QuickSessionImpl implements QuickSession {
     public QuickSession requireParamEquals(String name, Object expectedValue) {
         requireParamEquals(name, expectedValue,
                 (paramName, actualValue, expectedValue1, quickSession) -> {
-            throw new ParamNotEqualsException(paramName, actualValue, expectedValue1);
+            throw new ParamNotExpectedException(paramName, actualValue, expectedValue1);
         });
         return quickSessionProxy;
     }
@@ -214,7 +218,7 @@ public class QuickSessionImpl implements QuickSession {
     public QuickSession requireParamEqualsWith(String name, String expectedName) {
         requireParamEqualsWith(name, expectedName,
                 (paramName, actualValue, expectedValue, quickSession) -> {
-            throw new ParamNotEqualsException(paramName, actualValue, expectedValue);
+            throw new ParamNotExpectedException(paramName, actualValue, expectedValue);
         });
         return quickSessionProxy;
     }
@@ -335,7 +339,7 @@ public class QuickSessionImpl implements QuickSession {
     @Override
     public QuickSession putParamBy(String name, ParamGenerator generator) {
         RequireUtils.requireNotNull(generator);
-        putParam(name, generator.apply(quickSessionProxy));
+        putParam(name, generator.generate(quickSessionProxy));
         return quickSessionProxy;
     }
 
@@ -371,7 +375,7 @@ public class QuickSessionImpl implements QuickSession {
     public QuickSession mapParam(String name, ParamMapper mapper) {
         RequireUtils.requireNotNull(mapper);
         Object value = getParam(name);
-        putParam(name, mapper.apply(value));
+        putParam(name, mapper.map(value));
         return quickSessionProxy;
     }
 
@@ -391,7 +395,8 @@ public class QuickSessionImpl implements QuickSession {
     @Override
     public QuickSession setSessionBy(String name, ParamGenerator generator) {
         RequireUtils.requireNotNull(generator);
-        setSession(TemplateExpr.getString(quickSessionProxy, name), generator.apply(quickSessionProxy));
+        setSession(TemplateExpr.getString(quickSessionProxy, name),
+                generator.generate(quickSessionProxy));
         return quickSessionProxy;
     }
 
