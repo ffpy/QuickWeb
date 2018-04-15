@@ -23,7 +23,7 @@ public class QuickWeb {
 
         URL resource = QuickWeb.class.getClassLoader().getResource(configFilename);
         if (resource == null)
-            ExceptionUtils.throwException("can't find config file " + configFilename);
+            ExceptionUtils.throwException("config file " + configFilename + " not found");
         config = XMLUtils.fromXML(resource, ROOT_NAME, QuickWebConfig.class);
         if (config == null)
             ExceptionUtils.throwException("parse config file " + configFilename + " fail");

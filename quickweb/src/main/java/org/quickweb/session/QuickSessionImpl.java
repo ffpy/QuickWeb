@@ -339,7 +339,11 @@ public class QuickSessionImpl implements QuickSession {
     @Override
     public QuickSession putParamBy(String name, ParamGenerator generator) {
         RequireUtils.requireNotNull(generator);
-        putParam(name, generator.generate(quickSessionProxy));
+        try {
+            putParam(name, generator.generate(quickSessionProxy));
+        } catch (Exception e) {
+            error(e);
+        }
         return quickSessionProxy;
     }
 
@@ -375,7 +379,11 @@ public class QuickSessionImpl implements QuickSession {
     public QuickSession mapParam(String name, ParamMapper mapper) {
         RequireUtils.requireNotNull(mapper);
         Object value = getParam(name);
-        putParam(name, mapper.map(value));
+        try {
+            putParam(name, mapper.map(value));
+        } catch (Exception e) {
+            error(e);
+        }
         return quickSessionProxy;
     }
 
@@ -395,8 +403,12 @@ public class QuickSessionImpl implements QuickSession {
     @Override
     public QuickSession setSessionBy(String name, ParamGenerator generator) {
         RequireUtils.requireNotNull(generator);
-        setSession(TemplateExpr.getString(quickSessionProxy, name),
-                generator.generate(quickSessionProxy));
+        try {
+            setSession(TemplateExpr.getString(quickSessionProxy, name),
+                    generator.generate(quickSessionProxy));
+        } catch (Exception e) {
+            error(e);
+        }
         return quickSessionProxy;
     }
 
