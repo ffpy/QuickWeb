@@ -11,15 +11,7 @@ public class ParamHelper {
     private String members;
     private Scope scope;
 
-    public ParamHelper() {
-    }
-
     public ParamHelper(String param) {
-        this.param = param;
-        init();
-    }
-
-    public void setParam(String param) {
         this.param = param;
         init();
     }
@@ -43,21 +35,32 @@ public class ParamHelper {
     }
 
     private void init() {
+        scopeName = "";
+        paramName = "";
+        members = "";
         scope = null;
         members = null;
 
         if (param.contains(":")) {
             String[] split = StringUtils.split(param, ':');
-            if (split.length != 2)
-                ExceptionUtils.throwFormatIncorrectException(param);
 
-            scopeName = split[0];
-            members = split[1];
+            if (split.length == 1) {
+                members = split[0];
+            } else if (split.length == 2) {
+                scopeName = split[0];
+                members = split[1];
+            } else {
+                ExceptionUtils.throwFormatIncorrectException(param);
+            }
         } else {
             members = param;
         }
 
-        paramName = findMember().getMember();
+        ParamMember member = findMember();
+        if (member == null)
+            ExceptionUtils.throwException("get paramName fail");
+
+        paramName = member.getMember();
         if (paramName == null)
             ExceptionUtils.throwException("get paramName fail");
     }
@@ -121,7 +124,7 @@ public class ParamHelper {
             members = members.substring(beginIndex, members.length());
         } else {
             member = members;
-            members = null;
+            members = "";
         }
 
         if (isArrayMember(member)) {

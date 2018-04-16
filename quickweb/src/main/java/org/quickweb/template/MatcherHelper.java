@@ -4,7 +4,7 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 public class MatcherHelper {
-    public static final String PATTERN = "\\$((\\w*):?([\\w_]*)([\\w_\\.\\[\\]]*))";
+    public static final String PATTERN = "\\$(((\\w*):)?([\\w_]*[\\w_\\.\\[\\]]*))";
     private static final Pattern COMPILE = Pattern.compile(PATTERN);
     private final Matcher matcher;
 
@@ -17,18 +17,17 @@ public class MatcherHelper {
     }
 
     public String getMatch() {
-        return matcher.group(0);
+        String s = matcher.group(0);
+        return s == null ? "" : s;
     }
 
     public String getParam() {
-        return matcher.group(1);
+        String s = matcher.group(1);
+        return s == null ? "" : s;
     }
 
     public String getScopeName() {
-        return matcher.group(2);
-    }
-
-    public String getParamName() {
-        return matcher.group(3);
+        String s = matcher.group(3);
+        return s == null ? "" : s;
     }
 }

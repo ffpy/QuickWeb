@@ -51,7 +51,7 @@ public class TemplateExpr {
         MatcherHelper matcherHelper = createMatcherHelper();
         Map<String, Object> map = new HashMap<>();
         while (matcherHelper.find()) {
-            map.put(matcherHelper.getParamName(), getValue(matcherHelper));
+            map.put(matcherHelper.getParam(), getValue(matcherHelper));
         }
         return map;
     }
