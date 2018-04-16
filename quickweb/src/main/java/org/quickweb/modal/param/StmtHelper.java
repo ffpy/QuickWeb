@@ -1,7 +1,6 @@
-package org.quickweb.modal;
+package org.quickweb.modal.param;
 
 import org.quickweb.session.QuickSession;
-import org.quickweb.utils.RequireUtils;
 
 import java.sql.PreparedStatement;
 import java.sql.SQLException;
@@ -13,24 +12,21 @@ public class StmtHelper {
     private int index = 1;
 
     public StmtHelper(QuickSession quickSession, PreparedStatement stmt) {
-        RequireUtils.requireNotNull(quickSession, stmt);
         this.quickSession = quickSession;
         this.stmt = stmt;
     }
 
-    public void setParams(String[] paramNames) throws SQLException {
-        RequireUtils.requireArrayNotNull(paramNames);
-
+    public StmtHelper setParams(String[] paramNames) throws SQLException {
         for (String paramName : paramNames) {
             stmt.setObject(index++, quickSession.getParam(paramName));
         }
+        return this;
     }
 
-    public void setParams(List<Object> values) throws SQLException {
-        RequireUtils.requireNotNull(values);
-
+    public StmtHelper setParams(List<Object> values) throws SQLException {
         for (Object value : values) {
             stmt.setObject(index++, value);
         }
+        return this;
     }
 }

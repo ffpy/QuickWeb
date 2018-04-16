@@ -3,7 +3,6 @@ package org.quickweb.session.param;
 import org.apache.commons.lang3.StringUtils;
 import org.quickweb.session.scope.Scope;
 import org.quickweb.utils.ExceptionUtils;
-import org.quickweb.utils.RequireUtils;
 
 public class ParamHelper {
     private String param;
@@ -16,7 +15,6 @@ public class ParamHelper {
     }
 
     public ParamHelper(String param) {
-        RequireUtils.requireNotEmpty(param);
         this.param = param;
         init();
     }

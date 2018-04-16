@@ -9,19 +9,16 @@ import java.util.Objects;
 public class CookieUtils {
 
     public static void addCookie(HttpServletResponse response, Cookie cookie) {
-        RequireUtils.requireNotNull(response, cookie);
         response.addCookie(cookie);
     }
 
     public static Cookie getCookie(HttpServletRequest request, String name) {
-        RequireUtils.requireNotNull(request, name);
         return Arrays.stream(request.getCookies())
                 .filter(cookie -> Objects.equals(cookie.getName(), name))
                 .findFirst().orElse(null);
     }
 
     public static String getValue(HttpServletRequest request, String name) {
-        RequireUtils.requireNotNull(request, name);
         Cookie cookie = getCookie(request, name);
         if (cookie == null)
             return null;
@@ -29,7 +26,6 @@ public class CookieUtils {
     }
 
     public static void deleteCookie(HttpServletResponse response, String name) {
-        RequireUtils.requireNotNull(response, name);
         Cookie cookie = new Cookie(name, null);
         cookie.setMaxAge(0);
         cookie.setPath("/");

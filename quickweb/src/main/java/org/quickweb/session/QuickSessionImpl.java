@@ -1,11 +1,11 @@
 package org.quickweb.session;
 
-import org.quickweb.error.DefaultErrorHandler;
-import org.quickweb.error.ErrorHandler;
+import org.quickweb.session.error.DefaultErrorHandler;
+import org.quickweb.session.error.ErrorHandler;
 import org.quickweb.exception.*;
 import org.quickweb.modal.QuickModal;
 import org.quickweb.modal.QuickModalProxy;
-import org.quickweb.modal.StmtHelper;
+import org.quickweb.modal.param.StmtHelper;
 import org.quickweb.modal.handler.DataHandler;
 import org.quickweb.session.action.ExecSQLAction;
 import org.quickweb.session.action.RequireEmptyAction;
@@ -44,14 +44,12 @@ public class QuickSessionImpl implements QuickSession {
     private static Map<String, Object> applicationParamMap = new ConcurrentHashMap<>();
 
     public QuickSessionImpl(HttpServletRequest request, HttpServletResponse response) {
-        RequireUtils.requireNotNull(request, response);
         this.request = request;
         this.response = response;
     }
 
     @Override
     public void initProxy(QuickSession quickSessionProxy) {
-        RequireUtils.requireNotNull(quickSessionProxy);
         this.quickSessionProxy = quickSessionProxy;
     }
 
@@ -82,14 +80,12 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession watch(Consumer<QuickSession> consumer) {
-        RequireUtils.requireNotNull(consumer);
         consumer.accept(quickSessionProxy);
         return quickSessionProxy;
     }
 
     @Override
     public QuickSession watchRequest(BiConsumer<HttpServletRequest, HttpServletResponse> watcher) {
-        RequireUtils.requireNotNull(watcher);
         watcher.accept(request, response);
         return quickSessionProxy;
     }
@@ -110,7 +106,6 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession requireParamNotNull(RequireEmptyAction act, String... names) {
-        RequireUtils.requireNotNull(act);
         for (String n : names) {
             if (getParam(n) == null) {
                 try {
@@ -140,7 +135,6 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession requireParamNotEmpty(RequireEmptyAction act, String... names) {
-        RequireUtils.requireNotNull(act);
         for (String n : names) {
             boolean isEmpty = false;
             Object value = getParam(n);
@@ -195,7 +189,6 @@ public class QuickSessionImpl implements QuickSession {
     @Override
     public QuickSession requireParamEquals(String name, Object expectedValue,
                                            RequireEqualsAction act) {
-        RequireUtils.requireNotNull(act);
         Object actualValue = getParam(name);
         if (!Objects.equals(actualValue, expectedValue)) {
             try {
@@ -268,8 +261,6 @@ public class QuickSessionImpl implements QuickSession {
 
     @SuppressWarnings("unchecked")
     private <T> T getParam(ParamHelper paramHelper, Scope scope) {
-        RequireUtils.requireNotNull(paramHelper, scope);
-
         String name = paramHelper.getParamName();
         Object value = null;
         switch (scope) {
@@ -318,7 +309,6 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     private void putParam(String name, Object value, EditableScope scope) {
-        RequireUtils.requireNotNull(name, scope);
         if (value != null) {
             switch (scope) {
                 case CONTEXT:
@@ -338,7 +328,6 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession putParamBy(String name, ParamGenerator generator) {
-        RequireUtils.requireNotNull(generator);
         try {
             putParam(name, generator.generate(quickSessionProxy));
         } catch (Exception e) {
@@ -361,7 +350,6 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     private void removeParam(String name, EditableScope scope) {
-        RequireUtils.requireNotNull(name, scope);
         switch (scope) {
             case CONTEXT:
                 request.removeAttribute(name);
@@ -377,7 +365,6 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession mapParam(String name, ParamMapper mapper) {
-        RequireUtils.requireNotNull(mapper);
         Object value = getParam(name);
         try {
             putParam(name, mapper.map(value));
@@ -389,7 +376,6 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession watchParam(String name, Consumer<Object> watcher) {
-        RequireUtils.requireNotNull(watcher);
         watcher.accept(getParam(name));
         return quickSessionProxy;
     }
@@ -402,7 +388,6 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession setSessionBy(String name, ParamGenerator generator) {
-        RequireUtils.requireNotNull(generator);
         try {
             setSession(TemplateExpr.getString(quickSessionProxy, name),
                     generator.generate(quickSessionProxy));
@@ -445,14 +430,12 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession addCookieBy(String name, Function<QuickSession, String> generator) {
-        RequireUtils.requireNotNull(generator);
         addCookie(TemplateExpr.getString(quickSessionProxy, name), generator.apply(quickSessionProxy));
         return quickSessionProxy;
     }
 
     @Override
     public QuickSession addCookieBy(Function<QuickSession, Cookie> generator) {
-        RequireUtils.requireNotNull(generator);
         addCookie(generator.apply(quickSessionProxy));
         return quickSessionProxy;
     }
@@ -470,8 +453,8 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickModal modal(String table) {
-        return QuickModalProxy.of(new QuickModalImpl(quickSessionProxy, table));
+    public QuickModal modal(String... tables) {
+        return QuickModalProxy.of(new QuickModalImpl(quickSessionProxy, tables));
     }
 
     @Override
@@ -489,7 +472,6 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession endTransaction() {
-        RequireUtils.requireNotNull(connection);
         try {
             connection.commit();
         } catch (SQLException e) {
@@ -502,7 +484,6 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession setSavepoint() {
-        RequireUtils.requireNotNull(connection);
         try {
             connection.setSavepoint();
         } catch (SQLException e) {
@@ -513,7 +494,6 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession rollback() {
-        RequireUtils.requireNotNull(connection);
         try {
             connection.rollback();
         } catch (SQLException e) {
@@ -524,7 +504,6 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession commit() {
-        RequireUtils.requireNotNull(connection);
         try {
             connection.commit();
         } catch (SQLException e) {

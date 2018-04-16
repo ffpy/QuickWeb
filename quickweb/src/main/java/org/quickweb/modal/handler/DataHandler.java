@@ -17,8 +17,6 @@ public class DataHandler {
      * @throws SQLException
      */
     public static void handle(QuickSession quickSession, String sql, Action action) throws SQLException {
-        RequireUtils.requireNotNull(quickSession);
-
         // 设置为空值
         setQuickSessionUpdateCount(quickSession, null);
         setQuickSessionGeneratedKey(quickSession, null);

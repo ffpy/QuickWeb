@@ -34,7 +34,7 @@ public class ParamMemberHelper {
         } else {
             // Object
             Method method = null;
-            String upperCaseMember = CharUtils.firstUpperCase(member);
+            String upperCaseMember = CharUtils.upperCaseInitial(member);
             String getMethodName = "get" + upperCaseMember;
             String isMethodName = "is" + upperCaseMember;
 

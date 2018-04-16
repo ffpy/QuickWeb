@@ -1,7 +1,5 @@
 package org.quickweb.template;
 
-import org.quickweb.utils.RequireUtils;
-
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -11,7 +9,6 @@ public class MatcherHelper {
     private final Matcher matcher;
 
     public MatcherHelper(String template) {
-        RequireUtils.requireNotNull(template);
         this.matcher = COMPILE.matcher(template);
     }
 

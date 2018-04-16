@@ -1,7 +1,6 @@
 package org.quickweb.modal;
 
 import org.quickweb.session.QuickSession;
-import org.quickweb.utils.RequireUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -15,7 +14,6 @@ public class QuickModalProxy implements InvocationHandler {
     }
 
     public static QuickModal of(QuickModal quickModal) {
-        RequireUtils.requireNotNull(quickModal);
         QuickModal proxy = (QuickModal) Proxy.newProxyInstance(quickModal.getClass().getClassLoader(),
                 quickModal.getClass().getInterfaces(), new QuickModalProxy(quickModal));
         quickModal.initProxy(proxy);

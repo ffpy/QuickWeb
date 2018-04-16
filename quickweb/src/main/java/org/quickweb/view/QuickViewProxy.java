@@ -1,7 +1,6 @@
 package org.quickweb.view;
 
 import org.quickweb.session.QuickSession;
-import org.quickweb.utils.RequireUtils;
 
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
@@ -15,7 +14,6 @@ public class QuickViewProxy implements InvocationHandler {
     }
 
     public static QuickView of(QuickView quickView) {
-        RequireUtils.requireNotNull(quickView);
         QuickView proxy = (QuickView) Proxy.newProxyInstance(quickView.getClass().getClassLoader(),
                 quickView.getClass().getInterfaces(), new QuickViewProxy(quickView));
         quickView.initProxy(proxy);

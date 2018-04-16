@@ -13,6 +13,13 @@
                 <xs:element name="db">
                     <xs:complexType>
                         <xs:sequence>
+                            <xs:element name="dialect">
+                                <xs:simpleType>
+                                    <xs:restriction base="xs:string">
+                                        <xs:enumeration value="MySQL"/>
+                                    </xs:restriction>
+                                </xs:simpleType>
+                            </xs:element>
                             <xs:element name="driver" type="xs:string"/>
                             <xs:element name="url" type="xs:anyURI"/>
                             <xs:element name="username" type="xs:string"/>

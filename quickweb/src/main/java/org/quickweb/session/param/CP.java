@@ -15,6 +15,15 @@ public class CP {
         return new CP(column, paramName);
     }
 
+    public static CP[] of(String[] columnAndParamNames) {
+        CP[] cps = new CP[columnAndParamNames.length];
+        int i = 0;
+        for (String cp : columnAndParamNames) {
+            cps[i++] = CP.of(cp, cp);
+        }
+        return cps;
+    }
+
     public String getColumn() {
         return column;
     }

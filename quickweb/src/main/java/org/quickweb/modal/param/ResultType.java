@@ -1,4 +1,4 @@
-package org.quickweb.modal;
+package org.quickweb.modal.param;
 
 import java.sql.Date;
 import java.sql.Time;

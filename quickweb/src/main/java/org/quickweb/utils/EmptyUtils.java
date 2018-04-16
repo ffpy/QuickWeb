@@ -9,10 +9,6 @@ import java.util.List;
  */
 public class EmptyUtils {
 
-    public static boolean isEmpty(@Nullable List list) {
-        return list == null || list.isEmpty();
-    }
-
     public static boolean isEmpty(@Nullable Object[] objc) {
         return objc == null || objc.length == 0;
     }

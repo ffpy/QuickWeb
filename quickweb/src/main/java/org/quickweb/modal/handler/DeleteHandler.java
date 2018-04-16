@@ -1,22 +1,22 @@
 package org.quickweb.modal.handler;
 
-import org.quickweb.modal.QuickModal;
-import org.quickweb.modal.SqlParam;
-import org.quickweb.modal.StmtHelper;
-import org.quickweb.template.TemplateExpr;
-import org.quickweb.utils.SqlUtils;
+import org.quickweb.QuickWeb;
+import org.quickweb.modal.param.SqlParam;
+import org.quickweb.modal.param.SqlParamHelper;
+import org.quickweb.modal.param.StmtHelper;
+import org.quickweb.session.QuickSession;
 
 import java.sql.SQLException;
 
 public class DeleteHandler {
 
-    public static void delete(QuickModal quickModal, SqlParam sqlParam) throws SQLException {
-        TemplateExpr whereExpr = new TemplateExpr(quickModal.getQuickSession(), sqlParam.getWhere());
-        String sql = SqlUtils.delete(sqlParam.getTable(), whereExpr.getTemplate());
+    public static void delete(QuickSession quickSession, SqlParam sqlParam) throws SQLException {
+        SqlParamHelper helper = new SqlParamHelper(quickSession, sqlParam);
+        String sql = QuickWeb.getSqlBuilder().delete(helper);
 
-        DataHandler.handle(quickModal.getQuickSession(), sql, (stmt) -> {
-            StmtHelper stmtHelper = new StmtHelper(quickModal.getQuickSession(), stmt);
-            stmtHelper.setParams(whereExpr.getValues());
+        DataHandler.handle(quickSession, sql, (stmt) -> {
+           new StmtHelper(quickSession, stmt)
+                   .setParams(helper.getConditionValues());
             stmt.executeUpdate();
         });
     }

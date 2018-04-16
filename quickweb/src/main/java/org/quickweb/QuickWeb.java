@@ -1,5 +1,7 @@
 package org.quickweb;
 
+import org.quickweb.modal.bulider.MysqlBuilder;
+import org.quickweb.modal.bulider.SqlBuilder;
 import org.quickweb.session.QuickSession;
 import org.quickweb.session.QuickSessionImpl;
 import org.quickweb.session.QuickSessionProxy;
@@ -12,30 +14,48 @@ import java.net.URL;
 
 public class QuickWeb {
     private static QuickWebConfig config;
+    private static SqlBuilder sqlBuilder;
 
-    public static void initConfig() {
+    public static void init() {
         final String CONFIG_FILENAME = "quickweb.xml";
-        initConfig(CONFIG_FILENAME);
+        init(CONFIG_FILENAME);
     }
 
-    public static void initConfig(String configFilename) {
+    public static void init(String configFilename) {
         final String ROOT_NAME = "quickweb";
-
+        // 读取配置文件
         URL resource = QuickWeb.class.getClassLoader().getResource(configFilename);
         if (resource == null)
             ExceptionUtils.throwException("config file " + configFilename + " not found");
+        // 解析配置文件
         config = XMLUtils.fromXML(resource, ROOT_NAME, QuickWebConfig.class);
         if (config == null)
             ExceptionUtils.throwException("parse config file " + configFilename + " fail");
+        initSqlBuilder(config);
+    }
+
+    private static void initSqlBuilder(QuickWebConfig config) {
+        String dialect = config.getDb().getDialect();
+        switch (dialect.toUpperCase()) {
+            case "MYSQL":
+                sqlBuilder = new MysqlBuilder();
+                break;
+            default:
+                ExceptionUtils.throwException("unknown dialect of " + dialect);
+        }
     }
 
     public static QuickSession server(HttpServletRequest request, HttpServletResponse response) {
         if (config == null)
-            initConfig();
+            init();
         return QuickSessionProxy.of(new QuickSessionImpl(request, response));
     }
 
     public static QuickWebConfig getConfig() {
         return config;
+    }
+
+    public static SqlBuilder getSqlBuilder() {
+        return sqlBuilder;
     }
 }

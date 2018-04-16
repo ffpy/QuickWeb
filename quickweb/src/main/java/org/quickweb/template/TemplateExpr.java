@@ -61,6 +61,10 @@ public class TemplateExpr {
     }
 
     public static String getString(QuickSession quickSession, String template) {
+        if (template == null)
+            return null;
+        if (template.isEmpty())
+            return "";
         return new TemplateExpr(quickSession, template).getString();
     }
 }

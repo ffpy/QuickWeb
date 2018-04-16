@@ -1,5 +1,7 @@
 package org.quickweb.modal;
 
+import org.quickweb.modal.param.ResultType;
+import org.quickweb.modal.param.SqlParam;
 import org.quickweb.session.param.CP;
 import org.quickweb.session.QuickSession;
 
@@ -11,7 +13,7 @@ public interface QuickModal {
 
     void initProxy(QuickModal quickModalProxy);
 
-    String getTable();
+    SqlParam getSqlParam();
 
     QuickSession getQuickSession();
 
@@ -35,11 +37,11 @@ public interface QuickModal {
 
     QuickModal limitFrom(String paramName);
 
-    QuickSession insert(String... paramNames);
+    QuickSession insert(String... columnAndParamNames);
 
     QuickSession insert(CP... cps);
 
-    QuickSession update(String... paramNames);
+    QuickSession update(String... columnAndParamNames);
 
     QuickSession update(CP... cps);
 

@@ -20,9 +20,6 @@ public class HelloServlet extends HttpServlet {
     @Override
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         QuickWeb.server(req, resp)
-                .requireParamNotEmpty("name")
-                .modal("name")
-                .insert("name")
                 .view("hello");
     }
 }

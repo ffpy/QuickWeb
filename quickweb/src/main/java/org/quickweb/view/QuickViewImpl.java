@@ -5,7 +5,6 @@ import org.quickweb.QuickWebConfig;
 import org.quickweb.session.QuickSession;
 import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.ExceptionUtils;
-import org.quickweb.utils.RequireUtils;
 import org.quickweb.utils.RequestUtils;
 
 import javax.servlet.ServletException;
@@ -24,7 +23,6 @@ public class QuickViewImpl implements QuickView {
 
     public QuickViewImpl(QuickSession quickSession,
                          HttpServletRequest request, HttpServletResponse response) {
-        RequireUtils.requireNotNull(quickSession, request, response);
         this.quickSession = quickSession;
         this.request = request;
         this.response = response;
@@ -32,7 +30,6 @@ public class QuickViewImpl implements QuickView {
 
     @Override
     public void initProxy(QuickView quickViewProxy) {
-        RequireUtils.requireNotNull(quickViewProxy);
         this.quickViewProxy = quickViewProxy;
     }
 
@@ -53,7 +50,6 @@ public class QuickViewImpl implements QuickView {
 
     @Override
     public void view(String name) {
-        RequireUtils.requireNotNull(name);
         quickSession.end();
 
         name = TemplateExpr.getString(quickSession, name);
@@ -70,8 +66,6 @@ public class QuickViewImpl implements QuickView {
 
     @Override
     public void viewPath(String path) {
-        RequireUtils.requireNotNull(path);
-
         try {
             response.sendRedirect(path);
         } catch (IOException e) {
@@ -108,7 +102,6 @@ public class QuickViewImpl implements QuickView {
     }
 
     private void putParam(String name, Object value) {
-        RequireUtils.requireNotNull(name);
         if (value != null && request.getAttribute(name) == null)
             request.setAttribute(name, value);
     }

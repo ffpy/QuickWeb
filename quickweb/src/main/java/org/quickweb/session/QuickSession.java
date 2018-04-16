@@ -1,7 +1,7 @@
 package org.quickweb.session;
 
 import com.sun.istack.internal.Nullable;
-import org.quickweb.error.ErrorHandler;
+import org.quickweb.session.error.ErrorHandler;
 import org.quickweb.modal.QuickModal;
 import org.quickweb.session.action.ExecSQLAction;
 import org.quickweb.session.action.RequireEmptyAction;
@@ -100,7 +100,7 @@ public interface QuickSession {
 
     QuickSession removeCookie(String name);
 
-    QuickModal modal(String table);
+    QuickModal modal(String... tables);
 
     QuickSession execSQL(String sql);
 

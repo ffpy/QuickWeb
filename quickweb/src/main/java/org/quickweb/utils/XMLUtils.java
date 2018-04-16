@@ -9,8 +9,6 @@ public class XMLUtils {
 
     @SuppressWarnings("unchecked")
     public static <T> T fromXML(URL url, String rootName, Class<T> resultType) {
-        RequireUtils.requireNotNull(url, rootName, resultType);
-
         XStream xStream = new XStream(new DomDriver());
         XStream.setupDefaultSecurity(xStream);
         xStream.allowTypeHierarchy(resultType);

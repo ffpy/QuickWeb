@@ -58,11 +58,20 @@ public class QuickWebConfig {
     }
 
     public static class DB {
+        private String dialect;
         private String driver;
         private String url;
         private String username;
         private String password;
         private boolean showSql;
+
+        public String getDialect() {
+            return dialect;
+        }
+
+        public void setDialect(String dialect) {
+            this.dialect = dialect;
+        }
 
         public String getDriver() {
             return driver;
@@ -107,7 +116,8 @@ public class QuickWebConfig {
         @Override
         public String toString() {
             return "DB{" +
-                    "driver='" + driver + '\'' +
+                    "dialect='" + dialect + '\'' +
+                    ", driver='" + driver + '\'' +
                     ", url='" + url + '\'' +
                     ", username='" + username + '\'' +
                     ", password='" + password + '\'' +

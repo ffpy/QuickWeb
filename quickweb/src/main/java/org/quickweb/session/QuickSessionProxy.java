@@ -1,7 +1,5 @@
 package org.quickweb.session;
 
-import org.quickweb.utils.RequireUtils;
-
 import java.lang.reflect.InvocationHandler;
 import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
@@ -15,7 +13,6 @@ public class QuickSessionProxy implements InvocationHandler {
     }
 
     public static QuickSession of(QuickSession quickSession) {
-        RequireUtils.requireNotNull(quickSession);
         QuickSession proxy = (QuickSession) Proxy.newProxyInstance(quickSession.getClass().getClassLoader(),
                 quickSession.getClass().getInterfaces(), new QuickSessionProxy(quickSession));
         quickSession.initProxy(proxy);

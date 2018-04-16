@@ -1,10 +1,14 @@
 package org.quickweb.modal.handler;
 
-import org.apache.commons.lang3.StringUtils;
+import org.quickweb.QuickWeb;
 import org.quickweb.modal.*;
+import org.quickweb.modal.param.ResultType;
+import org.quickweb.modal.param.SqlParam;
+import org.quickweb.modal.param.SqlParamHelper;
+import org.quickweb.modal.param.StmtHelper;
+import org.quickweb.session.QuickSession;
 import org.quickweb.template.TemplateExpr;
-import org.quickweb.utils.RequireUtils;
-import org.quickweb.utils.SqlUtils;
+import org.quickweb.utils.EmptyUtils;
 
 import java.sql.ResultSet;
 import java.sql.ResultSetMetaData;
@@ -16,9 +20,9 @@ import java.util.Map;
 
 public class QueryHandler {
 
-    public static void find(QuickModal quickModal, String paramName,
+    public static void find(QuickSession quickSession, String paramName,
                             SqlParam sqlParam) throws SQLException {
-        findAction(quickModal, sqlParam, (stmt, rs) -> {
+        findAction(quickSession, sqlParam, (stmt, rs) -> {
             List<Map<String, Object>> rowList = new ArrayList<>();
             ResultSetMetaData metaData = rs.getMetaData();
 
@@ -30,20 +34,19 @@ public class QueryHandler {
                 }
                 rowList.add(rowMap);
             }
-            quickModal.getQuickSession().putParam(paramName, rowList);
+            quickSession.putParam(paramName, rowList);
         });
     }
 
-    public static void find(QuickModal quickModal, SqlParam sqlParam,
+    public static void find(QuickSession quickSession, SqlParam sqlParam,
                             OnQueryResult onQueryResult) throws SQLException {
-        RequireUtils.requireNotNull(onQueryResult);
-        findAction(quickModal, sqlParam, (stmt, rs) ->
-                onQueryResult.onResult(rs, quickModal.getQuickSession()));
+        findAction(quickSession, sqlParam, (stmt, rs) ->
+                onQueryResult.onResult(rs, quickSession));
     }
 
-    public static void findFirst(QuickModal quickModal, String paramName,
+    public static void findFirst(QuickSession quickSession, String paramName,
                                  SqlParam sqlParam) throws SQLException {
-        findAction(quickModal, sqlParam, (stmt, rs) -> {
+        findAction(quickSession, sqlParam, (stmt, rs) -> {
             ResultSetMetaData metaData = rs.getMetaData();
             Map<String, Object> rowMap = new HashMap<>();
             if (rs.next()) {
@@ -52,63 +55,52 @@ public class QueryHandler {
                     rowMap.put(metaData.getColumnLabel(i), obj);
                 }
             }
-            quickModal.getQuickSession().putParam(paramName, rowMap);
+            quickSession.putParam(paramName, rowMap);
         });
     }
 
-    public static void count(QuickModal quickModal, String paramName,
+    public static void count(QuickSession quickSession, String paramName,
                              SqlParam sqlParam) throws SQLException {
-        aggregateAction(quickModal, paramName, "*", sqlParam, "COUNT", ResultType.INT);
+        aggregateAction(quickSession, paramName, "*", sqlParam, "COUNT", ResultType.INT);
     }
 
-    public static void avg(QuickModal quickModal, String paramName, String column,
+    public static void avg(QuickSession quickSession, String paramName, String column,
                            SqlParam sqlParam) throws SQLException {
-        aggregateAction(quickModal, paramName, column, sqlParam, "AVG", ResultType.DOUBLE);
+        aggregateAction(quickSession, paramName, column, sqlParam, "AVG", ResultType.DOUBLE);
     }
 
-    public static void max(QuickModal quickModal, String paramName, String column,
+    public static void max(QuickSession quickSession, String paramName, String column,
                            SqlParam sqlParam, ResultType resultType) throws SQLException {
-        aggregateAction(quickModal, paramName, column, sqlParam, "MAX", resultType);
+        aggregateAction(quickSession, paramName, column, sqlParam, "MAX", resultType);
     }
 
-    public static void min(QuickModal quickModal, String paramName, String column,
+    public static void min(QuickSession quickSession, String paramName, String column,
                            SqlParam sqlParam, ResultType resultType) throws SQLException {
-        aggregateAction(quickModal, paramName, column, sqlParam, "MIN", resultType);
+        aggregateAction(quickSession, paramName, column, sqlParam, "MIN", resultType);
     }
 
-    public static void sum(QuickModal quickModal, String paramName, String column,
+    public static void sum(QuickSession quickSession, String paramName, String column,
                            SqlParam sqlParam, ResultType resultType) throws SQLException {
-        aggregateAction(quickModal, paramName, column, sqlParam, "SUM", resultType);
+        aggregateAction(quickSession, paramName, column, sqlParam, "SUM", resultType);
     }
 
     /**
      * 处理查询操作
-     * @param quickModal
-     * @param sqlParam
-     * @param action
-     * @throws SQLException
      */
-    private static void findAction(QuickModal quickModal, SqlParam sqlParam,
+    private static void findAction(QuickSession quickSession, SqlParam sqlParam,
                                    QueryAction action) throws SQLException {
-        RequireUtils.requireNotNull(sqlParam, action);
+        if (EmptyUtils.isEmpty(sqlParam.getColumns()))
+            sqlParam.setColumns(new String[]{"*"});
 
-        String select = sqlParam.getSelect();
-        if (StringUtils.isEmpty(select))
-            select = "*";
+        SqlParamHelper helper = new SqlParamHelper(quickSession, sqlParam);
 
-        TemplateExpr selectExpr = new TemplateExpr(quickModal.getQuickSession(), select);
-        TemplateExpr whereExpr = new TemplateExpr(quickModal.getQuickSession(), sqlParam.getWhere());
-        TemplateExpr orderExpr = new TemplateExpr(quickModal.getQuickSession(), sqlParam.getOrder());
+        String sql = QuickWeb.getSqlBuilder().find(helper);
 
-        String sql = SqlUtils.find(sqlParam.getTable(), selectExpr.getTemplate(),
-                whereExpr.getTemplate(), orderExpr.getTemplate(), sqlParam.getOffset(),
-                sqlParam.getLimit());
-
-        DataHandler.handle(quickModal.getQuickSession(), sql, (stmt) -> {
-            StmtHelper stmtHelper = new StmtHelper(quickModal.getQuickSession(), stmt);
-            stmtHelper.setParams(selectExpr.getValues());
-            stmtHelper.setParams(whereExpr.getValues());
-            stmtHelper.setParams(orderExpr.getValues());
+        DataHandler.handle(quickSession, sql, (stmt) -> {
+            new StmtHelper(quickSession, stmt)
+                    .setParams(helper.getColumnValues())
+                    .setParams(helper.getConditionValues())
+                    .setParams(helper.getOrderValues());
 
             ResultSet rs = stmt.executeQuery();
             action.act(stmt, rs);
@@ -118,25 +110,15 @@ public class QueryHandler {
 
     /**
      * 处理聚合函数操作
-     * @param quickModal
-     * @param paramName
-     * @param column
-     * @param sqlParam
-     * @param method
-     * @param resultType
-     * @throws SQLException
      */
-    private static void aggregateAction(QuickModal quickModal, String paramName,
+    private static void aggregateAction(QuickSession quickSession, String paramName,
                                         String column, SqlParam sqlParam,
                                         String method, ResultType resultType) throws SQLException {
-        RequireUtils.requireNotEmpty(method, column);
-        RequireUtils.requireNotNull(resultType);
+        column = TemplateExpr.getString(quickSession, column);
 
-        column = TemplateExpr.getString(quickModal.getQuickSession(), column);
+        sqlParam.setColumns(new String[]{method + "(" + column + ")"});
 
-        sqlParam.setSelect(method + "(" + column + ")");
-
-        findAction(quickModal, sqlParam, (stmt, rs) -> {
+        findAction(quickSession, sqlParam, (stmt, rs) -> {
             if (rs.next()) {
                 Object value;
                 if (resultType == null)
@@ -144,7 +126,7 @@ public class QueryHandler {
                 else
                     value = rs.getObject(1, resultType.getType());
 
-                quickModal.getQuickSession().putParam(paramName, value);
+                quickSession.putParam(paramName, value);
             }
         });
     }

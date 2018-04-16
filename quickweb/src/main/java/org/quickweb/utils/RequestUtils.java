@@ -12,8 +12,6 @@ public class RequestUtils {
     }
 
     public static String getParam(HttpServletRequest request, String name, String charset) {
-        RequireUtils.requireNotNull(request, name, charset);
-
         try {
             return convertCharset(request.getParameter(name), charset);
         } catch (UnsupportedEncodingException e) {

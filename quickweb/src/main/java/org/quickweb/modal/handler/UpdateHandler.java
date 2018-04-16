@@ -1,37 +1,32 @@
 package org.quickweb.modal.handler;
 
-import org.quickweb.modal.QuickModal;
-import org.quickweb.modal.SqlParam;
-import org.quickweb.modal.StmtHelper;
+import org.quickweb.QuickWeb;
+import org.quickweb.modal.param.SqlParam;
+import org.quickweb.modal.param.SqlParamHelper;
+import org.quickweb.modal.param.StmtHelper;
+import org.quickweb.session.QuickSession;
 import org.quickweb.session.param.CP;
-import org.quickweb.template.TemplateExpr;
-import org.quickweb.utils.ColumnUtils;
-import org.quickweb.utils.SqlUtils;
 
 import java.sql.SQLException;
 
 public class UpdateHandler {
 
-    public static void update(QuickModal quickModal, String[] columnAndParams,
+    public static void update(QuickSession quickSession, CP[] cps,
                               SqlParam sqlParam) throws SQLException {
-        update(quickModal, ColumnUtils.getColumns(columnAndParams), columnAndParams, sqlParam);
+        update(quickSession, CP.getColumns(cps), CP.getParamNames(cps), sqlParam);
     }
 
-    public static void update(QuickModal quickModal, CP[] cps,
+    public static void update(QuickSession quickSession, String[] columns, String[] params,
                               SqlParam sqlParam) throws SQLException {
-        update(quickModal, CP.getColumns(cps), CP.getParamNames(cps), sqlParam);
-    }
+        sqlParam.setColumns(columns);
 
-    public static void update(QuickModal quickModal, String[] columns, String[] params,
-                              SqlParam sqlParam) throws SQLException {
-        TemplateExpr whereExpr = new TemplateExpr(quickModal.getQuickSession(), sqlParam.getWhere());
+        SqlParamHelper helper = new SqlParamHelper(quickSession, sqlParam);
+        String sql = QuickWeb.getSqlBuilder().update(helper);
 
-        String sql = SqlUtils.update(sqlParam.getTable(), columns, whereExpr.getTemplate());
-
-        DataHandler.handle(quickModal.getQuickSession(), sql, (stmt) -> {
-            StmtHelper stmtHelper = new StmtHelper(quickModal.getQuickSession(), stmt);
-            stmtHelper.setParams(params);
-            stmtHelper.setParams(whereExpr.getValues());
+        DataHandler.handle(quickSession, sql, (stmt) -> {
+            new StmtHelper(quickSession, stmt)
+                    .setParams(params)
+                    .setParams(helper.getConditionValues());
             stmt.executeUpdate();
         });
     }

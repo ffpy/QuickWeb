@@ -1,30 +1,30 @@
 package org.quickweb.modal.handler;
 
-import org.quickweb.modal.QuickModal;
-import org.quickweb.modal.SqlParam;
-import org.quickweb.modal.StmtHelper;
+import org.quickweb.QuickWeb;
+import org.quickweb.modal.param.SqlParam;
+import org.quickweb.modal.param.SqlParamHelper;
+import org.quickweb.modal.param.StmtHelper;
+import org.quickweb.session.QuickSession;
 import org.quickweb.session.param.CP;
-import org.quickweb.utils.ColumnUtils;
-import org.quickweb.utils.SqlUtils;
 
 import java.sql.SQLException;
 
 public class InsertHandler {
 
-    public static void insert(QuickModal quickModal, String[] columnAndParams,
-                              SqlParam sqlParam) throws SQLException {
-        insert(quickModal, ColumnUtils.getColumns(columnAndParams), columnAndParams, sqlParam);
+    public static void insert(QuickSession quickSession, CP[] cps, SqlParam sqlParam) throws SQLException {
+        insert(quickSession, CP.getColumns(cps), CP.getParamNames(cps), sqlParam);
     }
 
-    public static void insert(QuickModal quickModal, CP[] cps, SqlParam sqlParam) throws SQLException {
-        insert(quickModal, CP.getColumns(cps), CP.getParamNames(cps), sqlParam);
-    }
-
-    public static void insert(QuickModal quickModal, String[] columns, String[] paramNames,
+    public static void insert(QuickSession quickSession, String[] columns, String[] paramNames,
                               SqlParam sqlParam) throws SQLException {
-        String sql = SqlUtils.insert(sqlParam.getTable(), columns);
-        DataHandler.handle(quickModal.getQuickSession(), sql, (stmt) -> {
-            new StmtHelper(quickModal.getQuickSession(), stmt).setParams(paramNames);
+        sqlParam.setColumns(columns);
+
+        SqlParamHelper helper = new SqlParamHelper(quickSession, sqlParam);
+        String sql = QuickWeb.getSqlBuilder().insert(helper);
+
+        DataHandler.handle(quickSession, sql, (stmt) -> {
+            new StmtHelper(quickSession, stmt)
+                    .setParams(paramNames);
             stmt.executeUpdate();
         });
     }
