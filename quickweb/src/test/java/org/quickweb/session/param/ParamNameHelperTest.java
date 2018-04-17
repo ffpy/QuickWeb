@@ -195,9 +195,9 @@ public class ParamNameHelperTest {
             assertEquals(paramName, helper.getName());
             assertEquals(members, helper.getMembers());
             assertEquals(scope, helper.getScope());
-            for (ParamMember aMemberArr : memberArr) {
+            for (ParamMember member : memberArr) {
                 assertEquals(true, helper.hasMember());
-                assertEquals(aMemberArr, helper.findMember());
+                assertEquals(member, helper.findMember());
             }
             assertEquals(false, helper.hasMember());
         } catch (Exception e) {

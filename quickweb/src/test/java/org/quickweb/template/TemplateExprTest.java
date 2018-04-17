@@ -31,34 +31,41 @@ public class TemplateExprTest {
                         "name",
                 },
                 {   // 1
+                        "$name",
+                        "?",
+                        Arrays.asList("aaa"),
+                        createMap(entry("name", "aaa")),
+                        "aaa",
+                },
+                {   // 2
                         "name = $name",
                         "name = ?",
                         Arrays.asList("aaa"),
                         createMap(entry("name", "aaa")),
                         "name = aaa",
                 },
-                {   // 2
+                {   // 3
                         "age = $age",
                         "age = ?",
                         Arrays.asList(10),
                         createMap(entry("age", 10)),
                         "age = 10",
                 },
-                {   // 3
+                {   // 4
                         "name = $name and age = $age",
                         "name = ? and age = ?",
                         Arrays.asList("aaa", 10),
                         createMap(entry("name", "aaa"), entry("age", 10)),
                         "name = aaa and age = 10",
                 },
-                {   // 4
+                {   // 5
                         "name = $name and age = $age or id = $ids[1]",
                         "name = ? and age = ? or id = ?",
                         Arrays.asList("aaa", 10, 1),
                         createMap(entry("name", "aaa"), entry("age", 10), entry("ids[1]", 1)),
                         "name = aaa and age = 10 or id = 1",
                 },
-                {   // 5
+                {   // 6
                         "$user.username",
                         "?",
                         Arrays.asList("uuu"),

@@ -13,9 +13,9 @@ public class MysqlBuilder implements SqlBuilder {
 
     @Override
     public String insert(SqlParamHelper helper) {
-        return "INSERT INTO " + helper.getTable() +
+        return "INSERT INTO " + helper.getFirstTable() +
                 "(" + helper.getColumn() + ")" +
-                " VALUES(" + buildPlaceholders(helper.getSqlParam().getColumns().length) + ")";
+                " VALUES(" + buildPlaceholders(helper.getColumnCount()) + ")";
     }
 
     @Override
@@ -24,25 +24,24 @@ public class MysqlBuilder implements SqlBuilder {
                 .map(param -> param + " = ?")
                 .collect(Collectors.toList());
 
-        String sql = "UPDATE " + helper.getTable() +
+        String sql = "UPDATE " + helper.getFirstTable() +
                 " SET " + StringUtils.join(sets, ',');
-        sql += buildWhere(helper.getCondition());
+        sql += concat(" WHERE ", helper.getCondition());
         return sql;
     }
 
     @Override
     public String delete(SqlParamHelper helper) {
-        String sql = "DELETE FROM " + helper.getTable();
-        sql += buildWhere(helper.getCondition());
+        String sql = "DELETE FROM " + helper.getFirstTable();
+        sql += concat(" WHERE ", helper.getCondition());
         return sql;
     }
 
     @Override
     public String find(SqlParamHelper helper) {
         String sql = "SELECT " + helper.getColumn() + " FROM " + helper.getTable();
-        sql += buildWhere(helper.getCondition());
-        if (!StringUtils.isEmpty(helper.getOrder()))
-            sql += " ORDER BY " + helper.getOrder();
+        sql += concat(" WHERE ", helper.getCondition());
+        sql += concat(" ORDER BY ", helper.getOrder());
         if (helper.getLimit() >= 0) {
             sql += " LIMIT " + helper.getLimit();
             if (helper.getOffset() >= 0)
@@ -51,13 +50,10 @@ public class MysqlBuilder implements SqlBuilder {
         return sql;
     }
 
-    /**
-     * 生成where子句
-     */
-    protected String buildWhere(@Nullable String condition) {
-        if (StringUtils.isEmpty(condition))
+    protected String concat(String prefix, @Nullable String content) {
+        if (StringUtils.isEmpty(content))
             return "";
-        return " WHERE " + condition;
+        return prefix + content;
     }
 
     /**

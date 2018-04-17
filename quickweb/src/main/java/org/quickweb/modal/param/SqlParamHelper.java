@@ -31,6 +31,12 @@ public class SqlParamHelper {
         return StringUtils.join(sqlParam.getTables(), SEPARATOR);
     }
 
+    public String getFirstTable() {
+        if (EmptyUtils.isEmpty(sqlParam.getTables()))
+            return "";
+        return sqlParam.getTables()[0];
+    }
+
     public String getColumn() {
         if (EmptyUtils.isEmpty(sqlParam.getColumns()))
             return "";
@@ -39,6 +45,12 @@ public class SqlParamHelper {
         if (columnExpr == null)
             columnExpr = new TemplateExpr(quickSession, column);
         return columnExpr.getTemplate(PLACEHOLDER);
+    }
+
+    public int getColumnCount() {
+        if (sqlParam.getColumns() == null)
+            return 0;
+        return sqlParam.getColumns().length;
     }
 
     public List<Object> getColumnValues() {
