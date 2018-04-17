@@ -1,7 +1,5 @@
 package org.quickweb.session.param;
 
-import java.util.Objects;
-
 public class ParamMember {
     private String member;
     private boolean isArrayMember;
@@ -17,21 +15,6 @@ public class ParamMember {
 
     public boolean isArrayMember() {
         return isArrayMember;
-    }
-
-    @Override
-    public boolean equals(Object o) {
-        if (this == o) return true;
-        if (!(o instanceof ParamMember)) return false;
-        ParamMember that = (ParamMember) o;
-        return isArrayMember == that.isArrayMember &&
-                Objects.equals(member, that.member);
-    }
-
-    @Override
-    public int hashCode() {
-
-        return Objects.hash(member, isArrayMember);
     }
 
     @Override
