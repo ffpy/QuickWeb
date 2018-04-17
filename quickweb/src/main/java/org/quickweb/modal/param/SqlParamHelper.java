@@ -28,7 +28,10 @@ public class SqlParamHelper {
     }
 
     public String getTable() {
-        return StringUtils.join(sqlParam.getTables(), SEPARATOR);
+        String s = StringUtils.join(sqlParam.getTables(), SEPARATOR);
+        if (s == null)
+            s = "";
+        return s;
     }
 
     public String getFirstTable() {
@@ -44,7 +47,7 @@ public class SqlParamHelper {
         String column = StringUtils.join(sqlParam.getColumns(), SEPARATOR);
         if (columnExpr == null)
             columnExpr = new TemplateExpr(quickSession, column);
-        return columnExpr.getTemplate(PLACEHOLDER);
+        return columnExpr.getPlaceholderString(PLACEHOLDER);
     }
 
     public int getColumnCount() {
@@ -57,6 +60,9 @@ public class SqlParamHelper {
         if (EmptyUtils.isEmpty(sqlParam.getColumns()))
             return Collections.emptyList();
 
+        if (columnExpr == null)
+            getColumn();
+
         return columnExpr.getValues();
     }
 
@@ -66,12 +72,15 @@ public class SqlParamHelper {
 
         if (conditionExpr == null)
             conditionExpr = new TemplateExpr(quickSession, sqlParam.getCondition());
-        return conditionExpr.getTemplate(PLACEHOLDER);
+        return conditionExpr.getPlaceholderString(PLACEHOLDER);
     }
 
     public List<Object> getConditionValues() {
         if (StringUtils.isEmpty(sqlParam.getCondition()))
             return Collections.emptyList();
+
+        if (conditionExpr == null)
+            getCondition();
 
         return conditionExpr.getValues();
     }
@@ -83,12 +92,15 @@ public class SqlParamHelper {
         String order = StringUtils.join(sqlParam.getOrders(), SEPARATOR);
         if (orderExpr == null)
             orderExpr = new TemplateExpr(quickSession, order);
-        return orderExpr.getTemplate(PLACEHOLDER);
+        return orderExpr.getPlaceholderString(PLACEHOLDER);
     }
 
     public List<Object> getOrderValues() {
         if (EmptyUtils.isEmpty(sqlParam.getOrders()))
             return Collections.emptyList();
+
+        if (orderExpr == null)
+            getOrder();
 
         return orderExpr.getValues();
     }

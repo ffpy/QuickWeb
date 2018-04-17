@@ -30,11 +30,11 @@ public class TemplateExpr {
         return s;
     }
 
-    public String getTemplate() {
-        return getTemplate("?");
+    public String getPlaceholderString() {
+        return getPlaceholderString("?");
     }
 
-    public String getTemplate(String placeholder) {
+    public String getPlaceholderString(String placeholder) {
         return template.replaceAll(MatcherHelper.PATTERN, placeholder);
     }
 

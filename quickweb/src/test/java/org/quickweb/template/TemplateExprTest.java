@@ -89,7 +89,7 @@ public class TemplateExprTest {
     @Test
     public void test() {
         TemplateExpr expr = new TemplateExpr(quickSession, s);
-        assertEquals(template, expr.getTemplate());
+        assertEquals(template, expr.getPlaceholderString());
         assertEquals(values, expr.getValues());
         assertEquals(paramMap, expr.getParamMap());
         assertEquals(outputString, expr.getString());

@@ -542,7 +542,7 @@ public class QuickSessionImpl implements QuickSession {
     public QuickSession execSQL(String sql, ExecSQLAction action) {
         TemplateExpr expr = new TemplateExpr(quickSessionProxy, sql);
         try {
-            DataHandler.handle(quickSessionProxy, expr.getTemplate(), (stmt) -> {
+            DataHandler.handle(quickSessionProxy, expr.getPlaceholderString(), (stmt) -> {
                 new StmtHelper(quickSessionProxy, stmt).setParams(expr.getValues());
                 stmt.execute();
                 if (action != null)
