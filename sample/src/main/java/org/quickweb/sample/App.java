@@ -1,10 +1,6 @@
 package org.quickweb.sample;
 
-import org.quickweb.session.param.ParamHelper;
-
-import java.util.Arrays;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
+import org.quickweb.session.param.ParamNameHelper;
 
 public class App {
     public static void main(String[] args) {
@@ -20,9 +16,9 @@ public class App {
 //        }
 
         String s = "x:name[2][1].aaa.bbb";
-        ParamHelper helper = new ParamHelper(s);
+        ParamNameHelper helper = new ParamNameHelper(s);
         System.out.println(helper.getScopeName());
-        System.out.println(helper.getParamName());
+        System.out.println(helper.getName());
         System.out.println(helper.getMembers());
         while (helper.hasMember()) {
             System.out.println(helper.findMember());

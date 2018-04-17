@@ -15,9 +15,8 @@ public class RequestUtils {
         try {
             return convertCharset(request.getParameter(name), charset);
         } catch (UnsupportedEncodingException e) {
-            ExceptionUtils.throwException(e);
+            throw ExceptionUtils.exception(e);
         }
-        return null;
     }
 
     private static String convertCharset(String s, String charset) throws UnsupportedEncodingException {

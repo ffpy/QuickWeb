@@ -60,7 +60,7 @@ public class QuickViewImpl implements QuickView {
         try {
             request.getRequestDispatcher(path).forward(request, response);
         } catch (ServletException | IOException e) {
-            ExceptionUtils.throwException(e);
+            throw ExceptionUtils.exception(e);
         }
     }
 
@@ -69,7 +69,7 @@ public class QuickViewImpl implements QuickView {
         try {
             response.sendRedirect(path);
         } catch (IOException e) {
-            ExceptionUtils.throwException(e);
+            throw ExceptionUtils.exception(e);
         }
     }
 

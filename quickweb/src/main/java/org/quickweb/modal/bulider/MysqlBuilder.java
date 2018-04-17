@@ -65,7 +65,7 @@ public class MysqlBuilder implements SqlBuilder {
      */
     protected String buildPlaceholders(int n) {
         if (n <= 0)
-            ExceptionUtils.throwMustMoreThanException("n", 0);
+            throw ExceptionUtils.mustMoreThan("n", 0);
 
         char[] placeholders = new char[n];
         for (int i = 0; i < n; i++) {

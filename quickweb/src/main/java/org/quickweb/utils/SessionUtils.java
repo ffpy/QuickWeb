@@ -10,11 +10,12 @@ public class SessionUtils {
     public static void setAttribute(HttpServletRequest request, String name, @Nullable Object value) {
         HttpSession session = request.getSession(true);
         if (session == null)
-            ExceptionUtils.throwException("get session fail");
+            throw ExceptionUtils.exception("get session fail");
         else
             session.setAttribute(name, value);
     }
 
+    @SuppressWarnings("unchecked")
     public static <T> T getAttribute(HttpServletRequest request, String name) {
         HttpSession session = request.getSession(false);
         if (session != null)

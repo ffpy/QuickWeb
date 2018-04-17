@@ -9,8 +9,6 @@ import org.quickweb.session.QuickSession;
 import org.quickweb.utils.ExceptionUtils;
 
 import java.sql.SQLException;
-import java.util.Arrays;
-import java.util.stream.Collectors;
 
 public class QuickModalImpl implements QuickModal {
     private QuickModal quickModalProxy;
@@ -47,12 +45,12 @@ public class QuickModalImpl implements QuickModal {
     public QuickModal selectFrom(String paramName) {
         Object value = quickSession.getParam(paramName);
         if (value == null)
-            ExceptionUtils.throwParamNotExistsException(paramName);
+            throw ExceptionUtils.paramNotExists(paramName);
 
         if (value instanceof String[]){
             sqlParam.setColumns((String[]) value);
         } else {
-            ExceptionUtils.throwUnsupportedClassException(value.getClass(), "String[]");
+            throw ExceptionUtils.unsupportedClass(value.getClass(), "String[]");
         }
         return quickModalProxy;
     }
@@ -67,11 +65,11 @@ public class QuickModalImpl implements QuickModal {
     public QuickModal whereFrom(String paramName) {
         Object value = quickSession.getParam(paramName);
         if (value == null)
-            ExceptionUtils.throwParamNotExistsException(paramName);
+            throw ExceptionUtils.paramNotExists(paramName);
         if (value instanceof String) {
             sqlParam.setCondition((String) value);
         } else {
-            ExceptionUtils.throwUnsupportedClassException(value.getClass(), "String");
+            throw ExceptionUtils.unsupportedClass(value.getClass(), "String");
         }
         return quickModalProxy;
     }
@@ -86,13 +84,13 @@ public class QuickModalImpl implements QuickModal {
     public QuickModal orderFrom(String paramName) {
         Object value = quickSession.getParam(paramName);
         if (value == null)
-            ExceptionUtils.throwParamNotExistsException(paramName);
+            throw ExceptionUtils.paramNotExists(paramName);
         if (value instanceof String) {
             sqlParam.setOrders(StringUtils.split((String) value, ','));
         } else if (value instanceof String[]) {
             sqlParam.setOrders((String[]) value);
         } else {
-            ExceptionUtils.throwUnsupportedClassException(value.getClass(), "String", "String[]");
+            throw ExceptionUtils.unsupportedClass(value.getClass(), "String", "String[]");
         }
         return quickModalProxy;
     }
@@ -107,11 +105,11 @@ public class QuickModalImpl implements QuickModal {
     public QuickModal offsetFrom(String paramName) {
         Object value = quickSession.getParam(paramName);
         if (value == null)
-            ExceptionUtils.throwParamNotExistsException(paramName);
+            throw ExceptionUtils.paramNotExists(paramName);
         if (value instanceof Integer) {
             sqlParam.setOffset((Integer) value);
         } else {
-            ExceptionUtils.throwUnsupportedClassException(value.getClass(), "Integer");
+            throw ExceptionUtils.unsupportedClass(value.getClass(), "Integer");
         }
         return quickModalProxy;
     }
@@ -126,11 +124,11 @@ public class QuickModalImpl implements QuickModal {
     public QuickModal limitFrom(String paramName) {
         Object value = quickSession.getParam(paramName);
         if (value == null)
-            ExceptionUtils.throwParamNotExistsException(paramName);
+            throw ExceptionUtils.paramNotExists(paramName);
         if (value instanceof Integer) {
             sqlParam.setLimit((Integer) value);
         } else {
-            ExceptionUtils.throwUnsupportedClassException(value.getClass(), "Integer");
+            throw ExceptionUtils.unsupportedClass(value.getClass(), "Integer");
         }
         return quickModalProxy;
     }

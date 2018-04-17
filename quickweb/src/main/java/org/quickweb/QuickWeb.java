@@ -26,11 +26,11 @@ public class QuickWeb {
         // 读取配置文件
         URL resource = QuickWeb.class.getClassLoader().getResource(configFilename);
         if (resource == null)
-            ExceptionUtils.throwException("config file " + configFilename + " not found");
+            throw ExceptionUtils.exception("config file " + configFilename + " not found");
         // 解析配置文件
         config = XMLUtils.fromXML(resource, ROOT_NAME, QuickWebConfig.class);
         if (config == null)
-            ExceptionUtils.throwException("parse config file " + configFilename + " fail");
+            throw ExceptionUtils.exception("parse config file " + configFilename + " fail");
         initSqlBuilder(config);
     }
 
@@ -41,7 +41,7 @@ public class QuickWeb {
                 sqlBuilder = new MysqlBuilder();
                 break;
             default:
-                ExceptionUtils.throwException("unknown dialect of " + dialect);
+                throw ExceptionUtils.exception("unknown dialect of " + dialect);
         }
     }
 

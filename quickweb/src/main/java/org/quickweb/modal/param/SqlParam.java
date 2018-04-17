@@ -50,7 +50,7 @@ public class SqlParam {
 
     public void setOffset(int value) {
         if (value < 0)
-            ExceptionUtils.throwMustMoreThanException("offset", -1);
+            throw ExceptionUtils.mustMoreThan("offset", -1);
         this.offset = value;
     }
 
@@ -60,7 +60,7 @@ public class SqlParam {
 
     public void setLimit(int value) {
         if (value < 0)
-            ExceptionUtils.throwMustMoreThanException("limit", -1);
+            throw ExceptionUtils.mustMoreThan("limit", -1);
         this.limit = value;
     }
 

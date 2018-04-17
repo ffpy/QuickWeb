@@ -10,13 +10,13 @@ import java.util.Map;
 
 public class ParamMemberHelper {
 
-    public static Object getMemberValue(Object value, ParamHelper paramHelper) {
+    public static Object getMemberValue(Object value, ParamNameHelper paramNameHelper) {
         if (value == null)
             return null;
-        if (!paramHelper.hasMember())
+        if (!paramNameHelper.hasMember())
             return value;
 
-        ParamMember paramMember = paramHelper.findMember();
+        ParamMember paramMember = paramNameHelper.findMember();
         String member = paramMember.getMember();
 
         if (value instanceof Object[] && paramMember.isArrayMember()) {
@@ -52,25 +52,24 @@ public class ParamMemberHelper {
             }
 
             if (method == null)
-                ExceptionUtils.throwException("the getter method of " + member + " is not found" +
+                throw ExceptionUtils.exception("the getter method of " + member + " is not found" +
                         ", the expected method is " + getMethodName + " or " + isMethodName);
 
             try {
                 value = method.invoke(value);
             } catch (IllegalAccessException | InvocationTargetException e) {
-                ExceptionUtils.throwException(e);
+                throw ExceptionUtils.exception(e);
             }
         }
 
-        return getMemberValue(value, paramHelper);
+        return getMemberValue(value, paramNameHelper);
     }
 
     private static int getIndexMember(String member) {
         try {
             return Integer.parseInt(member);
         } catch (NumberFormatException e) {
-            ExceptionUtils.throwException("the index must be integer", e);
+            throw ExceptionUtils.exception("the index must be integer", e);
         }
-        return 0;
     }
 }

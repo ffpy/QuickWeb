@@ -7,44 +7,44 @@ import org.quickweb.session.scope.IScope;
 
 public class ExceptionUtils {
 
-    public static void throwScopeNotMatchedException(IScope scope) {
-        throwException("scope not matched, the value is " + scope);
+    public static QuickWebException scopeNotMatched(IScope scope) {
+        return exception("scope not matched, the value is " + scope);
     }
 
-    public static void throwUnknownScopeException(String scopeName) {
-        throwException("unknown scope of " + scopeName);
+    public static QuickWebException unknownScope(String scopeName) {
+        return exception("unknown scope of " + scopeName);
     }
 
-    public static void throwNotEditableParamScope(Scope scope) {
-        throwException(scope + " is not EditableParamScope");
+    public static QuickWebException notEditableParamScope(Scope scope) {
+        return exception(scope + " is not EditableParamScope");
     }
 
-    public static void throwMustMoreThanException(String paramName, int value) {
-        throwException(paramName + " must be more than " + value);
+    public static QuickWebException mustMoreThan(String paramName, int value) {
+        return exception(paramName + " must be more than " + value);
     }
 
-    public static void throwFormatIncorrectException(String param) {
-        throwException("the name format of " + param + " is incorrect");
+    public static QuickWebException formatIncorrect(String param) {
+        return exception("the name format of " + param + " is incorrect");
     }
 
-    public static void throwUnsupportedClassException(Class<?> cls, String... expected) {
-        throwException("unsupported class of " + cls +
+    public static QuickWebException unsupportedClass(Class<?> cls, String... expected) {
+        return exception("unsupported class of " + cls +
                 ", the expected are " + StringUtils.join(expected, ','));
     }
 
-    public static void throwParamNotExistsException(String paramName) {
-        throwException("the param of " + paramName + " is not exists");
+    public static QuickWebException paramNotExists(String paramName) {
+        return exception("the param of " + paramName + " is not exists");
     }
 
-    public static void throwException(String message) {
-        throw new QuickWebException(message);
+    public static QuickWebException exception(String message) {
+        return new QuickWebException(message);
     }
 
-    public static void throwException(Throwable throwable) {
-        throw new QuickWebException(throwable);
+    public static QuickWebException exception(Throwable throwable) {
+        return new QuickWebException(throwable);
     }
 
-    public static void throwException(String message, Throwable cause) {
-        throw new QuickWebException(message, cause);
+    public static QuickWebException exception(String message, Throwable cause) {
+        return new QuickWebException(message, cause);
     }
 }

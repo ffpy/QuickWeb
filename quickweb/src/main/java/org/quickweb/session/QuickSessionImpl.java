@@ -11,7 +11,7 @@ import org.quickweb.session.action.ExecSQLAction;
 import org.quickweb.session.action.RequireEmptyAction;
 import org.quickweb.session.action.RequireEqualsAction;
 import org.quickweb.session.param.ParamGenerator;
-import org.quickweb.session.param.ParamHelper;
+import org.quickweb.session.param.ParamNameHelper;
 import org.quickweb.session.param.ParamMapper;
 import org.quickweb.session.param.ParamMemberHelper;
 import org.quickweb.session.scope.EditableScope;
@@ -246,7 +246,7 @@ public class QuickSessionImpl implements QuickSession {
                 Scope.SESSION, Scope.COOKIE, Scope.APPLICATION
         };
 
-        ParamHelper helper = new ParamHelper(name);
+        ParamNameHelper helper = new ParamNameHelper(name);
         if (helper.getScope() == Scope.ALL) {
             for (Scope scope : scopes) {
                 Object value = getParam(helper, scope);
@@ -260,9 +260,9 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T getParam(ParamHelper paramHelper, Scope scope) {
-        String name = paramHelper.getParamName();
-        Object value = null;
+    private <T> T getParam(ParamNameHelper paramNameHelper, Scope scope) {
+        String name = paramNameHelper.getName();
+        Object value;
         switch (scope) {
             case CONTEXT:
                 value = request.getAttribute(name);
@@ -286,15 +286,15 @@ public class QuickSessionImpl implements QuickSession {
                 value = getParam(name);
                 break;
             default:
-                ExceptionUtils.throwScopeNotMatchedException(scope);
+                throw ExceptionUtils.scopeNotMatched(scope);
         }
-        return (T) ParamMemberHelper.getMemberValue(value, paramHelper);
+        return (T) ParamMemberHelper.getMemberValue(value, paramNameHelper);
     }
 
     @Override
     public QuickSession putParam(String name, Object value) {
         if (value != null) {
-            ParamHelper helper = new ParamHelper(name);
+            ParamNameHelper helper = new ParamNameHelper(name);
             Scope scope = helper.getScope();
             EditableScope eScope;
             if (scope == Scope.ALL) {
@@ -303,7 +303,7 @@ public class QuickSessionImpl implements QuickSession {
                 eScope = EditableScope.of(helper.getScope());
             }
 
-            putParam(helper.getParamName(), value, eScope);
+            putParam(helper.getName(), value, eScope);
         }
         return quickSessionProxy;
     }
@@ -321,7 +321,7 @@ public class QuickSessionImpl implements QuickSession {
                     applicationParamMap.put(name, value);
                     break;
                 default:
-                    ExceptionUtils.throwScopeNotMatchedException(scope);
+                    ExceptionUtils.scopeNotMatched(scope);
             }
         }
     }
@@ -344,7 +344,7 @@ public class QuickSessionImpl implements QuickSession {
 
     @Override
     public QuickSession removeParam(String name) {
-        Scope scope = new ParamHelper(name).getScope();
+        Scope scope = new ParamNameHelper(name).getScope();
         removeParam(name, EditableScope.of(scope));
         return quickSessionProxy;
     }

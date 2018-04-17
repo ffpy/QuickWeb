@@ -4,28 +4,28 @@ import org.apache.commons.lang3.StringUtils;
 import org.quickweb.session.scope.Scope;
 import org.quickweb.utils.ExceptionUtils;
 
-public class ParamHelper {
+public class ParamNameHelper {
     private String param;
     private String scopeName;
     private String paramName;
     private String members;
     private Scope scope;
 
-    public ParamHelper(String param) {
+    public ParamNameHelper(String param) {
         this.param = param;
         init();
     }
 
-    public String getScopeName() {
-        return scopeName;
-    }
-
-    public String getParamName() {
+    public String getName() {
         return paramName;
     }
 
     public String getMembers() {
         return members;
+    }
+
+    public String getScopeName() {
+        return scopeName;
     }
 
     public Scope getScope() {
@@ -50,7 +50,7 @@ public class ParamHelper {
                 scopeName = split[0];
                 members = split[1];
             } else {
-                ExceptionUtils.throwFormatIncorrectException(param);
+                throw ExceptionUtils.formatIncorrect(param);
             }
         } else {
             members = param;
@@ -58,11 +58,11 @@ public class ParamHelper {
 
         ParamMember member = findMember();
         if (member == null)
-            ExceptionUtils.throwException("get paramName fail");
+            throw ExceptionUtils.exception("get paramName fail");
 
         paramName = member.getMember();
         if (paramName == null)
-            ExceptionUtils.throwException("get paramName fail");
+            throw ExceptionUtils.exception("get paramName fail");
     }
 
     private Scope matchScope() {
@@ -92,9 +92,8 @@ public class ParamHelper {
             case "ALL":
                 return Scope.ALL;
             default:
-                ExceptionUtils.throwUnknownScopeException(scopeName);
+                throw ExceptionUtils.unknownScope(scopeName);
         }
-        return null;
     }
 
     public boolean hasMember() {

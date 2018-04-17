@@ -15,7 +15,6 @@ public enum EditableScope implements IScope {
             if (Objects.equals(ps.name(), scope.name()))
                 return ps;
         }
-        ExceptionUtils.throwNotEditableParamScope(scope);
-        return null;
+        throw ExceptionUtils.notEditableParamScope(scope);
     }
 }
