@@ -97,6 +97,24 @@ public class MatcherHelperTest {
                         new String[]{"name[0].a[1]"},
                         new String[]{""},
                 },
+                {   // 13
+                        "name = $$name",
+                        new String[0],
+                        new String[0],
+                        new String[0],
+                },
+                {   // 14
+                        "name = $$$name",
+                        new String[]{"$name"},
+                        new String[]{"name"},
+                        new String[]{""},
+                },
+                {   // 13
+                        "name = $$$$name",
+                        new String[0],
+                        new String[0],
+                        new String[0],
+                },
         };
         return Arrays.asList(objects);
     }
@@ -112,11 +130,11 @@ public class MatcherHelperTest {
     public void test() {
         MatcherHelper helper = new MatcherHelper(template);
         for (int i = 0; i < matchs.length; i++) {
-            assertEquals(helper.find(), true);
+            assertEquals(true, helper.find());
             assertEquals(matchs[i], helper.getMatch());
             assertEquals(params[i], helper.getParam());
             assertEquals(scopeNames[i], helper.getScopeName());
         }
-        assertEquals(helper.find(), false);
+        assertEquals(false, helper.find());
     }
 }

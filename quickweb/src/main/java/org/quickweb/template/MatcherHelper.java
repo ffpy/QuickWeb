@@ -9,6 +9,7 @@ public class MatcherHelper {
     private final Matcher matcher;
 
     public MatcherHelper(String template) {
+        template = template.replace("$$", "");
         this.matcher = COMPILE.matcher(template);
     }
 

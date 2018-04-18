@@ -15,7 +15,7 @@ public class TemplateExprTest {
     private QuickSession quickSession;
     private String s;
 
-    private String template;
+    private String placeholdersString;
     private List<Object> values;
     private Map<String, Object> paramMap;
     private String outputString;
@@ -72,15 +72,36 @@ public class TemplateExprTest {
                         createMap(entry("user.username", "uuu")),
                         "uuu",
                 },
+                {   // 7
+                        "name = $$name",
+                        "name = $name",
+                        Arrays.asList(),
+                        createMap(),
+                        "name = $name",
+                },
+                {   // 8
+                        "name = $$$name",
+                        "name = $?",
+                        Arrays.asList("aaa"),
+                        createMap(entry("name", "aaa")),
+                        "name = $aaa",
+                },
+                {   // 9
+                        "name = $$$$name",
+                        "name = $$name",
+                        Arrays.asList(),
+                        createMap(),
+                        "name = $$name",
+                },
         };
         return Arrays.asList(objects);
     }
 
-    public TemplateExprTest(String s, String template, List<Object> values,
+    public TemplateExprTest(String s, String placeholdersString, List<Object> values,
                             Map<String, Object> paramMap, String outputString) {
         this.quickSession = mockQuickSession();
         this.s = s;
-        this.template = template;
+        this.placeholdersString = placeholdersString;
         this.values = values;
         this.paramMap = paramMap;
         this.outputString = outputString;
@@ -89,7 +110,7 @@ public class TemplateExprTest {
     @Test
     public void test() {
         TemplateExpr expr = new TemplateExpr(quickSession, s);
-        assertEquals(template, expr.getPlaceholderString());
+        assertEquals(placeholdersString, expr.getPlaceholderString());
         assertEquals(values, expr.getValues());
         assertEquals(paramMap, expr.getParamMap());
         assertEquals(outputString, expr.getString());

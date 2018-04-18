@@ -30,7 +30,6 @@ public class ParamMember {
 
     @Override
     public int hashCode() {
-
         return Objects.hash(member, isArrayMember);
     }
 
