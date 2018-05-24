@@ -1,7 +1,5 @@
 package org.quickweb.utils;
 
-import org.apache.commons.lang3.StringUtils;
-
 public class CharUtils {
 
     /**

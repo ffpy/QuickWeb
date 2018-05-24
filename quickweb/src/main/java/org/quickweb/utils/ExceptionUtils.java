@@ -1,6 +1,5 @@
 package org.quickweb.utils;
 
-import org.apache.commons.lang3.StringUtils;
 import org.quickweb.exception.QuickWebException;
 import org.quickweb.session.scope.Scope;
 import org.quickweb.session.scope.IScope;

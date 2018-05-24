@@ -65,7 +65,7 @@ public class QuickViewImpl implements QuickView {
     }
 
     @Override
-    public void viewPath(String path) {
+    public void redirect(String path) {
         try {
             response.sendRedirect(path);
         } catch (IOException e) {

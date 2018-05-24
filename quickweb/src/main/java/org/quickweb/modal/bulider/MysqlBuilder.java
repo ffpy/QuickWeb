@@ -1,9 +1,9 @@
 package org.quickweb.modal.bulider;
 
 import com.sun.istack.internal.Nullable;
-import org.apache.commons.lang3.StringUtils;
 import org.quickweb.modal.param.SqlParamHelper;
 import org.quickweb.utils.ExceptionUtils;
+import org.quickweb.utils.StringUtils;
 
 import java.util.Arrays;
 import java.util.List;

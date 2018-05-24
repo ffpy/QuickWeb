@@ -120,7 +120,7 @@ public interface QuickSession {
 
     void view(String name);
 
-    void viewPath(String path);
+    void redirect(String path);
 
     void error(@Nullable Exception e);
 

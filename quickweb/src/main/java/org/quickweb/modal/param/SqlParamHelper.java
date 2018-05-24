@@ -1,9 +1,9 @@
 package org.quickweb.modal.param;
 
-import org.apache.commons.lang3.StringUtils;
 import org.quickweb.session.QuickSession;
 import org.quickweb.template.TemplateExpr;
 import org.quickweb.utils.EmptyUtils;
+import org.quickweb.utils.StringUtils;
 
 import java.util.Collections;
 import java.util.List;

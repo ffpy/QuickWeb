@@ -1,7 +1,6 @@
 package org.quickweb.sample.servlet;
 
 import org.quickweb.QuickWeb;
-import org.quickweb.session.param.CP;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -25,6 +24,6 @@ public class RegisterServlet extends HttpServlet {
                 .putParam("ctime", new Timestamp(Calendar.getInstance().getTimeInMillis()))
                 .modal("user")
                 .insert("name", "username", "password", "ctime")
-                .viewPath("/login");
+                .redirect("/login");
     }
 }

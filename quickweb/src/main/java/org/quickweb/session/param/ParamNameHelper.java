@@ -1,8 +1,8 @@
 package org.quickweb.session.param;
 
-import org.apache.commons.lang3.StringUtils;
 import org.quickweb.session.scope.Scope;
 import org.quickweb.utils.ExceptionUtils;
+import org.quickweb.utils.StringUtils;
 
 public class ParamNameHelper {
     private String param;

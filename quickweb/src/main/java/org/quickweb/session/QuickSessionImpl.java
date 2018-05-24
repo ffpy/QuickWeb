@@ -523,8 +523,8 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public void viewPath(String path) {
-        view().viewPath(path);
+    public void redirect(String path) {
+        view().redirect(path);
     }
 
     @Override

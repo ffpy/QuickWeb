@@ -1,12 +1,12 @@
 package org.quickweb.modal;
 
-import org.apache.commons.lang3.StringUtils;
 import org.quickweb.modal.handler.*;
 import org.quickweb.modal.param.ResultType;
 import org.quickweb.modal.param.SqlParam;
 import org.quickweb.session.param.CP;
 import org.quickweb.session.QuickSession;
 import org.quickweb.utils.ExceptionUtils;
+import org.quickweb.utils.StringUtils;
 
 import java.sql.SQLException;
 

@@ -25,13 +25,10 @@ public class LoginServlet extends HttpServlet {
                 })
                 .invalidateSession()
                 .requireParamNotEmpty("r:username", "r:password")
-                .modal("user")
-                .select("password, name")
-                .where("username = $r:username")
-                .findFirst("m:user")
+                .modal("user").select("password, name").where("username = $r:username").findFirst("m:user")
                 .requireParamNotEmpty(new Exception("user not found"), "m:user")
                 .requireParamEqualsWith("r:password", "m:user.password")
                 .setSessionFrom("name", "m:user.name")
-                .viewPath("/");
+                .redirect("/");
     }
 }
