@@ -1,5 +1,6 @@
 package org.quickweb.session;
 
+import org.apache.commons.beanutils.BeanUtils;
 import org.quickweb.session.error.DefaultErrorHandler;
 import org.quickweb.session.error.ErrorHandler;
 import org.quickweb.exception.*;
@@ -11,7 +12,7 @@ import org.quickweb.session.action.ExecSQLAction;
 import org.quickweb.session.action.RequireEmptyAction;
 import org.quickweb.session.action.RequireEqualsAction;
 import org.quickweb.session.param.ParamGenerator;
-import org.quickweb.session.param.ParamNameHelper;
+import org.quickweb.session.param.ParamHelper;
 import org.quickweb.session.param.ParamMapper;
 import org.quickweb.session.param.ParamMemberHelper;
 import org.quickweb.session.scope.EditableScope;
@@ -26,6 +27,7 @@ import org.quickweb.view.QuickViewProxy;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import java.lang.reflect.InvocationTargetException;
 import java.sql.Connection;
 import java.sql.SQLException;
 import java.util.*;
@@ -97,16 +99,16 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession requireParamNotNull(String... names) {
+    public QuickSession requireParamNotNull(String... params) {
         requireParamNotNull((paramName, quickSession) -> {
             throw new ParamNullException(paramName);
-        }, names);
+        }, params);
         return quickSessionProxy;
     }
 
     @Override
-    public QuickSession requireParamNotNull(RequireEmptyAction act, String... names) {
-        for (String n : names) {
+    public QuickSession requireParamNotNull(RequireEmptyAction act, String... params) {
+        for (String n : params) {
             if (getParam(n) == null) {
                 try {
                     act.act(n, quickSessionProxy);
@@ -120,22 +122,22 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession requireParamNotNull(Exception e, String... names) {
-        requireParamNotNull((paramName, quickSession) -> { throw e; }, names);
+    public QuickSession requireParamNotNull(Exception e, String... params) {
+        requireParamNotNull((paramName, quickSession) -> { throw e; }, params);
         return quickSessionProxy;
     }
 
     @Override
-    public QuickSession requireParamNotEmpty(String... names) {
+    public QuickSession requireParamNotEmpty(String... params) {
         requireParamNotEmpty((paramName, quickSession) -> {
             throw new ParamEmptyException(paramName);
-        }, names);
+        }, params);
         return quickSessionProxy;
     }
 
     @Override
-    public QuickSession requireParamNotEmpty(RequireEmptyAction act, String... names) {
-        for (String n : names) {
+    public QuickSession requireParamNotEmpty(RequireEmptyAction act, String... params) {
+        for (String n : params) {
             boolean isEmpty = false;
             Object value = getParam(n);
 
@@ -172,14 +174,14 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession requireParamNotEmpty(Exception e, String... names) {
-        requireParamNotEmpty((paramName, quickSession) -> { throw e; }, names);
+    public QuickSession requireParamNotEmpty(Exception e, String... params) {
+        requireParamNotEmpty((paramName, quickSession) -> { throw e; }, params);
         return quickSessionProxy;
     }
 
     @Override
-    public QuickSession requireParamEquals(String name, Object expectedValue) {
-        requireParamEquals(name, expectedValue,
+    public QuickSession requireParamEquals(String param, Object expectedValue) {
+        requireParamEquals(param, expectedValue,
                 (paramName, actualValue, expectedValue1, quickSession) -> {
             throw new ParamNotExpectedException(paramName, actualValue, expectedValue1);
         });
@@ -187,12 +189,12 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession requireParamEquals(String name, Object expectedValue,
+    public QuickSession requireParamEquals(String param, Object expectedValue,
                                            RequireEqualsAction act) {
-        Object actualValue = getParam(name);
+        Object actualValue = getParam(param);
         if (!Objects.equals(actualValue, expectedValue)) {
             try {
-                act.act(name, actualValue, expectedValue, quickSessionProxy);
+                act.act(param, actualValue, expectedValue, quickSessionProxy);
             } catch (Exception e) {
                 error(e);
             }
@@ -201,15 +203,15 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession requireParamEquals(String name, Object expectedValue, Exception e) {
-        requireParamEquals(name, expectedValue,
+    public QuickSession requireParamEquals(String param, Object expectedValue, Exception e) {
+        requireParamEquals(param, expectedValue,
                 (paramName, actualValue, expectedValue1, quickSession) -> { throw e; });
         return quickSessionProxy;
     }
 
     @Override
-    public QuickSession requireParamEqualsWith(String name, String expectedName) {
-        requireParamEqualsWith(name, expectedName,
+    public QuickSession requireParamEqualsWith(String param, String expectedName) {
+        requireParamEqualsWith(param, expectedName,
                 (paramName, actualValue, expectedValue, quickSession) -> {
             throw new ParamNotExpectedException(paramName, actualValue, expectedValue);
         });
@@ -217,12 +219,12 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession requireParamEqualsWith(String name, String expectedName, RequireEqualsAction act) {
-        Object actualValue = getParam(name);
+    public QuickSession requireParamEqualsWith(String param, String expectedName, RequireEqualsAction act) {
+        Object actualValue = getParam(param);
         Object expectedValue = getParam(expectedName);
         if (!Objects.equals(actualValue, expectedValue)) {
             try {
-                act.act(name, actualValue, expectedValue, quickSessionProxy);
+                act.act(param, actualValue, expectedValue, quickSessionProxy);
             } catch (Exception e) {
                 error(e);
             }
@@ -231,8 +233,8 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession requireParamEqualsWith(String name, String expectedName, Exception e) {
-        requireParamEqualsWith(name, expectedName,
+    public QuickSession requireParamEqualsWith(String param, String expectedName, Exception e) {
+        requireParamEqualsWith(param, expectedName,
                 (paramName, actualValue, expectedValue, quickSession) -> { throw e; });
         return quickSessionProxy;
     }
@@ -246,7 +248,7 @@ public class QuickSessionImpl implements QuickSession {
                 Scope.SESSION, Scope.COOKIE, Scope.APPLICATION
         };
 
-        ParamNameHelper helper = new ParamNameHelper(name);
+        ParamHelper helper = new ParamHelper(name);
         if (helper.getScope() == Scope.ALL) {
             for (Scope scope : scopes) {
                 Object value = getParam(helper, scope);
@@ -260,8 +262,8 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @SuppressWarnings("unchecked")
-    private <T> T getParam(ParamNameHelper paramNameHelper, Scope scope) {
-        String name = paramNameHelper.getName();
+    private <T> T getParam(ParamHelper paramHelper, Scope scope) {
+        String name = paramHelper.getName();
         Object value;
         switch (scope) {
             case CONTEXT:
@@ -286,15 +288,15 @@ public class QuickSessionImpl implements QuickSession {
                 value = getParam(name);
                 break;
             default:
-                throw ExceptionUtils.scopeNotMatched(scope);
+                throw ExceptionUtils.nonsupportScope(scope);
         }
-        return (T) ParamMemberHelper.getMemberValue(value, paramNameHelper);
+        return (T) ParamMemberHelper.getMemberValue(value, paramHelper);
     }
 
     @Override
-    public QuickSession putParam(String name, Object value) {
+    public QuickSession setParam(String name, Object value) {
         if (value != null) {
-            ParamNameHelper helper = new ParamNameHelper(name);
+            ParamHelper helper = new ParamHelper(name);
             Scope scope = helper.getScope();
             EditableScope eScope;
             if (scope == Scope.ALL) {
@@ -303,12 +305,13 @@ public class QuickSessionImpl implements QuickSession {
                 eScope = EditableScope.of(helper.getScope());
             }
 
-            putParam(helper.getName(), value, eScope);
+            setParam(helper.getName(), value, eScope);
         }
         return quickSessionProxy;
     }
 
-    private void putParam(String name, Object value, EditableScope scope) {
+    @Override
+    public QuickSession setParam(String name, Object value, EditableScope scope) {
         if (value != null) {
             switch (scope) {
                 case CONTEXT:
@@ -317,19 +320,22 @@ public class QuickSessionImpl implements QuickSession {
                 case MODAL:
                     modalParamMap.put(name, value);
                     break;
+                case SESSION:
+                    SessionUtils.setAttribute(request, TemplateExpr.getString(quickSessionProxy, name), value);
                 case APPLICATION:
                     applicationParamMap.put(name, value);
                     break;
                 default:
-                    ExceptionUtils.scopeNotMatched(scope);
+                    throw ExceptionUtils.nonsupportScope(scope);
             }
         }
+        return quickSessionProxy;
     }
 
     @Override
-    public QuickSession putParamBy(String name, ParamGenerator generator) {
+    public QuickSession setParamBy(String name, ParamGenerator generator) {
         try {
-            putParam(name, generator.generate(quickSessionProxy));
+            setParam(name, generator.generate(quickSessionProxy));
         } catch (Exception e) {
             error(e);
         }
@@ -337,14 +343,14 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession putParamFrom(String name, String fromName) {
-        putParam(name, getParam(fromName));
+    public QuickSession setParamFrom(String name, String fromName) {
+        setParam(name, getParam(fromName));
         return quickSessionProxy;
     }
 
     @Override
     public QuickSession removeParam(String name) {
-        Scope scope = new ParamNameHelper(name).getScope();
+        Scope scope = new ParamHelper(name).getScope();
         removeParam(name, EditableScope.of(scope));
         return quickSessionProxy;
     }
@@ -357,6 +363,8 @@ public class QuickSessionImpl implements QuickSession {
             case MODAL:
                 modalParamMap.remove(name);
                 break;
+            case SESSION:
+                SessionUtils.removeAttribute(request, name);
             case APPLICATION:
                 applicationParamMap.remove(name);
                 break;
@@ -367,7 +375,7 @@ public class QuickSessionImpl implements QuickSession {
     public QuickSession mapParam(String name, ParamMapper mapper) {
         Object value = getParam(name);
         try {
-            putParam(name, mapper.map(value));
+            setParam(name, mapper.map(value));
         } catch (Exception e) {
             error(e);
         }
@@ -381,37 +389,46 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession setSession(String name, Object value) {
-        SessionUtils.setAttribute(request, TemplateExpr.getString(quickSessionProxy, name), value);
-        return quickSessionProxy;
-    }
-
-    @Override
-    public QuickSession setSessionBy(String name, ParamGenerator generator) {
+    public QuickSession mergeParamsToBean(Class<?> beanType, String beanParam, String... params) {
         try {
-            setSession(TemplateExpr.getString(quickSessionProxy, name),
-                    generator.generate(quickSessionProxy));
-        } catch (Exception e) {
-            error(e);
+            Object bean = beanType.newInstance();
+            for (String p : params) {
+                BeanUtils.setProperty(bean, p, getParam(p));
+                removeParam(p);
+            }
+            setParam(beanParam, bean);
+        } catch (InstantiationException | IllegalAccessException | InvocationTargetException e) {
+            throw new RuntimeException(e);
         }
         return quickSessionProxy;
     }
 
     @Override
-    public QuickSession setSessionFrom(String name, String paramName) {
-        setSession(TemplateExpr.getString(quickSessionProxy, name), getParam(paramName));
+    public QuickSession mergeParamsToMap(String mapParam, String... params) {
+        Map<String, Object> map = new HashMap<>();
+        for (String p : params) {
+            map.put(p, getParam(p));
+            removeParam(p);
+        }
+        setParam(mapParam, map);
         return quickSessionProxy;
     }
 
     @Override
-    public QuickSession removeSession(String name) {
-        SessionUtils.removeAttribute(request, TemplateExpr.getString(quickSessionProxy, name));
-        return quickSessionProxy;
-    }
-
-    @Override
-    public QuickSession invalidateSession() {
-        SessionUtils.invalidateSession(request);
+    public QuickSession clearParams(EditableScope scope) {
+        switch (scope) {
+            case CONTEXT:
+                request.getParameterMap().clear();
+                break;
+            case MODAL:
+                modalParamMap.clear();
+                break;
+            case SESSION:
+                SessionUtils.invalidateSession(request);
+            case APPLICATION:
+                applicationParamMap.clear();
+                break;
+        }
         return quickSessionProxy;
     }
 
@@ -429,20 +446,8 @@ public class QuickSessionImpl implements QuickSession {
     }
 
     @Override
-    public QuickSession addCookieBy(String name, Function<QuickSession, String> generator) {
-        addCookie(TemplateExpr.getString(quickSessionProxy, name), generator.apply(quickSessionProxy));
-        return quickSessionProxy;
-    }
-
-    @Override
     public QuickSession addCookieBy(Function<QuickSession, Cookie> generator) {
         addCookie(generator.apply(quickSessionProxy));
-        return quickSessionProxy;
-    }
-
-    @Override
-    public QuickSession addCookieFrom(String name, String paramName) {
-        addCookie(TemplateExpr.getString(quickSessionProxy, name), getParam(paramName));
         return quickSessionProxy;
     }
 

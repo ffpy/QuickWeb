@@ -20,7 +20,7 @@ import java.util.Map;
 
 public class QueryHandler {
 
-    public static void find(QuickSession quickSession, String paramName,
+    public static void find(QuickSession quickSession, String param,
                             SqlParam sqlParam) throws SQLException {
         findAction(quickSession, sqlParam, (stmt, rs) -> {
             List<Map<String, Object>> rowList = new ArrayList<>();
@@ -34,7 +34,7 @@ public class QueryHandler {
                 }
                 rowList.add(rowMap);
             }
-            quickSession.putParam(paramName, rowList);
+            quickSession.setParam(param, rowList);
         });
     }
 
@@ -44,7 +44,7 @@ public class QueryHandler {
                 onQueryResult.onResult(rs, quickSession));
     }
 
-    public static void findFirst(QuickSession quickSession, String paramName,
+    public static void findFirst(QuickSession quickSession, String param,
                                  SqlParam sqlParam) throws SQLException {
         findAction(quickSession, sqlParam, (stmt, rs) -> {
             ResultSetMetaData metaData = rs.getMetaData();
@@ -55,33 +55,33 @@ public class QueryHandler {
                     rowMap.put(metaData.getColumnLabel(i), obj);
                 }
             }
-            quickSession.putParam(paramName, rowMap);
+            quickSession.setParam(param, rowMap);
         });
     }
 
-    public static void count(QuickSession quickSession, String paramName,
+    public static void count(QuickSession quickSession, String param,
                              SqlParam sqlParam) throws SQLException {
-        aggregateAction(quickSession, paramName, "*", sqlParam, "COUNT", ResultType.INT);
+        aggregateAction(quickSession, param, "*", sqlParam, "COUNT", ResultType.INT);
     }
 
-    public static void avg(QuickSession quickSession, String paramName, String column,
+    public static void avg(QuickSession quickSession, String param, String column,
                            SqlParam sqlParam) throws SQLException {
-        aggregateAction(quickSession, paramName, column, sqlParam, "AVG", ResultType.DOUBLE);
+        aggregateAction(quickSession, param, column, sqlParam, "AVG", ResultType.DOUBLE);
     }
 
-    public static void max(QuickSession quickSession, String paramName, String column,
+    public static void max(QuickSession quickSession, String param, String column,
                            SqlParam sqlParam, ResultType resultType) throws SQLException {
-        aggregateAction(quickSession, paramName, column, sqlParam, "MAX", resultType);
+        aggregateAction(quickSession, param, column, sqlParam, "MAX", resultType);
     }
 
-    public static void min(QuickSession quickSession, String paramName, String column,
+    public static void min(QuickSession quickSession, String param, String column,
                            SqlParam sqlParam, ResultType resultType) throws SQLException {
-        aggregateAction(quickSession, paramName, column, sqlParam, "MIN", resultType);
+        aggregateAction(quickSession, param, column, sqlParam, "MIN", resultType);
     }
 
-    public static void sum(QuickSession quickSession, String paramName, String column,
+    public static void sum(QuickSession quickSession, String param, String column,
                            SqlParam sqlParam, ResultType resultType) throws SQLException {
-        aggregateAction(quickSession, paramName, column, sqlParam, "SUM", resultType);
+        aggregateAction(quickSession, param, column, sqlParam, "SUM", resultType);
     }
 
     /**
@@ -111,7 +111,7 @@ public class QueryHandler {
     /**
      * 处理聚合函数操作
      */
-    private static void aggregateAction(QuickSession quickSession, String paramName,
+    private static void aggregateAction(QuickSession quickSession, String param,
                                         String column, SqlParam sqlParam,
                                         String method, ResultType resultType) throws SQLException {
         column = TemplateExpr.getString(quickSession, column);
@@ -126,7 +126,7 @@ public class QueryHandler {
                 else
                     value = rs.getObject(1, resultType.getType());
 
-                quickSession.putParam(paramName, value);
+                quickSession.setParam(param, value);
             }
         });
     }

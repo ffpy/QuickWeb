@@ -42,10 +42,10 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickModal selectFrom(String paramName) {
-        Object value = quickSession.getParam(paramName);
+    public QuickModal selectFrom(String param) {
+        Object value = quickSession.getParam(param);
         if (value == null)
-            throw ExceptionUtils.paramNotExists(paramName);
+            throw ExceptionUtils.paramNotExists(param);
 
         if (value instanceof String[]){
             sqlParam.setColumns((String[]) value);
@@ -62,10 +62,10 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickModal whereFrom(String paramName) {
-        Object value = quickSession.getParam(paramName);
+    public QuickModal whereFrom(String param) {
+        Object value = quickSession.getParam(param);
         if (value == null)
-            throw ExceptionUtils.paramNotExists(paramName);
+            throw ExceptionUtils.paramNotExists(param);
         if (value instanceof String) {
             sqlParam.setCondition((String) value);
         } else {
@@ -81,10 +81,10 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickModal orderFrom(String paramName) {
-        Object value = quickSession.getParam(paramName);
+    public QuickModal orderFrom(String param) {
+        Object value = quickSession.getParam(param);
         if (value == null)
-            throw ExceptionUtils.paramNotExists(paramName);
+            throw ExceptionUtils.paramNotExists(param);
         if (value instanceof String) {
             sqlParam.setOrders(StringUtils.split((String) value, ','));
         } else if (value instanceof String[]) {
@@ -102,10 +102,10 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickModal offsetFrom(String paramName) {
-        Object value = quickSession.getParam(paramName);
+    public QuickModal offsetFrom(String param) {
+        Object value = quickSession.getParam(param);
         if (value == null)
-            throw ExceptionUtils.paramNotExists(paramName);
+            throw ExceptionUtils.paramNotExists(param);
         if (value instanceof Integer) {
             sqlParam.setOffset((Integer) value);
         } else {
@@ -121,10 +121,10 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickModal limitFrom(String paramName) {
-        Object value = quickSession.getParam(paramName);
+    public QuickModal limitFrom(String param) {
+        Object value = quickSession.getParam(param);
         if (value == null)
-            throw ExceptionUtils.paramNotExists(paramName);
+            throw ExceptionUtils.paramNotExists(param);
         if (value instanceof Integer) {
             sqlParam.setLimit((Integer) value);
         } else {
@@ -164,14 +164,14 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickSession findFirst(String paramName) {
-        exec(() -> QueryHandler.findFirst(quickSession, paramName, sqlParam));
+    public QuickSession findFirst(String param) {
+        exec(() -> QueryHandler.findFirst(quickSession, param, sqlParam));
         return quickSession;
     }
 
     @Override
-    public QuickSession find(String paramName) {
-        exec(() -> QueryHandler.find(quickSession, paramName, sqlParam));
+    public QuickSession find(String param) {
+        exec(() -> QueryHandler.find(quickSession, param, sqlParam));
         return quickSession;
     }
 
@@ -182,32 +182,32 @@ public class QuickModalImpl implements QuickModal {
     }
 
     @Override
-    public QuickSession count(String paramName) {
-        exec(() -> QueryHandler.count(quickSession, paramName, sqlParam));
+    public QuickSession count(String param) {
+        exec(() -> QueryHandler.count(quickSession, param, sqlParam));
         return quickSession;
     }
 
     @Override
-    public QuickSession avg(String paramName, String column) {
-        exec(() -> QueryHandler.avg(quickSession, paramName, column, sqlParam));
+    public QuickSession avg(String param, String column) {
+        exec(() -> QueryHandler.avg(quickSession, param, column, sqlParam));
         return quickSession;
     }
 
     @Override
-    public QuickSession max(String paramName, String column, ResultType resultType) {
-        exec(() -> QueryHandler.max(quickSession, paramName, column, sqlParam, resultType));
+    public QuickSession max(String param, String column, ResultType resultType) {
+        exec(() -> QueryHandler.max(quickSession, param, column, sqlParam, resultType));
         return quickSession;
     }
 
     @Override
-    public QuickSession min(String paramName, String column, ResultType resultType) {
-        exec(() -> QueryHandler.min(quickSession, paramName, column, sqlParam, resultType));
+    public QuickSession min(String param, String column, ResultType resultType) {
+        exec(() -> QueryHandler.min(quickSession, param, column, sqlParam, resultType));
         return quickSession;
     }
 
     @Override
-    public QuickSession sum(String paramName, String column, ResultType resultType) {
-        exec(() -> QueryHandler.sum(quickSession, paramName, column, sqlParam, resultType));
+    public QuickSession sum(String param, String column, ResultType resultType) {
+        exec(() -> QueryHandler.sum(quickSession, param, column, sqlParam, resultType));
         return quickSession;
     }
 

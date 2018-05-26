@@ -1,7 +1,7 @@
 package org.quickweb.session.param;
 
-import org.quickweb.utils.CharUtils;
 import org.quickweb.utils.ExceptionUtils;
+import org.quickweb.utils.StringUtils;
 
 import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
@@ -10,13 +10,13 @@ import java.util.Map;
 
 public class ParamMemberHelper {
 
-    public static Object getMemberValue(Object value, ParamNameHelper paramNameHelper) {
+    public static Object getMemberValue(Object value, ParamHelper paramHelper) {
         if (value == null)
             return null;
-        if (!paramNameHelper.hasMember())
+        if (!paramHelper.hasMember())
             return value;
 
-        ParamMember paramMember = paramNameHelper.findMember();
+        ParamMember paramMember = paramHelper.findMember();
         String member = paramMember.getMember();
 
         if (value instanceof Object[] && paramMember.isArrayMember()) {
@@ -34,7 +34,7 @@ public class ParamMemberHelper {
         } else {
             // Object
             Method method = null;
-            String upperCaseMember = CharUtils.upperCaseInitial(member);
+            String upperCaseMember = StringUtils.upperCaseFirstChar(member);
             String getMethodName = "get" + upperCaseMember;
             String isMethodName = "is" + upperCaseMember;
 
@@ -62,7 +62,7 @@ public class ParamMemberHelper {
             }
         }
 
-        return getMemberValue(value, paramNameHelper);
+        return getMemberValue(value, paramHelper);
     }
 
     private static int getIndexMember(String member) {

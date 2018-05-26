@@ -21,7 +21,7 @@ public class RegisterServlet extends HttpServlet {
     protected void doPost(HttpServletRequest req, HttpServletResponse resp) throws ServletException, IOException {
         QuickWeb.server(req, resp)
                 .requireParamNotEmpty("name", "username", "password")
-                .putParam("ctime", new Timestamp(Calendar.getInstance().getTimeInMillis()))
+                .setParam("ctime", new Timestamp(Calendar.getInstance().getTimeInMillis()))
                 .modal("user")
                 .insert("name", "username", "password", "ctime")
                 .redirect("/login");

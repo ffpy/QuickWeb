@@ -6,8 +6,8 @@ import org.quickweb.session.scope.IScope;
 
 public class ExceptionUtils {
 
-    public static QuickWebException scopeNotMatched(IScope scope) {
-        return exception("scope not matched, the value is " + scope);
+    public static QuickWebException nonsupportScope(IScope scope) {
+        return exception("scope of " + scope + " is nonsupport");
     }
 
     public static QuickWebException unknownScope(String scopeName) {
@@ -18,8 +18,8 @@ public class ExceptionUtils {
         return exception(scope + " is not EditableParamScope");
     }
 
-    public static QuickWebException mustMoreThan(String paramName, int value) {
-        return exception(paramName + " must be more than " + value);
+    public static QuickWebException mustMoreThan(String param, int value) {
+        return exception(param + " must be more than " + value);
     }
 
     public static QuickWebException formatIncorrect(String param) {
@@ -31,8 +31,8 @@ public class ExceptionUtils {
                 ", the expected are " + StringUtils.join(expected, ','));
     }
 
-    public static QuickWebException paramNotExists(String paramName) {
-        return exception("the param of " + paramName + " is not exists");
+    public static QuickWebException paramNotExists(String param) {
+        return exception("the param of " + param + " is not exists");
     }
 
     public static QuickWebException exception(String message) {

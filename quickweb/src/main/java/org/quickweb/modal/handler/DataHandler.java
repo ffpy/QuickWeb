@@ -65,7 +65,7 @@ public class DataHandler {
         Integer value = null;
         if (stmt != null)
             value = stmt.getUpdateCount();
-        quickSession.putParam(QuickModal.UPDATE_COUNT, value);
+        quickSession.setParam(QuickModal.UPDATE_COUNT, value);
     }
 
     /**
@@ -82,6 +82,6 @@ public class DataHandler {
             if (rs.next())
                 key = rs.getObject(1);
         }
-        quickSession.putParam(QuickModal.GENERATED_KEY, key);
+        quickSession.setParam(QuickModal.GENERATED_KEY, key);
     }
 }

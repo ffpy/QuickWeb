@@ -16,9 +16,9 @@ public class StmtHelper {
         this.stmt = stmt;
     }
 
-    public StmtHelper setParams(String[] paramNames) throws SQLException {
-        for (String paramName : paramNames) {
-            stmt.setObject(index++, quickSession.getParam(paramName));
+    public StmtHelper setParams(String[] params) throws SQLException {
+        for (String p : params) {
+            stmt.setObject(index++, quickSession.getParam(p));
         }
         return this;
     }

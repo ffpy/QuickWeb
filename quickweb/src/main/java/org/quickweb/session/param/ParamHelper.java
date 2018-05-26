@@ -4,14 +4,14 @@ import org.quickweb.session.scope.Scope;
 import org.quickweb.utils.ExceptionUtils;
 import org.quickweb.utils.StringUtils;
 
-public class ParamNameHelper {
+public class ParamHelper {
     private String param;
     private String scopeName;
     private String paramName;
     private String members;
     private Scope scope;
 
-    public ParamNameHelper(String param) {
+    public ParamHelper(String param) {
         this.param = param;
         init();
     }

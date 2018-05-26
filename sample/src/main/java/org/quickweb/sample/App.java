@@ -1,6 +1,6 @@
 package org.quickweb.sample;
 
-import org.quickweb.session.param.ParamNameHelper;
+import org.quickweb.session.param.ParamHelper;
 
 public class App {
     public static void main(String[] args) {
@@ -16,7 +16,7 @@ public class App {
 //        }
 
         String s = "x:name[2][1].aaa.bbb";
-        ParamNameHelper helper = new ParamNameHelper(s);
+        ParamHelper helper = new ParamHelper(s);
         System.out.println(helper.getScopeName());
         System.out.println(helper.getName());
         System.out.println(helper.getMembers());

@@ -33,7 +33,7 @@ public class CharUtilsTest {
     }
 
     @Test
-    public void upperCaseInitial() {
-        assertEquals(expected, CharUtils.upperCaseInitial(param));
+    public void upperCaseFirstChar() {
+        assertEquals(expected, StringUtils.upperCaseFirstChar(param));
     }
 }

@@ -132,8 +132,8 @@ public class ParamMemberHelperTest {
     public void test() {
         Exception ex = null;
         try {
-            ParamNameHelper paramNameHelper = new ParamNameHelper(param);
-            Object result = ParamMemberHelper.getMemberValue(value, paramNameHelper);
+            ParamHelper paramHelper = new ParamHelper(param);
+            Object result = ParamMemberHelper.getMemberValue(value, paramHelper);
             assertEquals(expected, result);
         } catch (Exception e) {
             ex = e;

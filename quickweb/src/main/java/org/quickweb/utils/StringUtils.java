@@ -115,4 +115,17 @@ public class StringUtils {
         }
         return list.toArray(new String[list.size()]);
     }
-}
+
+
+    /**
+     * 首字母大写
+     */
+    public static String upperCaseFirstChar(String s) {
+        if (StringUtils.isEmpty(s))
+            return s;
+
+        char[] cs = s.toCharArray();
+        if (cs[0] >= 'a' && cs[0] <= 'z')
+            cs[0] -= 32;
+        return String.valueOf(cs);
+    }}

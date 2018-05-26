@@ -19,7 +19,7 @@ public enum Scope implements IScope {
             if (Objects.equals(ps.name(), scope.name()))
                 return ps;
         }
-        ExceptionUtils.scopeNotMatched(scope);
+        ExceptionUtils.nonsupportScope(scope);
         return null;
     }
 }

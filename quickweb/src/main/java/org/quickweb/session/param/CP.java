@@ -4,15 +4,15 @@ import java.util.Objects;
 
 public class CP {
     private String column;
-    private String paramName;
+    private String param;
 
-    private CP(String column, String paramName) {
+    private CP(String column, String param) {
         this.column = column;
-        this.paramName = paramName;
+        this.param = param;
     }
 
-    public static CP of(String column, String paramName) {
-        return new CP(column, paramName);
+    public static CP of(String column, String param) {
+        return new CP(column, param);
     }
 
     public static CP[] of(String[] columnAndParamNames) {
@@ -28,8 +28,8 @@ public class CP {
         return column;
     }
 
-    public String getParamName() {
-        return paramName;
+    public String getParam() {
+        return param;
     }
 
     public static String[] getColumns(CP[] cps) {
@@ -46,19 +46,19 @@ public class CP {
     public static String[] getParamNames(CP[] cps) {
         Objects.requireNonNull(cps);
 
-        String[] paramNames = new String[cps.length];
+        String[] params = new String[cps.length];
         int i = 0;
         for (CP cp : cps) {
-            paramNames[i++] = cp.getParamName();
+            params[i++] = cp.getParam();
         }
-        return paramNames;
+        return params;
     }
 
     @Override
     public String toString() {
         return "CP{" +
                 "column='" + column + '\'' +
-                ", paramName='" + paramName + '\'' +
+                ", param='" + param + '\'' +
                 '}';
     }
 }

@@ -7,6 +7,7 @@ import java.util.Objects;
 public enum EditableScope implements IScope {
     CONTEXT,
     MODAL,
+    SESSION,
     APPLICATION,
     ;
 

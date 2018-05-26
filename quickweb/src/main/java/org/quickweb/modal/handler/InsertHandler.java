@@ -15,7 +15,7 @@ public class InsertHandler {
         insert(quickSession, CP.getColumns(cps), CP.getParamNames(cps), sqlParam);
     }
 
-    public static void insert(QuickSession quickSession, String[] columns, String[] paramNames,
+    public static void insert(QuickSession quickSession, String[] columns, String[] params,
                               SqlParam sqlParam) throws SQLException {
         sqlParam.setColumns(columns);
 
@@ -24,7 +24,7 @@ public class InsertHandler {
 
         DataHandler.handle(quickSession, sql, (stmt) -> {
             new StmtHelper(quickSession, stmt)
-                    .setParams(paramNames);
+                    .setParams(params);
             stmt.executeUpdate();
         });
     }

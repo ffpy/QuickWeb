@@ -1,6 +1,7 @@
 package org.quickweb.sample.servlet;
 
 import org.quickweb.QuickWeb;
+import org.quickweb.session.scope.EditableScope;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -23,12 +24,13 @@ public class LoginServlet extends HttpServlet {
                     quickSession.view("login");
                     System.out.println("error: " + e);
                 })
-                .invalidateSession()
+                .clearParams(EditableScope.SESSION)
                 .requireParamNotEmpty("r:username", "r:password")
                 .modal("user").select("password, name").where("username = $r:username").findFirst("m:user")
                 .requireParamNotEmpty(new Exception("user not found"), "m:user")
                 .requireParamEqualsWith("r:password", "m:user.password")
-                .setSessionFrom("name", "m:user.name")
+                .setParam("s:name", "m:user.name")
                 .redirect("/");
+
     }
 }

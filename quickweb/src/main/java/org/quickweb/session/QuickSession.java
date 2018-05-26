@@ -8,6 +8,7 @@ import org.quickweb.session.action.RequireEmptyAction;
 import org.quickweb.session.action.RequireEqualsAction;
 import org.quickweb.session.param.ParamGenerator;
 import org.quickweb.session.param.ParamMapper;
+import org.quickweb.session.scope.EditableScope;
 import org.quickweb.view.QuickView;
 
 import javax.servlet.http.Cookie;
@@ -39,38 +40,40 @@ public interface QuickSession {
 
     QuickSession onError(@Nullable ErrorHandler handler);
 
-    QuickSession requireParamNotNull(String... names);
+    QuickSession requireParamNotNull(String... params);
 
-    QuickSession requireParamNotNull(RequireEmptyAction act, String... names);
+    QuickSession requireParamNotNull(RequireEmptyAction act, String... params);
 
-    QuickSession requireParamNotNull(Exception e, String... names);
+    QuickSession requireParamNotNull(Exception e, String... params);
 
-    QuickSession requireParamNotEmpty(String... names);
+    QuickSession requireParamNotEmpty(String... params);
 
-    QuickSession requireParamNotEmpty(RequireEmptyAction act, String... names);
+    QuickSession requireParamNotEmpty(RequireEmptyAction act, String... params);
 
-    QuickSession requireParamNotEmpty(Exception e, String... names);
+    QuickSession requireParamNotEmpty(Exception e, String... params);
 
-    QuickSession requireParamEquals(String name, @Nullable Object expectedValue);
+    QuickSession requireParamEquals(String param, @Nullable Object expectedValue);
 
-    QuickSession requireParamEquals(String name, @Nullable Object expectedValue,
+    QuickSession requireParamEquals(String param, @Nullable Object expectedValue,
                                     RequireEqualsAction act);
 
-    QuickSession requireParamEquals(String name, @Nullable Object expectedValue, Exception e);
+    QuickSession requireParamEquals(String param, @Nullable Object expectedValue, Exception e);
 
-    QuickSession requireParamEqualsWith(String name, String expectedName);
+    QuickSession requireParamEqualsWith(String param, String expectedName);
 
-    QuickSession requireParamEqualsWith(String name, String expectedName, RequireEqualsAction act);
+    QuickSession requireParamEqualsWith(String param, String expectedName, RequireEqualsAction act);
 
-    QuickSession requireParamEqualsWith(String name, String expectedName, Exception e);
+    QuickSession requireParamEqualsWith(String param, String expectedName, Exception e);
 
     <T> T getParam(String name);
 
-    QuickSession putParam(String name, Object value);
+    QuickSession setParam(String name, Object value);
 
-    QuickSession putParamBy(String name, ParamGenerator generator);
+    QuickSession setParam(String name, Object value, EditableScope scope);
 
-    QuickSession putParamFrom(String name, String fromName);
+    QuickSession setParamBy(String name, ParamGenerator generator);
+
+    QuickSession setParamFrom(String name, String fromName);
 
     QuickSession removeParam(String name);
 
@@ -78,25 +81,17 @@ public interface QuickSession {
 
     QuickSession watchParam(String name, Consumer<Object> watcher);
 
-    QuickSession setSession(String name, Object value);
+    QuickSession mergeParamsToBean(Class<?> beanType, String beanParam, String... params);
 
-    QuickSession setSessionBy(String name, ParamGenerator generator);
+    QuickSession mergeParamsToMap(String mapParam, String... params);
 
-    QuickSession setSessionFrom(String name, String paramName);
-
-    QuickSession removeSession(String name);
-
-    QuickSession invalidateSession();
+    QuickSession clearParams(EditableScope scope);
 
     QuickSession addCookie(String name, String value);
 
     QuickSession addCookie(Cookie cookie);
 
-    QuickSession addCookieBy(String name, Function<QuickSession, String> generator);
-
     QuickSession addCookieBy(Function<QuickSession, Cookie> generator);
-
-    QuickSession addCookieFrom(String name, String paramName);
 
     QuickSession removeCookie(String name);
 

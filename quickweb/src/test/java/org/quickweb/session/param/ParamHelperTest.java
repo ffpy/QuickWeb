@@ -12,7 +12,7 @@ import java.util.Collection;
 import static org.junit.Assert.*;
 
 @RunWith(Parameterized.class)
-public class ParamNameHelperTest {
+public class ParamHelperTest {
     private String param;
     private String scopeName;
     private String paramName;
@@ -175,8 +175,8 @@ public class ParamNameHelperTest {
         return Arrays.asList(objects);
     }
 
-    public ParamNameHelperTest(String param, String scopeName, String paramName, String members,
-                               ParamMember[] memberArr, Scope scope, Class<? extends Exception> exceptionType) {
+    public ParamHelperTest(String param, String scopeName, String paramName, String members,
+                           ParamMember[] memberArr, Scope scope, Class<? extends Exception> exceptionType) {
         this.param = param;
         this.scopeName = scopeName;
         this.paramName = paramName;
@@ -190,7 +190,7 @@ public class ParamNameHelperTest {
     public void test() {
         Exception ex = null;
         try {
-            ParamNameHelper helper = new ParamNameHelper(param);
+            ParamHelper helper = new ParamHelper(param);
             assertEquals(scopeName, helper.getScopeName());
             assertEquals(paramName, helper.getName());
             assertEquals(members, helper.getMembers());

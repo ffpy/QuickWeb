@@ -19,23 +19,23 @@ public interface QuickModal {
 
     QuickModal select(String... columns);
 
-    QuickModal selectFrom(String paramName);
+    QuickModal selectFrom(String param);
 
     QuickModal where(String condition);
 
-    QuickModal whereFrom(String paramName);
+    QuickModal whereFrom(String param);
 
     QuickModal order(String... columns);
 
-    QuickModal orderFrom(String paramName);
+    QuickModal orderFrom(String param);
 
     QuickModal offset(int value);
 
-    QuickModal offsetFrom(String paramName);
+    QuickModal offsetFrom(String param);
 
     QuickModal limit(int value);
 
-    QuickModal limitFrom(String paramName);
+    QuickModal limitFrom(String param);
 
     QuickSession insert(String... columnAndParamNames);
 
@@ -47,19 +47,19 @@ public interface QuickModal {
 
     QuickSession delete();
 
-    QuickSession findFirst(String paramName);
+    QuickSession findFirst(String param);
 
-    QuickSession find(String paramName);
+    QuickSession find(String param);
 
     QuickSession find(OnQueryResult onQueryResult);
 
-    QuickSession count(String paramName);
+    QuickSession count(String param);
 
-    QuickSession avg(String paramName, String column);
+    QuickSession avg(String param, String column);
 
-    QuickSession max(String paramName, String column, ResultType resultType);
+    QuickSession max(String param, String column, ResultType resultType);
 
-    QuickSession min(String paramName, String column, ResultType resultType);
+    QuickSession min(String param, String column, ResultType resultType);
 
-    QuickSession sum(String paramName, String column, ResultType resultType);
+    QuickSession sum(String param, String column, ResultType resultType);
 }
